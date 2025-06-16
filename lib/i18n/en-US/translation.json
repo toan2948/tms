@@ -1,0 +1,206 @@
+{
+  "all": "All",
+  "create": "Create",
+  "update": "Update",
+  "delete": "Delete",
+  "copy": "Copy",
+  "view": "View",
+  "search": "Search",
+  "cancel": "Cancel",
+  "saveChanges": "Save Changes",
+  "viewDetails": "View details",
+  "scheduled": "Scheduled",
+  "cancelled": "Cancelled",
+  "price": "Price",
+  "status": "Status",
+  "dateRange": "Date range",
+  "filter": "Filter",
+  "export": "Export",
+  "from": "From",
+  "to": "to",
+  "actions": "Actions",
+  "connections": "Connections",
+  "customer": "Customer",
+  "billing": "Billing",
+  "product": "Product",
+  "created": "Created",
+  "currency": "Currency",
+  "date": "Date",
+  "description": "Description",
+  "amount": "Amount",
+  "payment": "Payment",
+  "refund": "Refund",
+  "discount": "Discount",
+  "started": "Started",
+  "nextInvoice": "Next invoice",
+  "billingMethod": "Billing method",
+  "currentPeriod": "Current period",
+  "taxCalculation": "Tax calculation",
+  "qty": "Qty",
+  "unitPrice": "Unit price",
+  "due": "Due",
+  "total": "Total",
+  "subtotal": "Subtotal",
+  "amountDue": "Amount due",
+  "type": "Type",
+  "source": "Source",
+  "startAt": "Start at",
+  "endAt": "End at",
+  "pricing": "Pricing",
+  "entitlements": "Entitlements",
+  "entitlement": "Entitlement",
+  "name": "Name",
+  "email": "Email Address",
+  "password": "Password",
+  "team": "Team",
+  "avatarURL": "Avatar URL",
+  "lastLogin": "Last login",
+  "roles": "Roles",
+  "role": "Role",
+  "allRoles": "All Roles",
+  "active": "Active",
+  "suspend": "Suspended",
+  "deleted": "Deleted",
+  "copySuccess": "Successfully copied to clipboard.",
+  "copyright": "Copyright © {{year}} Gan Jing World",
+  "header": {
+    "search": "search",
+    "language": "Language",
+    "signout": "Sign Out"
+  },
+  "theme": {
+    "label": "Theme",
+    "light": "Light",
+    "dark": "Dark",
+    "system": "Sync with OS"
+  },
+  "login": {
+    "title": "Sign in to your account",
+    "email": {
+      "label": "Email",
+      "hint": "Your email",
+      "required": "Please enter your email",
+      "invalid": "Please enter a valid email"
+    },
+    "password": {
+      "hint": "Your password",
+      "required": "Please enter your password"
+    },
+    "otp": {
+      "label": "OTP",
+      "hint": "Scan the QR code bellow to get your OTP",
+      "required": "Please enter your OTP"
+    },
+    "login": "Login",
+    "logingIn": "Logging in...",
+    "failed": "Failed to login"
+  },
+  "error": {
+    "title": "Oops!",
+    "unspecific": "Sorry, an unexpected error has occurred.",
+    "400": "The request cannot be fulfilled due to bad syntax",
+    "401": "Unauthorized. Please login to continue",
+    "403": "You don’t have permission to access this resource.",
+    "404": "Page you are trying to open does not exist. You may have mistyped the address, or the page has been moved to another URL.",
+    "500": "Something bad just happened. Our servers could not handle your request. Try refreshing the page.",
+    "503": "All of our servers are busy. We cannot handle your request right now, please wait for a couple of minutes and refresh the page.",
+    "goBack": "Go back",
+    "backToHomepage": "Get back to home page",
+    "refreshPage": "Refresh the page"
+  },
+  "accounts": {
+    "title": "Accounts",
+    "create": "Create Account",
+    "createSuccess": "Account has been created successfully.",
+    "edit": "Edit Account",
+    "editSuccess": "Account has been updated successfully.",
+    "my": "My Account",
+    "info": "Account Information",
+    "yourInfo": "Your Information",
+    "yourPassword": "Your Password",
+    "name": {
+      "required": "Please enter the account name"
+    },
+    "email": {
+      "required": "Please enter the email",
+      "invalid": "This is not a valid email"
+    },
+    "password": {
+      "required": "Please enter the password",
+      "confirmRequired": "Please retype to confirm password",
+      "mustMatch": "Passwords must match"
+    },
+    "roles": {
+      "required": "Please select at least one role"
+    },
+    "reset": {
+      "title": "Account Password",
+      "password": "New Password",
+      "confirm": "Confirm Password",
+      "reset": "Reset Password",
+      "success": "Password has been reset successfully."
+    }
+  },
+  "balance": {
+    "title": "Balance"
+  },
+  "customers": {
+    "title": "Customers",
+    "view": "View customer"
+  },
+  "home": {
+    "title": "Homepage"
+  },
+  "orders": {
+    "orderId": "Order Id",
+    "type": "Type",
+    "status": "Status",
+    "country": "Country",
+    "city": "City",
+    "state": "State",
+    "zipCode": "Zip Code",
+    "subtotal": "Sub Total",
+    "taxAmount": "Tax Amount",
+    "title": "Orders",
+    "update": "Update order",
+    "cancel": "Cancel order",
+    "view": "View order"
+  },
+  "payments": {
+    "title": "Payments",
+    "method": "Payment Method",
+    "pMethod": "P. Method",
+    "create": "Create Payment",
+    "all": "All Payments",
+    "disputes": "Disputes",
+    "viewDetails": "View payment details",
+    "refund": "Refund payment",
+    "sendReceipt": "Send receipt",
+    "copyId": "Copy payment ID",
+    "allTransactions": "All Transactions",
+    "pauseCollection": "Pause payment collection",
+    "sharUpdateLink": "Share payment update link",
+    "paymentSource": "Payment Source",
+    "paymentSourceId": "Payment Source Id",
+    "gateway": "Gateway",
+    "gatewayChargeId": "Gateway Charge Id"
+  },
+  "subscriptions": {
+    "title": "Subscriptions",
+    "create": "Create Subscription",
+    "update": "Update subscription",
+    "cancel": "Cancel subscription",
+    "view": "View subscription",
+    "details": "Subscriptions details",
+    "itemId": "Subscription Item ID"
+  },
+  "invoice": {
+    "title": "Invoices",
+    "number": "Invoice number",
+    "upcoming": {
+      "title": "Upcoming invoice",
+      "subtitle": "This is a preview of the invoice that will be billed on {{date}}. It may change if the subscriiption is updated.",
+      "viewFull": "View full invouce for {{amount}} on {{date}}"
+    }
+  }
+}

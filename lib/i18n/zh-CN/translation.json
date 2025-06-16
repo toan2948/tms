@@ -1,0 +1,197 @@
+{
+  "all": "全部",
+  "create": "创造",
+  "update": "更新",
+  "delete": "删除",
+  "copy": "复制",
+  "view": "视图",
+  "search": "搜索",
+  "cancel": "取消",
+  "saveChanges": "保存更改",
+  "viewDetails": "查看详细信息",
+  "scheduled": "预定",
+  "cancelled": "取消",
+  "price": "价格",
+  "status": "地位",
+  "dateRange": "日期范围",
+  "filter": "筛选",
+  "export": "出口",
+  "from": "从",
+  "to": "至",
+  "actions": "行动",
+  "connections": "连接",
+  "customer": "顾客",
+  "billing": "计费",
+  "product": "产品",
+  "created": "已创建",
+  "currency": "货币",
+  "date": "日期",
+  "description": "描述",
+  "amount": "数量",
+  "payment": "支付",
+  "refund": "退款",
+  "discount": "折扣",
+  "started": "开始",
+  "nextInvoice": "下一张发票",
+  "billingMethod": "计费方式",
+  "currentPeriod": "当前时间段",
+  "taxCalculation": "税收计算",
+  "qty": "数量",
+  "unitPrice": "单价",
+  "due": "到期",
+  "total": "总计",
+  "subtotal": "小计",
+  "amountDue": "应付金额",
+  "type": "类型",
+  "source": "来源",
+  "startAt": "开始于",
+  "endAt": "结束于",
+  "pricing": "定价",
+  "entitlements": "权利",
+  "entitlement": "权利",
+  "name": "名字",
+  "email": "电子邮件地址",
+  "password": "密码",
+  "team": "团队",
+  "avatarURL": "头像网址",
+  "lastLogin": "最近登入时间",
+  "roles": "角色",
+  "role": "角色",
+  "allRoles": "所有角色",
+  "active": "活跃",
+  "suspend": "暂停",
+  "deleted": "已删除",
+  "copySuccess": "已成功复制到剪贴板。",
+  "copyright": "版权 © {{year}} Gan Jing World",
+  "header": {
+    "search": "搜索",
+    "language": "语言",
+    "signout": "退出"
+  },
+  "theme": {
+    "label": "主题",
+    "light": "浅色",
+    "dark": "黑暗",
+    "system": "与操作系统同步"
+  },
+  "login": {
+    "title": "登录到您的帐户",
+    "email": {
+      "label": "电子邮件",
+      "hint": "你的邮件",
+      "required": "请输入您的电子邮件",
+      "invalid": "请输入有效电子邮件"
+    },
+    "password": {
+      "hint": "你的密码",
+      "required": "请输入您的密码"
+    },
+    "login": "登录",
+    "logingIn": "在登录...",
+    "failed": "登录失败"
+  },
+  "error": {
+    "title": "哎呀！",
+    "unspecified": "抱歉，发生了意外错误。",
+    "400": "由于语法错误，无法满足请求",
+    "401": "未经授权。请登录才能继续",
+    "403": "您无权访问该资源。",
+    "404": "您尝试打开的页面不存在。您可能输入了错误的地址，或者该页面已被移动到另一个 URL。",
+    "500": "刚刚发生了一些不好的事情。我们的服务器无法处理您的请求。请尝试刷新页面。",
+    "503": "我们所有的服务器都繁忙，暂时无法处理您的请求，请稍候几分钟，然后刷新页面。",
+    "goBack": "返回",
+    "backToHomepage": "返回主页",
+    "refreshPage": "刷新页面"
+  },
+  "accounts": {
+    "title": "帐户",
+    "create": "创建帐户",
+    "createSuccess": "成功建立帐户。",
+    "edit": "修改帐户",
+    "editSuccess": "帐户更新成功。",
+    "my": "我的账户",
+    "info": "帐户信息",
+    "yourInfo": "你的资料",
+    "yourPassword": "你的密码",
+    "name": {
+      "required": "请输入账户名"
+    },
+    "email": {
+      "required": "请输入电子邮箱",
+      "invalid": "这不是一个有效的电子邮件"
+    },
+    "password": {
+      "required": "请输入您的密码",
+      "confirmRequired": "请重新输入以确认密码",
+      "mustMatch": "密码必须匹配"
+    },
+    "roles": {
+      "required": "请至少选择一个角色"
+    },
+    "reset": {
+      "title": "账户密码",
+      "password": "新密码",
+      "confirm": "确认密码",
+      "reset": "重置密码",
+      "success": "密码已成功重置。"
+    }
+  },
+  "balance": {
+    "title": "平衡"
+  },
+  "customers": {
+    "title": "顾客",
+    "view": "查看客户"
+  },
+  "home": {
+    "title": "首页"
+  },
+  "orders": {
+    "title": "订单",
+    "orderId": "订单编号",
+    "type": "类型",
+    "status": "状态",
+    "country": "国家",
+    "city": "城市",
+    "state": "州/省",
+    "zipCode": "邮政编码",
+    "subtotal": "小计",
+    "taxAmount": "税额"
+  },
+  "payments": {
+    "title": "付款方式",
+    "method": "付款方式",
+    "pMethod": "付款方式",
+    "create": "创建付款",
+    "all": "所有付款",
+    "disputes": "争议",
+    "viewDetails": "查看付款详情",
+    "refund": "退款支付",
+    "sendReceipt": "发送收据",
+    "copyId": "复制支付ID",
+    "allTransactions": "所有交易",
+    "pauseCollection": "暂停收款",
+    "sharUpdateLink": "分享付款更新链接",
+    "paymentMethod": "付款类型",
+    "paymentSourceId": "付款订单号",
+    "gateway": "支付网关"
+  },
+  "subscriptions": {
+    "title": "订阅",
+    "create": "创建订阅",
+    "update": "更新订阅",
+    "cancel": "取消订阅",
+    "view": "查看订阅",
+    "details": "订阅详情",
+    "itemId": "订阅商品 ID"
+  },
+  "invoice": {
+    "title": "发票",
+    "number": "发票号码",
+    "upcoming": {
+      "title": "即将开具的发票",
+      "subtitle": "这是将于 {{date}} 计费的发票预览。如果订阅更新，它可能会发生变化。",
+      "viewFull": "查看 {{date}} 的 {{amount}} 完整发票"
+    }
+  }
+}

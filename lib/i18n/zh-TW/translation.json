@@ -1,0 +1,197 @@
+{
+  "all": "全部",
+  "create": "創造",
+  "update": "更新",
+  "delete": "刪除",
+  "copy": "複製",
+  "view": "視圖",
+  "search": "搜索",
+  "cancel": "取消",
+  "saveChanges": "儲存變更",
+  "viewDetails": "查看詳細資料",
+  "scheduled": "預定",
+  "cancelled": "取消",
+  "price": "價格",
+  "status": "地位",
+  "dateRange": "日期範圍",
+  "filter": "篩選",
+  "export": "出口",
+  "from": "從",
+  "to": "到",
+  "actions": "行動",
+  "connections": "連接",
+  "customer": "顧客",
+  "billing": "計費",
+  "product": "產品",
+  "created": "已創建",
+  "currency": "貨幣",
+  "date": "日期",
+  "description": "描述",
+  "amount": "數量",
+  "payment": "支付",
+  "refund": "退款",
+  "discount": "折扣",
+  "started": "开始",
+  "nextInvoice": "下一张发票",
+  "billingMethod": "计费方式",
+  "currentPeriod": "当前时间段",
+  "taxCalculation": "税收计算",
+  "qty": "数量",
+  "unitPrice": "单价",
+  "due": "到期",
+  "total": "总计",
+  "subtotal": "小計",
+  "amountDue": "應付金額",
+  "type": "類型",
+  "source": "來源",
+  "startAt": "開始於",
+  "endAt": "結束於",
+  "pricing": "定价",
+  "entitlements": "權利",
+  "entitlement": "權利",
+  "name": "名字",
+  "email": "電子郵件地址",
+  "password": "密碼",
+  "team": "團隊",
+  "avatarURL": "頭像網址",
+  "lastLogin": "最近登入時間",
+  "roles": "角色",
+  "role": "角色",
+  "allRoles": "所有角色",
+  "active": "活躍",
+  "suspend": "暫停",
+  "deleted": "已刪除",
+  "copySuccess": "已成功複製到剪貼板。",
+  "copyright": "版權 © {{year}} Gan Jing World",
+  "header": {
+    "search": "搜索",
+    "language": "語言",
+    "signout": "登出"
+  },
+  "theme": {
+    "label": "主題",
+    "light": "淺色",
+    "dark": "黑暗",
+    "system": "與作業系統同步"
+  },
+  "login": {
+    "title": "登入您的帳戶",
+    "email": {
+      "label": "電子郵件",
+      "hint": "你的郵件",
+      "required": "請輸入您的電子郵件",
+      "invalid": "請輸入有效電子郵件"
+    },
+    "password": {
+      "hint": "你的密碼",
+      "required": "請輸入您的密碼"
+    },
+    "login": "登入",
+    "logingIn": "在登入...",
+    "failed": "登入失敗"
+  },
+  "error": {
+    "title": "哎呀！",
+    "unspecified": "抱歉，發生了意外錯誤。",
+    "400": "由於語法錯誤，無法滿足請求",
+    "401": "未經授權。請登入才能繼續",
+    "403": "您無權存取該資源。",
+    "404": "您嘗試開啟的頁面不存在。您可能輸入了錯誤的位址，或該頁面已移至另一個 URL。",
+    "500": "剛剛發生了一些不好的事情。我們的伺服器無法處理您的請求。請嘗試刷新頁面。",
+    "503": "我們所有的伺服器都繁忙，暫時無法處理您的請求，請稍候幾分鐘，然後刷新頁面。",
+    "goBack": "返回",
+    "backToHomepage": "返回主頁",
+    "refreshPage": "刷新頁面"
+  },
+  "accounts": {
+    "title": "帳戶",
+    "create": "創建帳戶",
+    "createSuccess": "成功建立帳戶。",
+    "edit": "修改帳戶",
+    "editSuccess": "帳戶更新成功。",
+    "my": "我的帳戶",
+    "info": "帳戶資訊",
+    "yourInfo": "你的資料",
+    "yourPassword": "你的密碼",
+    "name": {
+      "required": "請輸入帳戶名"
+    },
+    "email": {
+      "required": "請輸入信​​箱",
+      "invalid": "這不是有效的電子郵件"
+    },
+    "password": {
+      "required": "請輸入您的密碼",
+      "confirmRequired": "請重新輸入以確認密碼",
+      "mustMatch": "密碼必須匹配"
+    },
+    "roles": {
+      "required": "請至少選擇一個角色"
+    },
+    "reset": {
+      "title": "帳號密碼",
+      "password": "新密碼",
+      "confirm": "確認密碼",
+      "reset": "重設密碼",
+      "success": "密碼已成功重設。"
+    }
+  },
+  "balance": {
+    "title": "平衡"
+  },
+  "customers": {
+    "title": "顧客",
+    "view": "查看客戶"
+  },
+  "home": {
+    "title": "首頁"
+  },
+  "orders": {
+    "title": "訂單",
+    "orderId": "訂單編號",
+    "type": "類型",
+    "status": "狀態",
+    "country": "國家",
+    "city": "城市",
+    "state": "州/省",
+    "zipCode": "郵政編碼",
+    "subtotal": "小計",
+    "taxAmount": "稅額"
+  },
+  "payments": {
+    "title": "付款方式",
+    "method": "付款方式",
+    "pMethod": "付款方式",
+    "create": "建立付款",
+    "all": "所有付款",
+    "disputes": "爭議",
+    "viewDetails": "查看付款詳情",
+    "refund": "退款支付",
+    "sendReceipt": "發送收據",
+    "copyId": "複製支付ID",
+    "allTransactions": "所有交易",
+    "pauseCollection": "暫停收款",
+    "sharUpdateLink": "分享付款更新鏈接",
+    "paymentMethod": "付款類型",
+    "paymentSourceId": "付款訂單號",
+    "gateway": "支付網關"
+  },
+  "subscriptions": {
+    "title": "訂閱",
+    "create": "建立訂閱",
+    "update": "更新訂閱",
+    "cancel": "取消訂閱",
+    "view": "檢視訂閱",
+    "details": "訂閱詳情",
+    "itemId": "訂閱商品 ID"
+  },
+  "invoice": {
+    "title": "發票",
+    "number": "發票號碼",
+    "upcoming": {
+      "title": "即將開立的發票",
+      "subtitle": "這是將於 {{date}} 計費的發票預覽。如果訂閱更新，它可能會發生變化。",
+      "viewFull": "查看 {{date}} 的 {{amount}} 完整發票"
+    }
+  }
+}
