@@ -1,4 +1,4 @@
-import nestedData from "./nestedData.json";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
  * This function converts all properties of an object to strings, including nested objects.
@@ -27,7 +27,7 @@ export const convertPropertiesToKeyArray = (data: any): string[] => {
 };
 
 export const convertPropertiesToKeyValueArray = (
-  data: any,
+  data: any
 ): { key: string; value: unknown }[] => {
   const result: { key: string; value: unknown }[] = [];
   const traverse = (obj: any, parentKey = "") => {
@@ -85,7 +85,7 @@ export type TranslationSetType = {
  */
 export const findElementByKeyPresence = (
   array: { [key: string]: any }[],
-  searchKey: string,
+  searchKey: string
 ): TranslationSetType => {
   // console.log(" for key:", key);
   if (searchKey === "")
