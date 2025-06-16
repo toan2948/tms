@@ -10,15 +10,6 @@ type TreeViewProps = {
 };
 export default function BasicSimpleTreeView({ setSelectedKey }: TreeViewProps) {
   const apiRef = useTreeViewApiRef();
-  // const handleScrollToChartsCommunity = (event: React.SyntheticEvent) => {
-  //   console.log("Scroll to charts community item clicked", apiRef.current);
-  //   if (apiRef.current) {
-  //     apiRef.current.focusItem(event, "charts-community");
-  //   }
-  //   apiRef
-  //     .current!.getItemDOMElement("charts-community")
-  //     ?.scrollIntoView({ block: "nearest" });
-  // };
   return (
     <>
       {/* <div>
