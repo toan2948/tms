@@ -4,6 +4,7 @@ import { Box, Stack, styled, Button, ButtonGroup } from "@mui/material";
 import { useState } from "react";
 import MultilingualView from "./Multilingual-View/MultilingualView";
 import BilingualView from "./BilingualView/BilingualView";
+import { NestedObject } from "@/store/store";
 export const HeaderBox = styled(Stack)(({}) => ({
   width: "100%",
   borderBottom: "solid 1px black",
@@ -13,7 +14,11 @@ export const HeaderBox = styled(Stack)(({}) => ({
   justifyContent: "center",
 }));
 
-const TranslationPage = () => {
+export type TranslationPageProps = {
+  data: NestedObject[];
+};
+
+const TranslationPage = ({ data }: TranslationPageProps) => {
   const [multiView, setMultilingualView] = useState<boolean>(true);
 
   return (
@@ -29,7 +34,7 @@ const TranslationPage = () => {
           </Button>
         </ButtonGroup>
       </Stack>
-      {multiView ? <MultilingualView /> : <BilingualView />}
+      {multiView ? <MultilingualView data={data} /> : <BilingualView />}
     </Box>
   );
 };

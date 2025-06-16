@@ -3,7 +3,7 @@ import { Stack } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
 import TranslationValueList from "./TranslationValueList";
 import BasicSimpleTreeView from "../TreeData";
-import { HeaderBox } from "..";
+import { HeaderBox, TranslationPageProps } from "..";
 import {
   convertPropertiesToKeyArray,
   convertPropertiesToKeyValueArray,
@@ -13,7 +13,7 @@ import {
 import nestedData from "@/lib/jsonPlay/nestedData.json";
 import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 
-const MultilingualView = () => {
+const MultilingualView = ({ data }: TranslationPageProps) => {
   const keyList = useMemo(() => {
     const arr = convertPropertiesToKeyArray(nestedData[0]);
     arr.shift();
@@ -27,7 +27,7 @@ const MultilingualView = () => {
     return nestedData.map((e) => convertPropertiesToKeyValueArray(e));
   }, [nestedData]);
 
-  console.log("Key value array, selectedKey:", keyValueArray, selectedKey);
+  // console.log("Key value array, selectedKey:", keyValueArray, selectedKey);
 
   const [selectedValue, setSelectedValue] = useState<TranslationSetType[]>(
     keyValueArray.map((e) =>
@@ -62,6 +62,7 @@ const MultilingualView = () => {
         <BasicSimpleTreeView
           selectedKey={selectedKey}
           setSelectedKey={setSelectedKey}
+          data={data}
         />
       </Stack>
       <Stack width={"100%"}>
