@@ -1,10 +1,10 @@
 import { createTheme } from "@mui/material/styles";
 import { enUS, zhCN, zhTW } from "@mui/x-data-grid/locales";
-import { TLocale } from "src/i18n/languages";
 import { createComponents } from "./components";
 import { darkPalette, lightPalette } from "./palette";
 import { createShadows } from "./shadows";
 import { createTypography } from "./typography";
+import { TLocale } from "@/lib/i18n/languages";
 
 export function getGridLocale(locale?: TLocale) {
   switch (locale) {
@@ -27,5 +27,5 @@ export const createCustomTheme = (dark?: boolean, locale?: TLocale) =>
       shadows: createShadows(),
       components: createComponents(dark),
     },
-    getGridLocale(locale),
+    getGridLocale(locale)
   );

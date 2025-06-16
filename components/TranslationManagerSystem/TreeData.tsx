@@ -3,13 +3,14 @@ import Box from "@mui/material/Box";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import { useTreeViewApiRef } from "@mui/x-tree-view/hooks";
-
+import { TreeData } from "@/utils/supabase/languages/dataFunctions";
 type TreeViewProps = {
   selectedKey: string | null;
   setSelectedKey: (value: string | null) => void;
 };
 export default function BasicSimpleTreeView({ setSelectedKey }: TreeViewProps) {
   const apiRef = useTreeViewApiRef();
+  console.log("TreeData:", TreeData);
   return (
     <>
       {/* <div>
