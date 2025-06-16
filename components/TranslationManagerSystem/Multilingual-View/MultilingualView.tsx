@@ -30,12 +30,22 @@ const MultilingualView = () => {
   console.log("Key value array, selectedKey:", keyValueArray, selectedKey);
 
   const [selectedValue, setSelectedValue] = useState<TranslationSetType[]>(
-    keyValueArray.map((e) => findElementByKeyPresence(e, selectedKey || ""))
+    keyValueArray.map((e) =>
+      findElementByKeyPresence(
+        e.map((item) => ({ ...item, value: String(item.value) })),
+        selectedKey || ""
+      )
+    )
   );
 
   useEffect(() => {
     setSelectedValue(
-      keyValueArray.map((e) => findElementByKeyPresence(e, selectedKey || ""))
+      keyValueArray.map((e) =>
+        findElementByKeyPresence(
+          e.map((item) => ({ ...item, value: String(item.value) })),
+          selectedKey || ""
+        )
+      )
     );
   }, [selectedKey]);
   return (
