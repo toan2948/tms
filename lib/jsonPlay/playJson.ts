@@ -1,14 +1,14 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 /**
  * This function converts all properties of an object to strings, including nested objects.
  * Each string is pushed into an array in the format "key: value".
  * @param data - The input object containing properties to be converted.
  * @returns An array of strings representing all properties in "key: value" format.
  */
-export const convertPropertiesToKeyArray = (data: any): string[] => {
+export const convertPropertiesToKeyArray = (
+  data: Record<string, unknown>
+): string[] => {
   const result: string[] = [];
-  const traverse = (obj: any, parentKey = "") => {
+  const traverse = (obj: Record<string, unknown>, parentKey = "") => {
     Object.entries(obj).forEach(([key, value]) => {
       const fullKey = parentKey ? `${parentKey}__${key}` : key;
       if (
@@ -16,7 +16,7 @@ export const convertPropertiesToKeyArray = (data: any): string[] => {
         !Array.isArray(value) &&
         value !== null
       ) {
-        traverse(value, fullKey);
+        traverse(value as Record<string, unknown>, fullKey);
       } else {
         result.push(`${fullKey}`);
       }
@@ -27,10 +27,10 @@ export const convertPropertiesToKeyArray = (data: any): string[] => {
 };
 
 export const convertPropertiesToKeyValueArray = (
-  data: any
+  data: Record<string, unknown>
 ): { key: string; value: unknown }[] => {
   const result: { key: string; value: unknown }[] = [];
-  const traverse = (obj: any, parentKey = "") => {
+  const traverse = (obj: Record<string, unknown>, parentKey = "") => {
     Object.entries(obj).forEach(([key, value]) => {
       const fullKey = parentKey ? `${parentKey}__${key}` : key;
       if (
@@ -38,7 +38,7 @@ export const convertPropertiesToKeyValueArray = (
         !Array.isArray(value) &&
         value !== null
       ) {
-        traverse(value, fullKey);
+        traverse(value as Record<string, unknown>, fullKey);
       } else {
         result.push({ key: fullKey, value: value });
       }
@@ -54,7 +54,10 @@ export const convertPropertiesToKeyValueArray = (
  * @param keyPath - The key path string in dot notation (e.g., "parent.child.key").
  * @returns The value corresponding to the key path, or undefined if not found.
  */
-export const findValueByKeyPath = (data: any, keyPath: string): any => {
+export const findValueByKeyPath = (
+  data: Record<string, unknown>,
+  keyPath: string
+): unknown => {
   const keys = keyPath.split("__");
 
   // console.log("Keys:", keys);
@@ -62,7 +65,9 @@ export const findValueByKeyPath = (data: any, keyPath: string): any => {
 
   for (const key of keys) {
     if (current && typeof current === "object" && key in current) {
-      current = current[key];
+      if (typeof current === "object" && current !== null) {
+        current = current[key] as Record<string, unknown>;
+      }
     } else {
       return undefined;
     }
@@ -84,7 +89,7 @@ export type TranslationSetType = {
  * @returns The first object that contains the given key, or undefined if not found.
  */
 export const findElementByKeyPresence = (
-  array: { [key: string]: any }[],
+  array: { key: string; value: string; lg?: string }[],
   searchKey: string
 ): TranslationSetType => {
   // console.log(" for key:", key);
@@ -92,7 +97,7 @@ export const findElementByKeyPresence = (
     return {
       key: "",
       value: "",
-      lg: array.find((e) => e.key === "lgKey")?.value,
+      lg: array.find((e) => e.key === "lgKey")?.value || "",
     };
   const found = array.find((element) => element.key === searchKey);
   return {
@@ -108,8 +113,20 @@ export const findElementByKeyPresence = (
  * @returns A tree representation of the object.
  */
 
-export const convertNestedObjectToTree = (data: Record<string, any>): any[] => {
-  const buildTree = (obj: Record<string, any>): any[] => {
+export const convertNestedObjectToTree = (
+  data: Record<string, unknown>
+): {
+  key: string;
+  value?: unknown;
+  children?: { key: string; value?: unknown; children?: unknown }[];
+}[] => {
+  const buildTree = (
+    obj: Record<string, unknown>
+  ): {
+    key: string;
+    value?: unknown;
+    children?: { key: string; value?: unknown; children?: unknown }[];
+  }[] => {
     return Object.entries(obj).map(([key, value]) => {
       if (
         typeof value === "object" &&
@@ -118,7 +135,10 @@ export const convertNestedObjectToTree = (data: Record<string, any>): any[] => {
       ) {
         return {
           key: key,
-          children: buildTree(value),
+          children:
+            typeof value === "object" && value !== null && !Array.isArray(value)
+              ? buildTree(value as Record<string, unknown>)
+              : undefined,
         };
       }
       return {
