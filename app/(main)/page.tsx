@@ -1,7 +1,12 @@
+import TranslationPage from "@/components/TranslationManagerSystem";
 import React from "react";
 
 const HomePage = () => {
-  return <div className='text-red-400'>new app</div>;
+  return (
+    <div>
+      <TranslationPage />
+    </div>
+  );
 };
 
 export default HomePage;
