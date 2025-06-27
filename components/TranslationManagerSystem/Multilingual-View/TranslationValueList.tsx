@@ -5,10 +5,15 @@ import { useForm } from "react-hook-form";
 import TranslationField from "./TranslationField";
 interface TranslationValueListProps {
   selectedValue: { key: string; lg: string; value: string }[];
+  selectedKey: string | null;
 }
 
-const TranslationValueList = ({ selectedValue }: TranslationValueListProps) => {
-  // console.log("Selected Value List:", selectedValue);
+const TranslationValueList = ({
+  selectedValue,
+  selectedKey,
+}: TranslationValueListProps) => {
+  console.log("Selected Value List:", selectedKey);
+
   const {
     formState: {},
   } = useForm({

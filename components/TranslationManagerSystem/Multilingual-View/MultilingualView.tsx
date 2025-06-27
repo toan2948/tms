@@ -22,6 +22,7 @@ import { fetchTranslationKeysByFilenameAndLanguage } from "@/utils/languages/dat
 import { buildKeyTreeFromFlatList } from "@/utils/languages/processData";
 import { TranslationTreeKey } from "@/types/translation";
 import { SelectChangeEvent } from "@mui/material/Select";
+import { useFileNameStore } from "@/store/useFileNameStore";
 export const HeaderBox = styled(Stack)(({}) => ({
   width: "100%",
   borderBottom: "solid 1px black",
@@ -32,16 +33,16 @@ export const HeaderBox = styled(Stack)(({}) => ({
 }));
 const MultilingualView = () => {
   const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
-  const [filename, setFilename] = React.useState("common");
-
+  const { fileNameState, change } = useFileNameStore();
   const handleChange = (event: SelectChangeEvent) => {
-    setFilename(event.target.value as string);
+    change(event.target.value as string);
   };
+  console.log("MultilingualView, filename:", fileNameState);
   useEffect(() => {
     async function fetchData() {
       try {
         const keys = await fetchTranslationKeysByFilenameAndLanguage(
-          filename,
+          fileNameState,
           "en"
         );
         const tree = buildKeyTreeFromFlatList(keys);
@@ -52,7 +53,7 @@ const MultilingualView = () => {
     }
 
     fetchData();
-  }, [filename]);
+  }, [fileNameState]);
   const keyList = useMemo(() => {
     const arr = convertPropertiesToKeyArray(nestedData[0]);
     arr.shift();
@@ -93,7 +94,7 @@ const MultilingualView = () => {
         <Select
           labelId='demo-simple-select-label'
           id='demo-simple-select'
-          value={filename}
+          value={fileNameState}
           label='filename'
           onChange={handleChange}
         >
@@ -124,7 +125,10 @@ const MultilingualView = () => {
           </HeaderBox>
           <Typo1424>Key to translate: {selectedKey}</Typo1424>
 
-          <TranslationValueList selectedValue={selectedValue} />
+          <TranslationValueList
+            selectedValue={selectedValue}
+            selectedKey={selectedKey}
+          />
         </Stack>
       </Stack>
     </>
