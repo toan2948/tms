@@ -1,4 +1,5 @@
 import { NestedObject } from "@/store/store";
+import { TranslationKey } from "@/types/translation";
 import { createClient } from "@/utils/supabase/server";
 
 export async function TreeData() {
@@ -25,8 +26,75 @@ export async function getTreeDataKey() {
       }))
     );
 
+  console.log("Data from getTreeDataKey", data);
+
   const treeData = convertToNestedObjects2(data || []);
   return treeData;
+}
+
+export async function fetchTranslationKeysByFileId(
+  filename: string,
+  languageCode: string
+): Promise<TranslationKey[]> {
+  const supabase = await createClient();
+
+  const { data: language, error: langError } = await supabase
+    .from("languages")
+    .select("id")
+    .eq("code", languageCode)
+    .single();
+
+  if (langError || !language) {
+    throw new Error(
+      `Language "${languageCode}" not found: ${langError?.message}`
+    );
+  }
+
+  const { data: file, error: fileError } = await supabase
+    .from("translation_files")
+    .select("id")
+    .eq("filename", filename)
+    .eq("language_id", language.id)
+    .single();
+
+  if (fileError || !file) {
+    throw new Error(
+      `File "${filename}" not found or query failed: ${fileError?.message}`
+    );
+  }
+
+  // Now get all translation keys for that file_id
+  const { data: keys, error: keyError } = await supabase
+    .from("translation_keys")
+    .select(
+      `
+      id,
+      file_id,
+      parent_id,
+      key_path_segment,
+      value,
+      full_key_path,
+      level,
+      added_at,
+      last_edited_at,
+      version,
+      status,
+      score,
+      notes,
+      ticket_number,
+      pr_number
+    `
+    )
+    .eq("file_id", file.id)
+    .order("level", { ascending: true });
+
+  if (keyError) {
+    throw new Error(`Error fetching keys: ${keyError.message}`);
+  }
+
+  console.log("Fetched translation keys:", keys);
+
+  return keys ?? [];
 }
 
 // types.ts

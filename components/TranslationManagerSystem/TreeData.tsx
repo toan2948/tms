@@ -3,7 +3,6 @@ import Box from "@mui/material/Box";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import { useTreeViewApiRef } from "@mui/x-tree-view/hooks";
-import { createClient } from "@/utils/supabase/server";
 import { NestedObject } from "@/store/store";
 import { buildTree, TreeNode } from "@/utils/languages/dataFunctions";
 
@@ -13,20 +12,13 @@ type TreeViewProps = {
   data: NestedObject[];
 };
 
-export async function TreeData() {
-  const supabase = await createClient();
-  const { data } = await supabase.from("EN_kv").select("*");
-
-  return JSON.stringify(data ?? {}, null, 2);
-}
-
 export default function BasicSimpleTreeView({
   data,
   setSelectedKey,
 }: TreeViewProps) {
   const apiRef = useTreeViewApiRef();
   const treeData = buildTree(data);
-  console.log("TreeData:", treeData);
+  // console.log("TreeData:", treeData);
 
   const renderTree = (nodes: TreeNode) => (
     <TreeItem

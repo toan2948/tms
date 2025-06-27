@@ -1,11 +1,15 @@
 import TranslationPage from "@/components/TranslationManagerSystem";
-import { getTreeDataKey } from "@/utils/languages/dataFunctions";
+import {
+  fetchTranslationKeysByFileId,
+  getTreeDataKey,
+} from "@/utils/languages/dataFunctions";
 import React from "react";
 
 async function HomePage() {
   const treeData = await getTreeDataKey();
-
-  console.log("Data from EN_kv 3:", treeData);
+  const keys = await fetchTranslationKeysByFileId("common", "en");
+  console.log("Homepage Treedata:", treeData);
+  console.log("keys:", keys);
 
   return (
     <div>
