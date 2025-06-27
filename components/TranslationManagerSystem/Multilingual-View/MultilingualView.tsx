@@ -37,7 +37,6 @@ const MultilingualView = () => {
   const handleChange = (event: SelectChangeEvent) => {
     change(event.target.value as string);
   };
-  console.log("MultilingualView, filename:", fileNameState);
   useEffect(() => {
     async function fetchData() {
       try {

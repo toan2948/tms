@@ -4,12 +4,18 @@ import React, { useEffect, useState } from "react";
 import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 type TranslationFieldProps = {
   index: number;
-  languageLabel: string;
+  data: {
+    language_name: string;
+    language_code: string;
+    filename: string;
+    id: string;
+    value: string | null;
+  };
   bilingual?: boolean;
 };
 const TranslationField = ({
   index,
-  languageLabel,
+  data,
   bilingual,
 }: TranslationFieldProps) => {
   const [activateButton, setActivateButton] = useState(false);
@@ -24,6 +30,8 @@ const TranslationField = ({
       setActivateButton(false);
     }
   }, [value]);
+
+  console.log("TranslationField Data:", data);
   return (
     <ListItem
       key={index}
@@ -33,12 +41,14 @@ const TranslationField = ({
         backgroundColor: index % 2 !== 0 ? "#d3d3d3" : "transparent", // Using a brighter color than grey
       }}
     >
-      <Typo1424 width={bilingual ? "20%" : "100%"}>{languageLabel}</Typo1424>
+      <Typo1424 width={bilingual ? "20%" : "100%"}>
+        {data.language_name}
+      </Typo1424>
       <Stack sx={{ width: "100%" }}>
         <TextareaAutosize
           minRows={2}
           maxRows={2}
-          value={value}
+          value={data.value || ""}
           onChange={(e) => handleChange(e)}
           style={{ minWidth: "100%", maxWidth: "100%" }}
         />

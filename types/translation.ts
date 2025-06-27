@@ -29,3 +29,11 @@ export interface TranslationTreeKey {
   // For building UI trees
   children?: TranslationTreeKey[];
 }
+
+export type TranslationByLanguage = {
+  language_code: string;
+  language_name: string;
+  value: string | null;
+  full_key_path: string;
+  filename: string;
+};
