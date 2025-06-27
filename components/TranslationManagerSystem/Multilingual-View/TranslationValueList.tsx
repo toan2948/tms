@@ -6,7 +6,6 @@ import TranslationField from "./TranslationField";
 import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
 import { TStep } from "@/utils/languages/fetchValuesByKeyID";
 interface TranslationValueListProps {
-  selectedValue: { key: string; lg: string; value: string }[];
   selectedKey: string | null;
 }
 

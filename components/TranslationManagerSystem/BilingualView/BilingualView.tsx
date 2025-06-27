@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 import React from "react";
 import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
-import TranslationValueList from "../Multilingual-View/TranslationValueList";
 const BilingualView = () => {
   const [source, setSource] = React.useState("");
 
@@ -67,18 +66,6 @@ const BilingualView = () => {
         </Box>
         {/* <TranslationTable /> */}
       </Stack>
-      <TranslationValueList
-        selectedValue={[
-          { key: "greeting", value: "English", lg: "Hello" },
-          {
-            key: "greeting",
-            value: "Chinese",
-            lg: " ownership of the component's design, with no Material UI or Joy UI styles to override. This unstyled version of the component is the ideal choice for heavy customization with a smaller bundle size. ",
-          },
-          { key: "farewell", value: "English", lg: "Goodbye" },
-          { key: "farewell", value: "Chinese", lg: "Goes" },
-        ]}
-      />
     </Stack>
   );
 };
