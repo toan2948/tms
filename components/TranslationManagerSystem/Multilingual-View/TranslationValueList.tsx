@@ -19,7 +19,6 @@ const TranslationValueList = ({ selectedValue }: TranslationValueListProps) => {
     },
   });
 
-  // console.log("TranslationValueList Props:", selectedValue);
   return (
     <Stack direction={"row"} width={"100%"} sx={{ overflowY: "scroll" }}>
       {/* <form

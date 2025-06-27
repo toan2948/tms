@@ -23,7 +23,6 @@ const MultilingualView = ({ data }: TranslationPageProps) => {
     keyList[0] || null
   );
   const keyValueArray = useMemo(() => {
-    // console.log("Nested Data:", nestedData);
     return nestedData.map((e) => convertPropertiesToKeyValueArray(e));
   }, [nestedData]);
 

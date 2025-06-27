@@ -1,10 +1,9 @@
 "use client";
 import { Box, Stack, styled, Button, ButtonGroup } from "@mui/material";
-
 import { useState } from "react";
-import MultilingualView from "./Multilingual-View/MultilingualView";
 import BilingualView from "./BilingualView/BilingualView";
 import { NestedObject } from "@/store/store";
+import MultilingualView from "./Multilingual-View/MultilingualView";
 export const HeaderBox = styled(Stack)(({}) => ({
   width: "100%",
   borderBottom: "solid 1px black",
@@ -20,7 +19,6 @@ export type TranslationPageProps = {
 
 const TranslationPage = ({ data }: TranslationPageProps) => {
   const [multiView, setMultilingualView] = useState<boolean>(true);
-
   return (
     <Box sx={{ padding: "20px 20px 20px 20px", width: "100%", height: "100%" }}>
       <h1>Translation Panel</h1>

@@ -1,14 +1,9 @@
 import { NestedObject } from "@/store/store";
 import { createClient } from "@/utils/supabase/server";
 
-export async function Instruments() {
-  const supabase = await createClient();
-  const { data: languages } = await supabase.from("languages").select("*");
-
-  return JSON.stringify(languages, null, 2);
-}
 export async function TreeData() {
   const supabase = await createClient();
+
   const { data } = await supabase.from("EN_kv").select("*");
 
   return JSON.stringify(data ?? {}, null, 2);
@@ -17,6 +12,24 @@ type InputItem = {
   key: string;
   value: string;
 };
+
+export async function getTreeDataKey() {
+  const supabase = await createClient();
+  const data = await supabase
+    .from("EN_kv")
+    .select("value, full_path")
+    .then((response) =>
+      response.data?.map((item) => ({
+        key: item.full_path as string, // Alias full_path as key
+        value: item.value as string,
+      }))
+    );
+
+  const treeData = convertToNestedObjects2(data || []);
+  return treeData;
+}
+
+// types.ts
 
 export function convertToNestedObjects2(data: InputItem[]): NestedObject[] {
   const grouped: Record<string, NestedObject> = {};

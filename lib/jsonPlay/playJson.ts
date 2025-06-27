@@ -48,34 +48,6 @@ export const convertPropertiesToKeyValueArray = (
   return result;
 };
 
-/**
- * This function searches for a value in an object corresponding to a given key path string.
- * @param data - The input object to search within.
- * @param keyPath - The key path string in dot notation (e.g., "parent.child.key").
- * @returns The value corresponding to the key path, or undefined if not found.
- */
-export const findValueByKeyPath = (
-  data: Record<string, unknown>,
-  keyPath: string
-): unknown => {
-  const keys = keyPath.split("__");
-
-  // console.log("Keys:", keys);
-  let current = data;
-
-  for (const key of keys) {
-    if (current && typeof current === "object" && key in current) {
-      if (typeof current === "object" && current !== null) {
-        current = current[key] as Record<string, unknown>;
-      }
-    } else {
-      return undefined;
-    }
-  }
-
-  return current;
-};
-
 export type TranslationSetType = {
   key: string;
   value: string;
@@ -105,50 +77,6 @@ export const findElementByKeyPresence = (
     value: found?.value || "",
     lg: array.find((e) => e.key === "lgKey")?.value || "",
   };
-};
-
-/**
- * Converts a nested object into a tree structure.
- * @param data - The input nested object.
- * @returns A tree representation of the object.
- */
-
-export const convertNestedObjectToTree = (
-  data: Record<string, unknown>
-): {
-  key: string;
-  value?: unknown;
-  children?: { key: string; value?: unknown; children?: unknown }[];
-}[] => {
-  const buildTree = (
-    obj: Record<string, unknown>
-  ): {
-    key: string;
-    value?: unknown;
-    children?: { key: string; value?: unknown; children?: unknown }[];
-  }[] => {
-    return Object.entries(obj).map(([key, value]) => {
-      if (
-        typeof value === "object" &&
-        !Array.isArray(value) &&
-        value !== null
-      ) {
-        return {
-          key: key,
-          children:
-            typeof value === "object" && value !== null && !Array.isArray(value)
-              ? buildTree(value as Record<string, unknown>)
-              : undefined,
-        };
-      }
-      return {
-        key: key,
-        value,
-      };
-    });
-  };
-
-  return buildTree(data);
 };
 
 export const obj = {
