@@ -2,7 +2,7 @@ import TranslationPage from "@/components/TranslationManagerSystem";
 
 import React from "react";
 
-function HomePage() {
+function TPage() {
   return (
     <div>
       <TranslationPage />
@@ -10,4 +10,4 @@ function HomePage() {
   );
 }
 
-export default HomePage;
+export default TPage;

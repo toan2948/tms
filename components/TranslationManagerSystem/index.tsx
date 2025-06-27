@@ -1,23 +1,10 @@
 "use client";
-import { Box, Stack, styled, Button, ButtonGroup } from "@mui/material";
+import { Box, Stack, Button, ButtonGroup } from "@mui/material";
 import { useState } from "react";
 import BilingualView from "./BilingualView/BilingualView";
 import MultilingualView from "./Multilingual-View/MultilingualView";
-import { TranslationTreeKey } from "@/types/translation";
-export const HeaderBox = styled(Stack)(({}) => ({
-  width: "100%",
-  borderBottom: "solid 1px black",
-  maxHeight: "50px",
-  minHeight: "50px",
-  alignItems: "center",
-  justifyContent: "center",
-}));
 
-export type TranslationPageProps = {
-  data: TranslationTreeKey[];
-};
-
-const TranslationPage = ({ data }: TranslationPageProps) => {
+const TranslationPage = () => {
   const [multiView, setMultilingualView] = useState<boolean>(true);
   return (
     <Box sx={{ padding: "20px 20px 20px 20px", width: "100%", height: "100%" }}>
@@ -32,7 +19,7 @@ const TranslationPage = ({ data }: TranslationPageProps) => {
           </Button>
         </ButtonGroup>
       </Stack>
-      {multiView ? <MultilingualView data={data} /> : <BilingualView />}
+      {multiView ? <MultilingualView /> : <BilingualView />}
     </Box>
   );
 };

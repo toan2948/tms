@@ -1,6 +1,6 @@
 import { NestedObject } from "@/store/store";
 import { TranslationTreeKey } from "@/types/translation";
-import { createClient } from "@/utils/supabase/server";
+import { createClient } from "../supabase/client";
 
 export async function TreeData() {
   const supabase = await createClient();
