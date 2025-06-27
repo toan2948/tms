@@ -16,7 +16,6 @@ export default function BasicSimpleTreeView({
   setSelectedKey,
 }: TreeViewProps) {
   const apiRef = useTreeViewApiRef();
-  // console.log("TreeData:", treeData);
 
   const renderTree = (node: TranslationTreeKey) => (
     <TreeItem

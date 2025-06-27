@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
 import TranslationValueList from "./TranslationValueList";
-import BasicSimpleTreeView from "../TreeData";
+import BasicSimpleTreeView from "../BasicSimpleTreeView";
 import {
   convertPropertiesToKeyArray,
   convertPropertiesToKeyValueArray,
@@ -44,10 +44,8 @@ const MultilingualView = () => {
           filename,
           "en"
         );
-
         const tree = buildKeyTreeFromFlatList(keys);
         setTreeKeys(tree);
-        console.log("treeKeys:", tree);
       } catch (error) {
         console.error("Error fetching data:", error);
       }

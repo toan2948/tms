@@ -26,8 +26,6 @@ export async function getTreeDataKey() {
       }))
     );
 
-  console.log("Data from getTreeDataKey", data);
-
   const treeData = convertToNestedObjects2(data || []);
   return treeData;
 }
