@@ -33,10 +33,11 @@ export default function BasicSimpleTreeView({
           aria-label='custom tree'
           apiRef={apiRef}
           onItemClick={(event, itemId) => {
-            const itemElement = apiRef.current?.getItemDOMElement(itemId);
+            const a = itemId.split(".");
+            const l = a.length - 1;
+            const label = a[l].substring(0, a[l].length - 1);
 
-            // console.log("Item clicked:", itemElement?.innerText);
-            setSelectedKey(itemElement?.innerText || null);
+            setSelectedKey(l > 0 ? label : null);
           }}
         >
           {data.map((node) => renderTree(node))}
