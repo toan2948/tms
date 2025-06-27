@@ -18,3 +18,14 @@ export interface TranslationKey {
   // For building UI trees
   children?: TranslationKey[];
 }
+export interface TranslationTreeKey {
+  id: string;
+  file_id: string;
+  parent_id: string | null;
+  key_path_segment: string;
+  full_key_path: string;
+  level: number;
+
+  // For building UI trees
+  children?: TranslationTreeKey[];
+}

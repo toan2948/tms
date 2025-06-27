@@ -2,8 +2,8 @@
 import { Box, Stack, styled, Button, ButtonGroup } from "@mui/material";
 import { useState } from "react";
 import BilingualView from "./BilingualView/BilingualView";
-import { NestedObject } from "@/store/store";
 import MultilingualView from "./Multilingual-View/MultilingualView";
+import { TranslationTreeKey } from "@/types/translation";
 export const HeaderBox = styled(Stack)(({}) => ({
   width: "100%",
   borderBottom: "solid 1px black",
@@ -14,7 +14,7 @@ export const HeaderBox = styled(Stack)(({}) => ({
 }));
 
 export type TranslationPageProps = {
-  data: NestedObject[];
+  data: TranslationTreeKey[];
 };
 
 const TranslationPage = ({ data }: TranslationPageProps) => {

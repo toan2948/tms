@@ -1,5 +1,5 @@
 import { NestedObject } from "@/store/store";
-import { TranslationKey } from "@/types/translation";
+import { TranslationTreeKey } from "@/types/translation";
 import { createClient } from "@/utils/supabase/server";
 
 export async function TreeData() {
@@ -32,10 +32,10 @@ export async function getTreeDataKey() {
   return treeData;
 }
 
-export async function fetchTranslationKeysByFileId(
+export async function fetchTranslationKeysByFilenameAndLanguage(
   filename: string,
   languageCode: string
-): Promise<TranslationKey[]> {
+): Promise<TranslationTreeKey[]> {
   const supabase = await createClient();
 
   const { data: language, error: langError } = await supabase
@@ -72,17 +72,8 @@ export async function fetchTranslationKeysByFileId(
       file_id,
       parent_id,
       key_path_segment,
-      value,
       full_key_path,
-      level,
-      added_at,
-      last_edited_at,
-      version,
-      status,
-      score,
-      notes,
-      ticket_number,
-      pr_number
+      level
     `
     )
     .eq("file_id", file.id)

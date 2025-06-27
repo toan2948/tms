@@ -3,13 +3,12 @@ import Box from "@mui/material/Box";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import { useTreeViewApiRef } from "@mui/x-tree-view/hooks";
-import { NestedObject } from "@/store/store";
-import { buildTree, TreeNode } from "@/utils/languages/dataFunctions";
+import { TranslationTreeKey } from "@/types/translation";
 
 type TreeViewProps = {
   selectedKey: string | null;
   setSelectedKey: (value: string | null) => void;
-  data: NestedObject[];
+  data: TranslationTreeKey[];
 };
 
 export default function BasicSimpleTreeView({
@@ -17,16 +16,15 @@ export default function BasicSimpleTreeView({
   setSelectedKey,
 }: TreeViewProps) {
   const apiRef = useTreeViewApiRef();
-  const treeData = buildTree(data);
   // console.log("TreeData:", treeData);
 
-  const renderTree = (nodes: TreeNode) => (
+  const renderTree = (node: TranslationTreeKey) => (
     <TreeItem
-      itemId={nodes.key + nodes.title}
-      label={nodes.title}
-      key={nodes.key}
+      itemId={node.id + node.full_key_path + node.level}
+      label={node.key_path_segment}
+      key={node.id + node.full_key_path}
     >
-      {nodes.children?.map((child) => renderTree(child))}
+      {node.children?.map((child) => renderTree(child))}
     </TreeItem>
   );
   return (
@@ -42,7 +40,7 @@ export default function BasicSimpleTreeView({
             setSelectedKey(itemElement?.innerText || null);
           }}
         >
-          {treeData.map((node) => renderTree(node))}
+          {data.map((node) => renderTree(node))}
         </SimpleTreeView>
       </Box>
     </>
