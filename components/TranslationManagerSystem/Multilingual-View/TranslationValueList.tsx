@@ -53,7 +53,8 @@ const TranslationValueList = ({ selectedKey }: TranslationValueListProps) => {
 
     // fetchData();
     console.log("Values State Updated", valuesState);
-  }, [fileNameState, fullKeyPath, selectedKey, valuesState]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fileNameState, fullKeyPath, selectedKey]); //valuesState in this condition will cause infinite loop
   useEffect(() => {
     console.log("useEffect2");
   }, [fileNameState, fullKeyPath, selectedKey]);
