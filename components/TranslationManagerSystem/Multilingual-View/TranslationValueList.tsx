@@ -53,7 +53,7 @@ const TranslationValueList = ({ selectedKey }: TranslationValueListProps) => {
 
     // fetchData();
     console.log("Values State Updated", valuesState);
-  }, [fileNameState, fullKeyPath, selectedKey]);
+  }, [fileNameState, fullKeyPath, selectedKey, valuesState]);
   useEffect(() => {
     console.log("useEffect2");
   }, [fileNameState, fullKeyPath, selectedKey]);

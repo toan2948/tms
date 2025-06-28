@@ -10,12 +10,7 @@ import {
 import React, { useEffect, useMemo, useState } from "react";
 import TranslationValueList from "./TranslationValueList";
 import BasicSimpleTreeView from "../BasicSimpleTreeView";
-import {
-  convertPropertiesToKeyArray,
-  convertPropertiesToKeyValueArray,
-  findElementByKeyPresence,
-  TranslationSetType,
-} from "@/lib/jsonPlay/playJson";
+import { convertPropertiesToKeyArray } from "@/lib/jsonPlay/playJson";
 import nestedData from "@/lib/jsonPlay/nestedData.json";
 import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 import { fetchTranslationKeysByFilenameAndLanguage } from "@/utils/languages/dataFunctions";
@@ -61,31 +56,7 @@ const MultilingualView = () => {
   const [selectedKey, setSelectedKey] = useState<string | null>(
     keyList[0] || null
   );
-  const keyValueArray = useMemo(() => {
-    return nestedData.map((e) => convertPropertiesToKeyValueArray(e));
-  }, [nestedData]);
 
-  // console.log("Key value array, selectedKey:", keyValueArray, selectedKey);
-
-  const [selectedValue, setSelectedValue] = useState<TranslationSetType[]>(
-    keyValueArray.map((e) =>
-      findElementByKeyPresence(
-        e.map((item) => ({ ...item, value: String(item.value) })),
-        selectedKey || ""
-      )
-    )
-  );
-
-  useEffect(() => {
-    setSelectedValue(
-      keyValueArray.map((e) =>
-        findElementByKeyPresence(
-          e.map((item) => ({ ...item, value: String(item.value) })),
-          selectedKey || ""
-        )
-      )
-    );
-  }, [selectedKey]);
   return (
     <>
       <FormControl fullWidth>
@@ -124,10 +95,7 @@ const MultilingualView = () => {
           </HeaderBox>
           <Typo1424>Key to translate: {selectedKey}</Typo1424>
 
-          <TranslationValueList
-            selectedValue={selectedValue}
-            selectedKey={selectedKey}
-          />
+          <TranslationValueList selectedKey={selectedKey} />
         </Stack>
       </Stack>
     </>
