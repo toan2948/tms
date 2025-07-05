@@ -10,8 +10,6 @@ interface TranslationValueListProps {
 }
 
 const TranslationValueList = ({ selectedKey }: TranslationValueListProps) => {
-  // console.log("Selected Value List:", selectedKey);
-
   const { fileNameState } = useFileNameStore();
   const { fullKeyPath } = useKeyStore();
 
@@ -26,7 +24,7 @@ const TranslationValueList = ({ selectedKey }: TranslationValueListProps) => {
   >([]);
 
   useEffect(() => {
-    console.log("File Name State,fullKeyPath:", fileNameState, fullKeyPath);
+    // console.log("File Name State,fullKeyPath:", fileNameState, fullKeyPath);
     // async function fetchData() {
     //   try {
     //     const values = await fetchTranslationsByPathAndFilename(
@@ -42,7 +40,7 @@ const TranslationValueList = ({ selectedKey }: TranslationValueListProps) => {
     async function fetchData2() {
       try {
         const values = await TStep(fullKeyPath, fileNameState);
-        // console.log("Fetched Values:", values);
+        console.log("Fetched Values:", values);
         setValuesState(values);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -51,13 +49,9 @@ const TranslationValueList = ({ selectedKey }: TranslationValueListProps) => {
 
     fetchData2();
 
-    // fetchData();
-    console.log("Values State Updated", valuesState);
+    // console.log("Values State Updated", valuesState);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileNameState, fullKeyPath, selectedKey]); //valuesState in this condition will cause infinite loop
-  useEffect(() => {
-    console.log("useEffect2");
-  }, [fileNameState, fullKeyPath, selectedKey]);
 
   const {
     formState: {},
@@ -77,7 +71,7 @@ const TranslationValueList = ({ selectedKey }: TranslationValueListProps) => {
         })}
       > */}
       <List sx={{ width: "100%" }}>
-        {/* //todo: note- if key= e.key, there will be an absurb rendering */}
+        {/* //todo: note- if key= e.key, there will be an absurd rendering */}
 
         {valuesState.map((e, index) => (
           <TranslationField index={index} key={index} data={e} />

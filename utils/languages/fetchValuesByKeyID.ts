@@ -94,7 +94,6 @@ export async function TStep(
   if (data) {
     // console.log("Data:", data);
     for (const item of data) {
-      console.log("Item:", item.id);
       const key = fetchKeyValue(item.id, fullKeyPath);
       keys.push({
         language_name: item.language_name,
@@ -128,8 +127,6 @@ async function fetchKeyValue(id: string, fullKey: string) {
     .select("value, full_key_path")
     .eq("file_id", id)
     .eq("full_key_path", fullKey);
-
-  console.log("2", data);
 
   if (error) {
     throw new Error(`Supabase error: ${error.message}`);
