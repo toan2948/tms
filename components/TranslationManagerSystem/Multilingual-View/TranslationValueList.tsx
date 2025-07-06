@@ -4,7 +4,9 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import TranslationField from "./TranslationField";
 import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
-import { TStep } from "@/utils/languages/fetchValuesByKeyID";
+import { useEditAllFileStore } from "@/store/useEditAllFileStore";
+import { getTranslationKeys } from "@/utils/languages/dataFunctions";
+import { TranslationValue } from "@/types/translation";
 interface TranslationValueListProps {
   selectedKey: string | null;
 }
@@ -13,43 +15,23 @@ const TranslationValueList = ({ selectedKey }: TranslationValueListProps) => {
   const { fileNameState } = useFileNameStore();
   const { fullKeyPath } = useKeyStore();
 
-  const [valuesState, setValuesState] = React.useState<
-    {
-      language_name: string;
-      language_code: string;
-      filename: string;
-      id: string;
-      value: string | null;
-    }[]
-  >([]);
+  const [valuesState, setValuesState] = React.useState<TranslationValue[]>([]);
+
+  const { filesInfo } = useEditAllFileStore();
 
   useEffect(() => {
-    // console.log("File Name State,fullKeyPath:", fileNameState, fullKeyPath);
-    // async function fetchData() {
-    //   try {
-    //     const values = await fetchTranslationsByPathAndFilename(
-    //       fullKeyPath,
-    //       fileNameState
-    //     );
-    //     // console.log("Fetched Values:", values);
-    //     // setValuesState(values);
-    //   } catch (error) {
-    //     console.error("Error fetching data:", error);
-    //   }
-    // }
-    async function fetchData2() {
-      try {
-        const values = await TStep(fullKeyPath, fileNameState);
-        console.log("Fetched Values:", values);
-        setValuesState(values);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
+    const localStorageFilesInfo = localStorage.getItem("translationEdits")
+      ? JSON.parse(localStorage.getItem("translationEdits") as string)
+      : [];
+    console.log("Local Storage Files Info:", localStorageFilesInfo);
 
-    fetchData2();
-
-    // console.log("Values State Updated", valuesState);
+    setValuesState(
+      getTranslationKeys(
+        fileNameState,
+        fullKeyPath,
+        localStorageFilesInfo ? localStorageFilesInfo : filesInfo
+      )
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileNameState, fullKeyPath, selectedKey]); //valuesState in this condition will cause infinite loop
 

@@ -1,5 +1,8 @@
-import { NestedObject } from "@/store/store";
-import { TranslationTreeKey } from "@/types/translation";
+import {
+  FileState,
+  TranslationTreeKey,
+  TranslationValue,
+} from "@/types/translation";
 import { createClient } from "../supabase/client";
 
 export async function TreeData() {
@@ -8,26 +11,6 @@ export async function TreeData() {
   const { data } = await supabase.from("EN_kv").select("*");
 
   return JSON.stringify(data ?? {}, null, 2);
-}
-type InputItem = {
-  key: string;
-  value: string;
-};
-
-export async function getTreeDataKey() {
-  const supabase = await createClient();
-  const data = await supabase
-    .from("EN_kv")
-    .select("value, full_path")
-    .then((response) =>
-      response.data?.map((item) => ({
-        key: item.full_path as string, // Alias full_path as key
-        value: item.value as string,
-      }))
-    );
-
-  const treeData = convertToNestedObjects2(data || []);
-  return treeData;
 }
 
 export async function fetchTranslationKeysByFilenameAndLanguage(
@@ -81,39 +64,92 @@ export async function fetchTranslationKeysByFilenameAndLanguage(
     throw new Error(`Error fetching keys: ${keyError.message}`);
   }
 
-  console.log("Fetched translation keys:", keys);
-
   return keys ?? [];
 }
+export async function getAllTranslationFiles() {
+  const supabase = await createClient();
 
-// types.ts
+  // Fetch files with their language info
+  const { data: files, error: filesError } = await supabase.from(
+    "translation_files_with_language"
+  ).select(`
+      id,
+      filename,
+      language_code,
+      language_name
+    `);
 
-export function convertToNestedObjects2(data: InputItem[]): NestedObject[] {
-  const grouped: Record<string, NestedObject> = {};
+  if (filesError) {
+    throw new Error(`Failed to fetch files: ${filesError.message}`);
+  }
 
-  data.forEach(({ key, value }) => {
-    const parts = key.split(">").map((part) => part.trim());
-    const root = parts[0];
+  // Extract file IDs
+  const fileIds = files.map((f) => f.id);
 
-    if (!grouped[root]) grouped[root] = {};
+  // Fetch all keys for these files
+  const { data: keys, error: keysError } = await supabase
+    .from("translation_keys")
+    .select("file_id, full_key_path, value, id")
+    .in("file_id", fileIds);
 
-    let current: NestedObject = grouped[root];
-    for (let i = 1; i < parts.length - 1; i++) {
-      const part = parts[i];
-      if (!current[part] || typeof current[part] !== "object") {
-        current[part] = {};
-      }
-      current = current[part] as NestedObject;
-    }
+  if (keysError) {
+    throw new Error(`Failed to fetch keys: ${keysError.message}`);
+  }
 
-    current[parts[parts.length - 1]] = value;
-  });
+  // Group keys by file_id
+  const keysByFileId = keys.reduce<
+    Record<
+      string,
+      Array<{
+        fullKeyPath: string;
+        id: string;
+        value: string | null;
+        isChanged: boolean;
+      }>
+    >
+  >((acc, k) => {
+    if (!acc[k.file_id]) acc[k.file_id] = [];
+    acc[k.file_id].push({
+      fullKeyPath: k.full_key_path,
+      value: k.value,
+      id: k.id,
+      isChanged: false, // default false for now
+    });
+    return acc;
+  }, {});
 
-  return Object.keys(grouped).map((key) => ({ [key]: grouped[key] }));
+  // Build final structure
+  const result = files.map((f) => ({
+    fileName: f.filename,
+    language_code: f.language_code,
+    language_name: f.language_name,
+    isDirty: false, // always false for fresh fetch
+    keys: keysByFileId[f.id] || [],
+  }));
+
+  return result;
 }
 
-export type TreeNode = {
-  title: string;
-  key: string;
-  children?: TreeNode[];
+export const getTranslationKeys = (
+  fileN: string,
+  path: string,
+  files: FileState[]
+) => {
+  const searchedFiles = files.filter((e) => e.fileName === fileN);
+  if (searchedFiles.length === 0) return [];
+  const result: TranslationValue[] = [];
+  searchedFiles.forEach((element) => {
+    const foundKeys = element.keys.filter((key) => key.fullKeyPath === path);
+    if (foundKeys.length > 0) {
+      result.push({
+        id: foundKeys[0].id,
+        value: foundKeys[0].value,
+        fullKeyPath: foundKeys[0].fullKeyPath,
+        language_code: element.language_code,
+        language_name: element.language_name,
+        filename: element.fileName,
+      });
+    }
+  });
+  return result;
 };

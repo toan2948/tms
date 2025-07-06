@@ -29,11 +29,28 @@ export interface TranslationTreeKey {
   // For building UI trees
   children?: TranslationTreeKey[];
 }
+export type KeyState = {
+  fullKeyPath: string;
+  id: string;
+  isChanged: boolean;
+  value: string | null;
+};
+export interface FileState extends LanguageInfo {
+  fileName: string; //or fileID
+  isDirty: boolean;
+  keys: KeyState[];
+}
 
-export type TranslationByLanguage = {
+export interface LanguageInfo {
   language_code: string;
   language_name: string;
+}
+
+export type TranslationValue = {
+  id: string;
   value: string | null;
-  full_key_path: string;
+  fullKeyPath: string;
+  language_code: string;
+  language_name: string;
   filename: string;
 };

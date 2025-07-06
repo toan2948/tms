@@ -1,5 +1,7 @@
 "use client";
 import {
+  Box,
+  Button,
   FormControl,
   InputLabel,
   MenuItem,
@@ -7,17 +9,20 @@ import {
   Stack,
   styled,
 } from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import TranslationValueList from "./TranslationValueList";
-import BasicSimpleTreeView from "../BasicSimpleTreeView";
-import { convertPropertiesToKeyArray } from "@/lib/jsonPlay/playJson";
-import nestedData from "@/lib/jsonPlay/nestedData.json";
+import BasicSimpleTreeView from "./BasicSimpleTreeView";
 import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
-import { fetchTranslationKeysByFilenameAndLanguage } from "@/utils/languages/dataFunctions";
+import {
+  fetchTranslationKeysByFilenameAndLanguage,
+  getAllTranslationFiles,
+} from "@/utils/languages/dataFunctions";
 import { buildKeyTreeFromFlatList } from "@/utils/languages/processData";
 import { TranslationTreeKey } from "@/types/translation";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { useFileNameStore } from "@/store/useFileNameStore";
+import { useEditAllFileStore } from "@/store/useEditAllFileStore";
+import { SessionDialog } from "./SessionDialog/SessionDialog";
 export const HeaderBox = styled(Stack)(({}) => ({
   width: "100%",
   borderBottom: "solid 1px black",
@@ -29,9 +34,27 @@ export const HeaderBox = styled(Stack)(({}) => ({
 const MultilingualView = () => {
   const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
   const { fileNameState, change } = useFileNameStore();
+  const { filesInfo, initialSet } = useEditAllFileStore();
   const handleChange = (event: SelectChangeEvent) => {
     change(event.target.value as string);
   };
+
+  useEffect(() => {
+    async function fetchFileKey() {
+      try {
+        const data = await getAllTranslationFiles();
+        initialSet(data);
+        const localStorageFilesInfo = localStorage.getItem("translationEdits");
+        if (!localStorageFilesInfo)
+          localStorage.setItem("translationEdits", JSON.stringify(data));
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    }
+    fetchFileKey();
+  }, []);
+  console.log("Files Info:", filesInfo);
+
   useEffect(() => {
     async function fetchData() {
       try {
@@ -41,6 +64,7 @@ const MultilingualView = () => {
         );
         const tree = buildKeyTreeFromFlatList(keys);
         setTreeKeys(tree);
+        console.log("Fetched Keys:", keys);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -48,30 +72,38 @@ const MultilingualView = () => {
 
     fetchData();
   }, [fileNameState]);
-  const keyList = useMemo(() => {
-    const arr = convertPropertiesToKeyArray(nestedData[0]);
-    arr.shift();
-    return arr.length > 0 ? arr : [];
-  }, [nestedData]);
-  const [selectedKey, setSelectedKey] = useState<string | null>(
-    keyList[0] || null
-  );
+
+  const [selectedKey, setSelectedKey] = useState<string | null>(null);
+  const [openDialog, setOpenDialog] = React.useState(false);
 
   return (
     <>
-      <FormControl fullWidth>
-        <InputLabel id='demo-simple-select-label'>filename</InputLabel>
-        <Select
-          labelId='demo-simple-select-label'
-          id='demo-simple-select'
-          value={fileNameState}
-          label='filename'
-          onChange={handleChange}
+      <SessionDialog open={openDialog} onClose={setOpenDialog} />
+      <Stack direction={"row"} justifyContent={"space-between"}>
+        <FormControl
+          sx={{
+            width: "20%",
+            marginBottom: "20px",
+          }}
         >
-          <MenuItem value={"common"}>Common</MenuItem>
-          <MenuItem value={"movie"}>Movie</MenuItem>
-        </Select>
-      </FormControl>
+          <InputLabel id='demo-simple-select-label'>filename</InputLabel>
+          <Select
+            labelId='demo-simple-select-label'
+            id='demo-simple-select'
+            value={fileNameState}
+            label='filename'
+            onChange={handleChange}
+          >
+            <MenuItem value={"common"}>Common</MenuItem>
+            <MenuItem value={"movie"}>Movie</MenuItem>
+          </Select>
+        </FormControl>
+        <Box>
+          <Button onClick={() => setOpenDialog(true)} variant='contained'>
+            Save Session
+          </Button>
+        </Box>
+      </Stack>
 
       <Stack
         direction={"row"}

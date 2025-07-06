@@ -99,7 +99,7 @@ export async function TStep(
         language_name: item.language_name,
         language_code: item.language_code,
         filename: item.filename,
-        id: item.id,
+        id: key ? (await key)?.id ?? null : null,
         value: key ? (await key)?.value ?? null : null, // Fetch the value for the full key path
         // full_key_path: fullKeyPath,
       });
@@ -124,7 +124,7 @@ async function fetchKeyValue(id: string, fullKey: string) {
 
   const { data, error } = await supabase
     .from("translation_keys")
-    .select("value, full_key_path")
+    .select("value, full_key_path,id")
     .eq("file_id", id)
     .eq("full_key_path", fullKey);
 
