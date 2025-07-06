@@ -5,8 +5,8 @@ import { useForm } from "react-hook-form";
 import TranslationField from "./TranslationField";
 import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
-import { getTranslationKeys } from "@/utils/languages/dataFunctions";
 import { TranslationValue } from "@/types/translation";
+import { getTranslationKeys } from "@/utils/languages/processData";
 interface TranslationValueListProps {
   selectedKey: string | null;
 }
@@ -23,7 +23,7 @@ const TranslationValueList = ({ selectedKey }: TranslationValueListProps) => {
     const localStorageFilesInfo = localStorage.getItem("translationEdits")
       ? JSON.parse(localStorage.getItem("translationEdits") as string)
       : [];
-    console.log("Local Storage Files Info:", localStorageFilesInfo);
+    // console.log("Local Storage Files Info:", localStorageFilesInfo);
 
     setValuesState(
       getTranslationKeys(

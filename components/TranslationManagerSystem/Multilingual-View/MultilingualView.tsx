@@ -15,7 +15,7 @@ import BasicSimpleTreeView from "./BasicSimpleTreeView";
 import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 import {
   fetchTranslationKeysByFilenameAndLanguage,
-  getAllTranslationFiles,
+  fetchAllTranslationFiles,
 } from "@/utils/languages/dataFunctions";
 import { buildKeyTreeFromFlatList } from "@/utils/languages/processData";
 import { TranslationTreeKey } from "@/types/translation";
@@ -34,7 +34,7 @@ export const HeaderBox = styled(Stack)(({}) => ({
 const MultilingualView = () => {
   const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
   const { fileNameState, change } = useFileNameStore();
-  const { filesInfo, initialSet } = useEditAllFileStore();
+  const { initialSet } = useEditAllFileStore();
   const handleChange = (event: SelectChangeEvent) => {
     change(event.target.value as string);
   };
@@ -42,18 +42,26 @@ const MultilingualView = () => {
   useEffect(() => {
     async function fetchFileKey() {
       try {
-        const data = await getAllTranslationFiles();
-        initialSet(data);
         const localStorageFilesInfo = localStorage.getItem("translationEdits");
-        if (!localStorageFilesInfo)
+
+        if (localStorageFilesInfo !== null && localStorageFilesInfo !== "[]") {
+          console.log("Using data from localStorage");
+          const parsedData = JSON.parse(localStorageFilesInfo);
+          initialSet(parsedData);
+        } else {
+          const data = await fetchAllTranslationFiles();
+          initialSet(data);
           localStorage.setItem("translationEdits", JSON.stringify(data));
+        }
       } catch (error) {
-        console.error("Error fetching data:", error);
+        console.error("Error loading translation data:", error);
       }
     }
+
     fetchFileKey();
-  }, []);
-  console.log("Files Info:", filesInfo);
+  }, [fileNameState]);
+
+  // console.log("Files Info:", filesInfo);
 
   useEffect(() => {
     async function fetchData() {
@@ -64,7 +72,7 @@ const MultilingualView = () => {
         );
         const tree = buildKeyTreeFromFlatList(keys);
         setTreeKeys(tree);
-        console.log("Fetched Keys:", keys);
+        // console.log("Fetched Keys:", keys);
       } catch (error) {
         console.error("Error fetching data:", error);
       }

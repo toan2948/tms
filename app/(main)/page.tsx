@@ -9,6 +9,7 @@ function HomePage() {
   return (
     <Box sx={{ padding: "20px 20px 20px 20px", width: "100%", height: "100%" }}>
       <h1>Translation Panel</h1>
+
       <Stack sx={{ width: "100%", marginBottom: "20px", alignItems: "center" }}>
         <ButtonGroup variant='contained' aria-label='Basic button group'>
           <Button onClick={() => setMultilingualView(true)}>

@@ -1,8 +1,4 @@
-import {
-  FileState,
-  TranslationTreeKey,
-  TranslationValue,
-} from "@/types/translation";
+import { TranslationTreeKey, TranslationValue } from "@/types/translation";
 import { createClient } from "../supabase/client";
 
 export async function TreeData() {
@@ -66,7 +62,7 @@ export async function fetchTranslationKeysByFilenameAndLanguage(
 
   return keys ?? [];
 }
-export async function getAllTranslationFiles() {
+export async function fetchAllTranslationFiles() {
   const supabase = await createClient();
 
   // Fetch files with their language info
@@ -130,26 +126,33 @@ export async function getAllTranslationFiles() {
   return result;
 }
 
-export const getTranslationKeys = (
-  fileN: string,
-  path: string,
-  files: FileState[]
-) => {
-  const searchedFiles = files.filter((e) => e.fileName === fileN);
-  if (searchedFiles.length === 0) return [];
-  const result: TranslationValue[] = [];
-  searchedFiles.forEach((element) => {
-    const foundKeys = element.keys.filter((key) => key.fullKeyPath === path);
-    if (foundKeys.length > 0) {
-      result.push({
-        id: foundKeys[0].id,
-        value: foundKeys[0].value,
-        fullKeyPath: foundKeys[0].fullKeyPath,
-        language_code: element.language_code,
-        language_name: element.language_name,
-        filename: element.fileName,
-      });
+export async function updateChangedKeys(values: TranslationValue[]) {
+  const supabase = await createClient();
+  const now = new Date().toISOString();
+
+  // Batch update each row one-by-one (async parallel)
+  const promises = values.map(({ id, value }) =>
+    supabase
+      .from("translation_keys")
+      .update({
+        value,
+        last_edited_at: now,
+      })
+      .eq("id", id)
+  );
+
+  // Wait for all updates
+  const results = await Promise.all(promises);
+
+  // Check for errors
+  for (const result of results) {
+    if (result.error) {
+      console.error("Update failed:", result.error);
+      throw result.error;
     }
-  });
-  return result;
-};
+  }
+
+  console.log("All keys updated successfully", results);
+
+  return results.map((r) => r.data).flat();
+}

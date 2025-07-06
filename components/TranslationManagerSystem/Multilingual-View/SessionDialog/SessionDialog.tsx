@@ -1,15 +1,27 @@
 import * as React from "react";
 
 import {
+  Box,
+  Button,
   Dialog,
   DialogTitle,
   List,
   ListItem,
-  ListItemText,
+  Stack,
+  Typography,
 } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
-import { FileState, TranslationValue } from "@/types/translation";
-
+import {
+  filterTranslationKeys,
+  formatSessionDialogData,
+} from "@/utils/languages/processData";
+import {
+  fetchAllTranslationFiles,
+  updateChangedKeys,
+} from "@/utils/languages/dataFunctions";
+import { toast } from "react-toastify";
+import { useEditAllFileStore } from "@/store/useEditAllFileStore";
+import { FileState } from "@/types/translation";
 export interface SessionDialogProps {
   open: boolean;
   onClose: Dispatch<SetStateAction<boolean>>;
@@ -21,48 +33,72 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
   )
     ? JSON.parse(localStorage.getItem("translationEdits") as string)
     : [];
-  const changedKeys: TranslationValue[] = localStorageFilesInfo.flatMap(
-    (file) =>
-      file.keys
-        .filter((key) => key.isChanged)
-        .map((key) => ({
-          id: key.id,
-          value: key.value,
-          fullKeyPath: key.fullKeyPath,
-          language_code: file.language_code,
-          language_name: file.language_name,
-          filename: file.fileName,
-        }))
-  );
-  const groupedMap = new Map<string, Set<string>>();
+  const changedKeys = filterTranslationKeys(localStorageFilesInfo);
+  const sessionData = formatSessionDialogData(changedKeys);
+  const { initialSet } = useEditAllFileStore();
 
-  changedKeys.forEach((item) => {
-    const groupKey = `${item.filename}: ${item.fullKeyPath}`;
-    if (!groupedMap.has(groupKey)) {
-      groupedMap.set(groupKey, new Set());
-    }
-    groupedMap.get(groupKey)!.add(item.language_code);
-  });
-
-  // Convert to array of strings
-  const changedKeyStrings: string[] = Array.from(groupedMap.entries()).map(
-    ([key, langSet]) => `${key} -- ${Array.from(langSet).join(", ")}`
-  );
-
-  console.log("Changed Keys:", changedKeyStrings);
-
+  console.log("changedKeys", changedKeys);
   const handleClose = () => {
     onClose(false);
   };
 
+  const updateDB = async () => {
+    await updateChangedKeys(changedKeys);
+    onClose(false);
+    toast.success("Saved to DB!");
+    const data = await fetchAllTranslationFiles();
+    initialSet(data);
+    localStorage.setItem("translationEdits", JSON.stringify(data));
+  };
+
   return (
     <Dialog onClose={handleClose} open={open}>
-      <DialogTitle>Set backup account</DialogTitle>
-      <List sx={{ pt: 0 }}>
-        <ListItem disablePadding>
-          <ListItemText primary='Add account' />
-        </ListItem>
-      </List>
+      <DialogTitle textAlign={"center"}>Save Session?</DialogTitle>
+
+      <Box
+        sx={{
+          // margin: "10px",
+          padding: "10px",
+        }}
+      >
+        <Typography>Save these changes:</Typography>
+
+        <Box
+          sx={{
+            border: "1px solid black",
+
+            padding: "10px",
+            marginBottom: "10px",
+          }}
+        >
+          <List sx={{ pt: 0 }}>
+            {sessionData.map((item, index) => (
+              <ListItem
+                key={index}
+                sx={{
+                  borderRadius: "5px",
+                }}
+              >
+                <Typography color={item.color}> {item.label}</Typography>
+              </ListItem>
+            ))}
+          </List>
+        </Box>
+        <Stack direction={"row"} justifyContent={"flex-end"}>
+          <Button
+            variant='outlined'
+            sx={{
+              marginRight: "10px",
+            }}
+            onClick={handleClose}
+          >
+            Cancel
+          </Button>
+          <Button variant='contained' onClick={updateDB}>
+            Save
+          </Button>
+        </Stack>
+      </Box>
     </Dialog>
   );
 }
