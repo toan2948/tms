@@ -21,21 +21,16 @@ import {
 } from "@/utils/languages/dataFunctions";
 import { toast } from "react-toastify";
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
-import { FileState } from "@/types/translation";
 export interface SessionDialogProps {
   open: boolean;
   onClose: Dispatch<SetStateAction<boolean>>;
 }
 
 export function SessionDialog({ open, onClose }: SessionDialogProps) {
-  const localStorageFilesInfo: FileState[] = localStorage.getItem(
-    "translationEdits"
-  )
-    ? JSON.parse(localStorage.getItem("translationEdits") as string)
-    : [];
-  const changedKeys = filterTranslationKeys(localStorageFilesInfo);
+  const { filesInfo, initialSet } = useEditAllFileStore();
+
+  const changedKeys = filterTranslationKeys(filesInfo);
   const sessionData = formatSessionDialogData(changedKeys);
-  const { initialSet } = useEditAllFileStore();
 
   console.log("changedKeys", changedKeys);
   const handleClose = () => {
