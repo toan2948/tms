@@ -40,10 +40,11 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
   const updateDB = async () => {
     await updateChangedKeys(changedKeys);
     onClose(false);
-    toast.success("Saved to DB!");
     const data = await fetchAllTranslationFiles();
     initialSet(data);
     localStorage.setItem("translationEdits", JSON.stringify(data));
+    localStorage.setItem("currentDBvalues", JSON.stringify(data));
+    toast.success("Saved to DB!");
   };
 
   return (

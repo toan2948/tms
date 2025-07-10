@@ -15,11 +15,23 @@ export const useEditAllFileStore = create<AllFileState>((set, get) => ({
       filesInfo: files,
     })),
   updateKeyChanged: (editedKey: KeyState) => {
+    // const localStorageDBValues = localStorage.getItem("currentDBvalues")
+    //   ? JSON.parse(localStorage.getItem("currentDBvalues") as string)
+    //   : [];
+    // const currentValue = findKeyStateByIdAcrossFiles(
+    //   localStorageDBValues,
+    //   editedKey.id
+    // );
+
     set((state) => ({
       filesInfo: state.filesInfo.map((file) => {
-        const updatedKeys = file.keys.map((key) =>
-          key.id === editedKey.id ? { ...key, ...editedKey } : key
-        );
+        // console.log("editedKey in updateKeyChanged", editedKey);
+        const updatedKeys = file.keys.map((key) => {
+          if (key.value === editedKey.value) {
+            return { ...key, isChanged: false };
+          } else
+            return key.id === editedKey.id ? { ...key, ...editedKey } : key;
+        });
         const isDirty = updatedKeys.some((key) => key.isChanged);
         return {
           ...file,

@@ -40,8 +40,9 @@ const MultilingualView = () => {
   };
 
   useEffect(() => {
-    async function fetchFileKey() {
+    async function fetchKeysAndSaveToLocal() {
       try {
+        const data = await fetchAllTranslationFiles();
         const localStorageFilesInfo = localStorage.getItem("translationEdits");
 
         if (localStorageFilesInfo !== null && localStorageFilesInfo !== "[]") {
@@ -49,26 +50,26 @@ const MultilingualView = () => {
           const parsedData = JSON.parse(localStorageFilesInfo);
           initialSet(parsedData);
         } else {
-          const data = await fetchAllTranslationFiles();
           initialSet(data);
           localStorage.setItem("translationEdits", JSON.stringify(data));
         }
+        localStorage.setItem("currentDBvalues", JSON.stringify(data));
       } catch (error) {
         console.error("Error loading translation data:", error);
       }
     }
 
-    fetchFileKey();
+    fetchKeysAndSaveToLocal();
   }, [fileNameState]);
 
   // console.log("Files Info:", filesInfo);
 
   useEffect(() => {
-    async function fetchData() {
+    async function fetchKeysForBuildingTree() {
       try {
         const keys = await fetchTranslationKeysByFilenameAndLanguage(
           fileNameState,
-          "en"
+          "en" //it does not matter which language we use here, as we are fetching all keys
         );
         const tree = buildKeyTreeFromFlatList(keys);
         setTreeKeys(tree);
@@ -78,7 +79,7 @@ const MultilingualView = () => {
       }
     }
 
-    fetchData();
+    fetchKeysForBuildingTree();
   }, [fileNameState]);
 
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
