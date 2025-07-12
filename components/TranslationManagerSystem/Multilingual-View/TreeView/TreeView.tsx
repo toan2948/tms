@@ -64,31 +64,33 @@ const TreeView = () => {
     fetchKeysForBuildingTree();
   }, [fileNameState]);
   return (
-    <Stack
-      direction={"row"}
-      border={"solid 1px black"}
-      justifyContent={"space-around"}
-      maxHeight='500px'
-    >
-      <Stack width={"50%"} borderRight={"solid 1px black"}>
-        <HeaderBox>
-          <Typo1424 textAlign={"center"}>Keys</Typo1424>
-        </HeaderBox>
-        <BasicSimpleTreeView
-          selectedKey={selectedKey}
-          setSelectedKey={setSelectedKey}
-          data={treeKeys}
-        />
-      </Stack>
-      <Stack width={"100%"}>
-        <HeaderBox>
-          <Typo1424 textAlign={"center"}>Language</Typo1424>
-        </HeaderBox>
-        <Typo1424>Key to translate: {selectedKey}</Typo1424>
+    <>
+      <Stack
+        direction={"row"}
+        border={"solid 1px black"}
+        justifyContent={"space-around"}
+        maxHeight='500px'
+      >
+        <Stack width={"50%"} borderRight={"solid 1px black"}>
+          <HeaderBox>
+            <Typo1424 textAlign={"center"}>Keys</Typo1424>
+          </HeaderBox>
+          <BasicSimpleTreeView
+            selectedKey={selectedKey}
+            setSelectedKey={setSelectedKey}
+            data={treeKeys}
+          />
+        </Stack>
+        <Stack width={"100%"}>
+          <HeaderBox>
+            <Typo1424 textAlign={"center"}>Language</Typo1424>
+          </HeaderBox>
+          <Typo1424>Key to translate: {selectedKey}</Typo1424>
 
-        <TranslationValueList selectedKey={selectedKey} />
+          <TranslationValueList selectedKey={selectedKey} />
+        </Stack>
       </Stack>
-    </Stack>
+    </>
   );
 };
 

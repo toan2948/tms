@@ -13,16 +13,19 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 import { useKeyStore } from "@/store/useFileNameStore";
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
-import { TranslationValue } from "@/types/translation";
+import { TranslationValue, TranslationValueWithOld } from "@/types/translation";
 import { findKeyStateByIdAcrossFiles } from "@/utils/languages/processData";
+import { ResetDialog } from "../Dialogs/ResetDialog";
 type TranslationFieldProps = {
   index: number;
-  data: TranslationValue;
+  data: TranslationValue | TranslationValueWithOld;
   bilingual?: boolean;
 };
 const TranslationField = ({ index, data }: TranslationFieldProps) => {
   const [isSaveButtonEnabled, setIsSaveButtonEnabled] = useState(false);
   const [value, setValue] = useState(data.value);
+  const [openResetDialog, setOpenResetDialog] = React.useState(false);
+
   const { fullKeyPath } = useKeyStore();
   const { updateKeyChanged } = useEditAllFileStore();
   const localStorageDBValues = useMemo(() => {
@@ -57,23 +60,6 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
     setIsResetButtonEnabled(true);
     //value state is temporally not set here
   };
-  const handleReset = () => {
-    // console.log("Resetting value to DBValue:", DBValue?.value, value);
-    updateKeyChanged({
-      fullKeyPath: fullKeyPath,
-      id: data.id,
-      isChanged: false,
-      value: DBValue?.value ?? "",
-      version: data.version ? data.version - 1 : 0,
-      last_edited_at: DBValue?.last_edited_at
-        ? new Date(DBValue.last_edited_at)
-        : new Date(),
-      has_children: data.has_children,
-    });
-    setValue(DBValue?.value ?? "");
-    setIsSaveButtonEnabled(false);
-    setIsResetButtonEnabled(false);
-  };
 
   useEffect(() => {
     if (value === DBValue?.value) {
@@ -95,104 +81,115 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   }, [data.value, DBValue?.value]);
 
   return (
-    <ListItem
-      key={index}
-      sx={{
-        display: "flex",
-        width: "100%",
-        alignItems: "stretch", // this is CRITICAL
-        backgroundColor: index % 2 !== 0 ? "#d3d3d3" : "#F5F5F5", // Using a brighter color than grey
-      }}
-    >
-      <Stack paddingRight={"5px"} width={"17%"}>
-        <Typo1424 weight={600}>{data.language_name}</Typo1424>
-        <Typo1424>
-          v{data.version}:
-          {data.last_edited_at
-            ? new Date(data.last_edited_at).toISOString().substring(0, 10)
-            : ""}
-        </Typo1424>
-      </Stack>
+    <>
+      <ResetDialog
+        data={data}
+        open={openResetDialog}
+        onClose={setOpenResetDialog}
+        setValue={setValue}
+        setIsSaveButtonEnabled={setIsSaveButtonEnabled}
+        setIsResetButtonEnabled={setIsResetButtonEnabled}
+      />
 
-      <Paper
-        variant='outlined'
+      <ListItem
+        key={index}
         sx={{
-          borderRadius: 2,
-          overflow: "hidden",
+          display: "flex",
           width: "100%",
-          flexGrow: 1,
+          alignItems: "stretch", // this is CRITICAL
+          backgroundColor: index % 2 !== 0 ? "#d3d3d3" : "#F5F5F5", // Using a brighter color than grey
         }}
       >
-        <Grid container>
-          <Grid
-            size={2}
-            sx={{ borderRight: "1px solid", borderColor: "divider", p: 2 }}
-          >
-            <Typography>{isResetButtonEnabled && "New"}</Typography>
-          </Grid>
+        <Stack paddingRight={"5px"} width={"17%"}>
+          <Typo1424 weight={600}>{data.language_name}</Typo1424>
+          <Typo1424>
+            v{data.version}:
+            {data.last_edited_at
+              ? new Date(data.last_edited_at).toISOString().substring(0, 10)
+              : ""}
+          </Typo1424>
+        </Stack>
 
-          <Grid size={10} sx={{ p: 2 }}>
-            <TextareaAutosize
-              minRows={2}
-              maxRows={2}
-              value={value ?? ""}
-              onChange={(e) => handleChange(e)}
-              style={{
-                minWidth: "100%",
-                maxWidth: "100%",
-                border: "1px solid black",
-                borderRadius: "4px",
-              }}
-            />
-          </Grid>
-        </Grid>
-        {isResetButtonEnabled && (
+        <Paper
+          variant='outlined'
+          sx={{
+            borderRadius: 2,
+            overflow: "hidden",
+            width: "100%",
+            flexGrow: 1,
+          }}
+        >
           <Grid container>
             <Grid
               size={2}
               sx={{ borderRight: "1px solid", borderColor: "divider", p: 2 }}
             >
-              <Typography>Old</Typography>
+              <Typography>{isResetButtonEnabled && "New"}</Typography>
             </Grid>
+
             <Grid size={10} sx={{ p: 2 }}>
-              <Typo1424 color={"red"}>{DBValue?.value}</Typo1424>
+              <TextareaAutosize
+                minRows={2}
+                maxRows={2}
+                value={value ?? ""}
+                onChange={(e) => handleChange(e)}
+                style={{
+                  minWidth: "100%",
+                  maxWidth: "100%",
+                  border: "1px solid black",
+                  borderRadius: "4px",
+                }}
+              />
             </Grid>
           </Grid>
-        )}
-      </Paper>
-      <Box>
-        <Stack
-          ml={"5px"}
-          direction={"column"}
-          justifyContent={"space-around"}
-          sx={{
-            height: "100%", // fill available parent height
-          }}
-        >
-          <Box width={"90px"}>
-            <Button
-              variant='outlined'
-              disabled={!isSaveButtonEnabled}
-              onClick={() => handleSave()}
-              fullWidth
-            >
-              Save
-            </Button>
-          </Box>
           {isResetButtonEnabled && (
-            <Box>
+            <Grid container>
+              <Grid
+                size={2}
+                sx={{ borderRight: "1px solid", borderColor: "divider", p: 2 }}
+              >
+                <Typography>Old</Typography>
+              </Grid>
+              <Grid size={10} sx={{ p: 2 }}>
+                <Typo1424 color={"red"}>{DBValue?.value}</Typo1424>
+              </Grid>
+            </Grid>
+          )}
+        </Paper>
+        <Box>
+          <Stack
+            ml={"5px"}
+            direction={"column"}
+            justifyContent={"space-around"}
+            sx={{
+              height: "100%", // fill available parent height
+            }}
+          >
+            <Box width={"90px"}>
               <Button
                 variant='outlined'
-                onClick={() => handleReset()}
+                disabled={!isSaveButtonEnabled}
+                onClick={() => handleSave()}
                 fullWidth
               >
-                Reset
+                Save
               </Button>
             </Box>
-          )}
-        </Stack>
-      </Box>
-    </ListItem>
+            {isResetButtonEnabled && (
+              <Box>
+                <Button
+                  variant='outlined'
+                  onClick={() => setOpenResetDialog(true)}
+                  fullWidth
+                >
+                  Reset
+                </Button>
+              </Box>
+            )}
+          </Stack>
+        </Box>
+      </ListItem>
+    </>
   );
 };
 

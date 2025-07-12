@@ -32,7 +32,7 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
   const changedKeys = filterTranslationKeys(filesInfo);
   const sessionData = formatSessionDialogData(changedKeys);
 
-  console.log("changedKeys", changedKeys);
+  // console.log("changedKeys", changedKeys);
   const handleClose = () => {
     onClose(false);
   };

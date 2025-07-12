@@ -29,13 +29,23 @@ const TranslationValueList = ({ selectedKey }: TranslationValueListProps) => {
     [filesInfo]
   );
 
+  console.log(
+    "TranslationValueList - selectedKey:",
+    selectedKey,
+    fullKeyPath,
+    fileNameState,
+    changedKeys
+  );
+
   useEffect(() => {
     // const localStorageFilesInfo = localStorage.getItem("translationEdits")
     //   ? JSON.parse(localStorage.getItem("translationEdits") as string)
     //   : [];
     // // console.log("Local Storage Files Info:", localStorageFilesInfo);
 
-    setValuesState(getTranslationKeys(fileNameState, fullKeyPath, filesInfo));
+    setValuesState(
+      getTranslationKeys(fileNameState, fullKeyPath, filesInfo, selectedKey)
+    );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileNameState, fullKeyPath, selectedKey, changedKeys]); //valuesState in this condition will cause infinite loop
 

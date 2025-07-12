@@ -61,3 +61,6 @@ export type TranslationValue = {
   last_edited_at: Date | null;
   has_children: boolean;
 };
+export type TranslationValueWithOld = TranslationValue & {
+  old_value: string | null;
+};

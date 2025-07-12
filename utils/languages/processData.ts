@@ -5,18 +5,41 @@ import {
   KeyState,
   TranslationTreeKey,
   TranslationValue,
+  TranslationValueWithOld,
 } from "@/types/translation";
+
+function findKeyById(files: FileState[], keyId: string): string | null {
+  for (const file of files) {
+    const found = file.keys.find((key) => key.id === keyId);
+    if (found) return found.value !== null ? found.value : null;
+  }
+  return null;
+}
 
 export const filterTranslationKeys = (
   localStorageFilesInfo: FileState[]
-): TranslationValue[] => {
-  const changedKeys: TranslationValue[] = localStorageFilesInfo.flatMap(
-    (file) =>
-      file.keys
-        .filter((key) => key.isChanged)
-        .map((key) => ({
+): TranslationValueWithOld[] => {
+  const localStorageRaw = localStorage.getItem("currentDBvalues");
+  const localStorageDBValues: FileState[] = localStorageRaw
+    ? JSON.parse(localStorageRaw)
+    : [];
+
+  // console.log("localStorageDBValues", localStorageDBValues);
+
+  const changedKeys = localStorageFilesInfo.flatMap((file) =>
+    file.keys
+      .filter((key) => key.isChanged)
+      .map((key) => {
+        // Find the corresponding key in the localStorageDBValues
+        const old_value = findKeyById(localStorageDBValues, key.id);
+        // console.log("DBKey:", DBKey);
+        // console.log("Key:", key);
+        // const old_value = DBKey ? DBKey.value : null;
+
+        return {
           id: key.id,
           value: key.value,
+          old_value: old_value,
           fullKeyPath: key.fullKeyPath,
           language_code: file.language_code,
           language_name: file.language_name,
@@ -24,7 +47,8 @@ export const filterTranslationKeys = (
           version: key.version,
           last_edited_at: key.last_edited_at,
           has_children: key.has_children,
-        }))
+        };
+      })
   );
   return changedKeys;
 };
@@ -92,8 +116,11 @@ export const formatSessionDialogData = (changedKeys: TranslationValue[]) => {
 export const getTranslationKeys = (
   fileN: string,
   path: string,
-  files: FileState[]
+  files: FileState[],
+  selectedKey: string | null = null
 ): TranslationValue[] => {
+  console.log("getTranslationKeys called with:", selectedKey);
+  if (!selectedKey) return [];
   const searchedFiles = files.filter((e) => e.fileName === fileN);
   if (searchedFiles.length === 0) return [];
   const result: TranslationValue[] = [];
@@ -156,3 +183,30 @@ export function findKeyStateByIdAcrossFiles(
   }
   return undefined;
 }
+type GroupedTranslationValues = {
+  filename: string;
+  fullKeyPath: string;
+  list: TranslationValueWithOld[];
+};
+
+export const groupTranslationValues = (
+  values: TranslationValueWithOld[]
+): GroupedTranslationValues[] => {
+  const groupedMap = new Map<string, GroupedTranslationValues>();
+
+  values.forEach((item) => {
+    const key = `${item.filename}:::${item.fullKeyPath}`; // unique composite key
+
+    if (!groupedMap.has(key)) {
+      groupedMap.set(key, {
+        filename: item.filename,
+        fullKeyPath: item.fullKeyPath,
+        list: [item],
+      });
+    } else {
+      groupedMap.get(key)!.list.push(item);
+    }
+  });
+
+  return Array.from(groupedMap.values());
+};

@@ -13,8 +13,8 @@ import React from "react";
 
 import { SelectChangeEvent } from "@mui/material/Select";
 import { useFileNameStore } from "@/store/useFileNameStore";
-import { SessionDialog } from "./SessionDialog/SessionDialog";
-import TreeView from "./TreeView";
+import { SessionDialog } from "./Dialogs/SessionDialog";
+import TreeView from "./TreeView/TreeView";
 import AllChangesView from "./AllChangesView";
 export const HeaderBox = styled(Stack)(({}) => ({
   width: "100%",

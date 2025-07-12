@@ -15,14 +15,6 @@ export const useEditAllFileStore = create<AllFileState>((set, get) => ({
       filesInfo: files,
     })),
   updateKeyChanged: (editedKey: KeyState) => {
-    // const localStorageDBValues = localStorage.getItem("currentDBvalues")
-    //   ? JSON.parse(localStorage.getItem("currentDBvalues") as string)
-    //   : [];
-    // const currentValue = findKeyStateByIdAcrossFiles(
-    //   localStorageDBValues,
-    //   editedKey.id
-    // );
-
     set((state) => ({
       filesInfo: state.filesInfo.map((file) => {
         // console.log("editedKey in updateKeyChanged", editedKey);
