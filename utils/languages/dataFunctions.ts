@@ -85,7 +85,7 @@ export async function fetchAllTranslationFiles() {
   // Fetch all keys for these files
   const { data: keys, error: keysError } = await supabase
     .from("translation_keys")
-    .select("file_id, full_key_path, value, id")
+    .select("file_id, full_key_path, value, id, version, last_edited_at")
     .in("file_id", fileIds);
 
   if (keysError) {
@@ -101,6 +101,8 @@ export async function fetchAllTranslationFiles() {
         id: string;
         value: string | null;
         isChanged: boolean;
+        version: number | null;
+        last_edited_at: Date | null;
       }>
     >
   >((acc, k) => {
@@ -109,6 +111,8 @@ export async function fetchAllTranslationFiles() {
       fullKeyPath: k.full_key_path,
       value: k.value,
       id: k.id,
+      version: k.version,
+      last_edited_at: k.last_edited_at,
       isChanged: false, // default false for now
     });
     return acc;

@@ -38,9 +38,9 @@ const TranslationValueList = ({ selectedKey }: TranslationValueListProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileNameState, fullKeyPath, selectedKey, changedKeys]); //valuesState in this condition will cause infinite loop
 
-  useEffect(() => {
-    console.log("valuesState", valuesState);
-  }, [valuesState]);
+  // useEffect(() => {
+  //   console.log("valuesState", valuesState);
+  // }, [valuesState]);
 
   return (
     <Stack direction={"row"} width={"100%"} sx={{ overflowY: "scroll" }}>

@@ -49,9 +49,12 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
       id: data.id,
       isChanged: true,
       value: value,
+      version: data.version ? data.version + 1 : 1,
+      last_edited_at: new Date(),
     });
     setIsSaveButtonEnabled(false);
     setIsResetButtonEnabled(true);
+    //value state is temporally not set here
   };
   const handleReset = () => {
     // console.log("Resetting value to DBValue:", DBValue?.value, value);
@@ -60,6 +63,10 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
       id: data.id,
       isChanged: false,
       value: DBValue?.value ?? "",
+      version: data.version ? data.version - 1 : 0,
+      last_edited_at: DBValue?.last_edited_at
+        ? new Date(DBValue.last_edited_at)
+        : new Date(),
     });
     setValue(DBValue?.value ?? "");
     setIsSaveButtonEnabled(false);
@@ -95,7 +102,16 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
         backgroundColor: index % 2 !== 0 ? "#d3d3d3" : "#F5F5F5", // Using a brighter color than grey
       }}
     >
-      <Typo1424 width={"15% "}>{data.language_name}</Typo1424>
+      <Stack paddingRight={"5px"} width={"17%"}>
+        <Typo1424 weight={600}>{data.language_name}</Typo1424>
+        <Typo1424>
+          v{data.version}:
+          {data.last_edited_at
+            ? new Date(data.last_edited_at).toISOString().substring(0, 10)
+            : ""}
+        </Typo1424>
+      </Stack>
+
       <Paper
         variant='outlined'
         sx={{

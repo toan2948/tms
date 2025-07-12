@@ -19,6 +19,8 @@ export const filterTranslationKeys = (localStorageFilesInfo: FileState[]) => {
           language_code: file.language_code,
           language_name: file.language_name,
           filename: file.fileName,
+          version: key.version,
+          last_edited_at: key.last_edited_at,
         }))
   );
   return changedKeys;
@@ -102,6 +104,8 @@ export const getTranslationKeys = (
         language_code: element.language_code,
         language_name: element.language_name,
         filename: element.fileName,
+        version: foundKeys[0].version,
+        last_edited_at: foundKeys[0].last_edited_at,
       });
     }
   });

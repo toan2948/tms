@@ -34,6 +34,8 @@ export type KeyState = {
   id: string;
   isChanged: boolean;
   value: string | null;
+  version: number | null;
+  last_edited_at: Date | null;
 };
 export interface FileState extends LanguageInfo {
   fileName: string; //or fileID
@@ -53,4 +55,6 @@ export type TranslationValue = {
   language_code: string;
   language_name: string;
   filename: string;
+  version: number | null;
+  last_edited_at: Date | null;
 };
