@@ -9,20 +9,12 @@ import {
   Stack,
   styled,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
-import TranslationValueList from "./TranslationValueList";
-import BasicSimpleTreeView from "./BasicSimpleTreeView";
-import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
-import {
-  fetchTranslationKeysByFilenameAndLanguage,
-  fetchAllTranslationFiles,
-} from "@/utils/languages/dataFunctions";
-import { buildKeyTreeFromFlatList } from "@/utils/languages/processData";
-import { TranslationTreeKey } from "@/types/translation";
+import React from "react";
+
 import { SelectChangeEvent } from "@mui/material/Select";
 import { useFileNameStore } from "@/store/useFileNameStore";
-import { useEditAllFileStore } from "@/store/useEditAllFileStore";
 import { SessionDialog } from "./SessionDialog/SessionDialog";
+import TreeView from "./TreeView";
 export const HeaderBox = styled(Stack)(({}) => ({
   width: "100%",
   borderBottom: "solid 1px black",
@@ -32,57 +24,12 @@ export const HeaderBox = styled(Stack)(({}) => ({
   justifyContent: "center",
 }));
 const MultilingualView = () => {
-  const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
   const { fileNameState, change } = useFileNameStore();
-  const { initialSet } = useEditAllFileStore();
+
   const handleChange = (event: SelectChangeEvent) => {
     change(event.target.value as string);
   };
 
-  useEffect(() => {
-    async function fetchKeysAndSaveToLocal() {
-      try {
-        const data = await fetchAllTranslationFiles();
-        const localStorageFilesInfo = localStorage.getItem("translationEdits");
-
-        if (localStorageFilesInfo !== null && localStorageFilesInfo !== "[]") {
-          console.log("Using data from localStorage");
-          const parsedData = JSON.parse(localStorageFilesInfo);
-          initialSet(parsedData);
-        } else {
-          initialSet(data);
-          localStorage.setItem("translationEdits", JSON.stringify(data));
-        }
-        localStorage.setItem("currentDBvalues", JSON.stringify(data));
-      } catch (error) {
-        console.error("Error loading translation data:", error);
-      }
-    }
-
-    fetchKeysAndSaveToLocal();
-  }, [fileNameState]);
-
-  // console.log("Files Info:", filesInfo);
-
-  useEffect(() => {
-    async function fetchKeysForBuildingTree() {
-      try {
-        const keys = await fetchTranslationKeysByFilenameAndLanguage(
-          fileNameState,
-          "en" //it does not matter which language we use here, as we are fetching all keys
-        );
-        const tree = buildKeyTreeFromFlatList(keys);
-        setTreeKeys(tree);
-        // console.log("Fetched Keys:", keys);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-
-    fetchKeysForBuildingTree();
-  }, [fileNameState]);
-
-  const [selectedKey, setSelectedKey] = useState<string | null>(null);
   const [openDialog, setOpenDialog] = React.useState(false);
 
   return (
@@ -108,37 +55,21 @@ const MultilingualView = () => {
           </Select>
         </FormControl>
         <Box>
+          <Button
+            variant='contained'
+            onClick={() => {}}
+            sx={{
+              marginRight: "10px",
+            }}
+          >
+            See All Changes
+          </Button>
           <Button onClick={() => setOpenDialog(true)} variant='contained'>
             Save Session
           </Button>
         </Box>
       </Stack>
-
-      <Stack
-        direction={"row"}
-        border={"solid 1px black"}
-        justifyContent={"space-around"}
-        maxHeight='500px'
-      >
-        <Stack width={"50%"} borderRight={"solid 1px black"}>
-          <HeaderBox>
-            <Typo1424 textAlign={"center"}>Keys</Typo1424>
-          </HeaderBox>
-          <BasicSimpleTreeView
-            selectedKey={selectedKey}
-            setSelectedKey={setSelectedKey}
-            data={treeKeys}
-          />
-        </Stack>
-        <Stack width={"100%"}>
-          <HeaderBox>
-            <Typo1424 textAlign={"center"}>Language</Typo1424>
-          </HeaderBox>
-          <Typo1424>Key to translate: {selectedKey}</Typo1424>
-
-          <TranslationValueList selectedKey={selectedKey} />
-        </Stack>
-      </Stack>
+      <TreeView />
     </>
   );
 };
