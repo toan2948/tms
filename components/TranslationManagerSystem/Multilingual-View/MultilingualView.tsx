@@ -15,6 +15,7 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { SessionDialog } from "./SessionDialog/SessionDialog";
 import TreeView from "./TreeView";
+import AllChangesView from "./AllChangesView";
 export const HeaderBox = styled(Stack)(({}) => ({
   width: "100%",
   borderBottom: "solid 1px black",
@@ -30,6 +31,8 @@ const MultilingualView = () => {
     change(event.target.value as string);
   };
 
+  const [seeAllChanges, setSeeAllChanges] = React.useState(false);
+
   const [openDialog, setOpenDialog] = React.useState(false);
 
   return (
@@ -40,6 +43,7 @@ const MultilingualView = () => {
           sx={{
             width: "20%",
             marginBottom: "20px",
+            visibility: !seeAllChanges ? "visible" : "hidden",
           }}
         >
           <InputLabel id='demo-simple-select-label'>filename</InputLabel>
@@ -54,22 +58,26 @@ const MultilingualView = () => {
             <MenuItem value={"movie"}>Movie</MenuItem>
           </Select>
         </FormControl>
+
         <Box>
           <Button
             variant='contained'
-            onClick={() => {}}
+            onClick={() => {
+              setSeeAllChanges(!seeAllChanges);
+            }}
             sx={{
               marginRight: "10px",
+              backgroundColor: "#4caf50",
             }}
           >
-            See All Changes
+            {!seeAllChanges ? "See All Changes " : "See Tree View"}
           </Button>
           <Button onClick={() => setOpenDialog(true)} variant='contained'>
             Save Session
           </Button>
         </Box>
       </Stack>
-      <TreeView />
+      {seeAllChanges ? <AllChangesView /> : <TreeView />}
     </>
   );
 };

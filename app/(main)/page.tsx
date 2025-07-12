@@ -11,11 +11,17 @@ function HomePage() {
       <h1>Translation Panel</h1>
 
       <Stack sx={{ width: "100%", marginBottom: "20px", alignItems: "center" }}>
-        <ButtonGroup variant='contained' aria-label='Basic button group'>
-          <Button onClick={() => setMultilingualView(true)}>
+        <ButtonGroup aria-label='Basic button group'>
+          <Button
+            variant={multiView ? "contained" : "outlined"}
+            onClick={() => setMultilingualView(true)}
+          >
             Multilingual View
           </Button>
-          <Button onClick={() => setMultilingualView(false)}>
+          <Button
+            variant={!multiView ? "contained" : "outlined"}
+            onClick={() => setMultilingualView(false)}
+          >
             Bilingual View
           </Button>
         </ButtonGroup>
