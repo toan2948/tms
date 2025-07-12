@@ -19,7 +19,7 @@ const TreeView = () => {
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
   const { fileNameState } = useFileNameStore();
-  const { initialSet } = useEditAllFileStore();
+  const { setFilesInfo, setDBFilesInfo } = useEditAllFileStore();
 
   useEffect(() => {
     async function fetchKeysAndSaveToLocal() {
@@ -30,12 +30,12 @@ const TreeView = () => {
         if (localStorageFilesInfo !== null && localStorageFilesInfo !== "[]") {
           console.log("Using data from localStorage");
           const parsedData = JSON.parse(localStorageFilesInfo);
-          initialSet(parsedData);
+          setFilesInfo(parsedData);
         } else {
-          initialSet(data);
+          setFilesInfo(data);
           localStorage.setItem("translationEdits", JSON.stringify(data));
         }
-        localStorage.setItem("currentDBvalues", JSON.stringify(data));
+        setDBFilesInfo(data);
       } catch (error) {
         console.error("Error loading translation data:", error);
       }

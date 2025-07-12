@@ -17,13 +17,9 @@ function findKeyById(files: FileState[], keyId: string): string | null {
 }
 
 export const filterTranslationKeys = (
-  localStorageFilesInfo: FileState[]
+  localStorageFilesInfo: FileState[],
+  DBFilesInfo: FileState[]
 ): TranslationValueWithOld[] => {
-  const localStorageRaw = localStorage.getItem("currentDBvalues");
-  const localStorageDBValues: FileState[] = localStorageRaw
-    ? JSON.parse(localStorageRaw)
-    : [];
-
   // console.log("localStorageDBValues", localStorageDBValues);
 
   const changedKeys = localStorageFilesInfo.flatMap((file) =>
@@ -31,7 +27,7 @@ export const filterTranslationKeys = (
       .filter((key) => key.isChanged)
       .map((key) => {
         // Find the corresponding key in the localStorageDBValues
-        const old_value = findKeyById(localStorageDBValues, key.id);
+        const old_value = findKeyById(DBFilesInfo, key.id);
         // console.log("DBKey:", DBKey);
         // console.log("Key:", key);
         // const old_value = DBKey ? DBKey.value : null;

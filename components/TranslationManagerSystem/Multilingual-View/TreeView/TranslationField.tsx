@@ -27,16 +27,18 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   const [openResetDialog, setOpenResetDialog] = React.useState(false);
 
   const { fullKeyPath } = useKeyStore();
-  const { updateKeyChanged } = useEditAllFileStore();
-  const localStorageDBValues = useMemo(() => {
-    return localStorage.getItem("currentDBvalues")
-      ? JSON.parse(localStorage.getItem("currentDBvalues") as string)
-      : [];
-  }, [data]);
+  const { updateKeyChanged, DBFilesInfo } = useEditAllFileStore();
+
+  //**todo: localStorage is not defined in server-side rendering
+  // const localStorageDBValues = useMemo(() => {
+  //   return localStorage.getItem("currentDBvalues")
+  //     ? JSON.parse(localStorage.getItem("currentDBvalues") as string)
+  //     : [];
+  // }, [data]);
 
   const DBValue = useMemo(
-    () => findKeyStateByIdAcrossFiles(localStorageDBValues, data.id),
-    [data.id, localStorageDBValues]
+    () => findKeyStateByIdAcrossFiles(DBFilesInfo, data.id),
+    [data.id, DBFilesInfo]
   );
 
   // console.log("DBValue:, Local/state Data:", DBValue?.value, "/", data.value);

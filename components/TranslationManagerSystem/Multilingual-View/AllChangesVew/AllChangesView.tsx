@@ -5,13 +5,13 @@ import {
 } from "@/utils/languages/processData";
 import { Box, Stack } from "@mui/material";
 import React, { useMemo } from "react";
-import TranslationField from "./TreeView/TranslationField";
+import TranslationField from "../TreeView/TranslationField";
 import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 
 const AllChangesView = () => {
-  const { filesInfo } = useEditAllFileStore();
+  const { filesInfo, DBFilesInfo } = useEditAllFileStore();
   const changedKeys = useMemo(
-    () => filterTranslationKeys(filesInfo),
+    () => filterTranslationKeys(filesInfo, DBFilesInfo),
     [filesInfo]
   );
   //   const sessionData = formatSessionDialogData(changedKeys);

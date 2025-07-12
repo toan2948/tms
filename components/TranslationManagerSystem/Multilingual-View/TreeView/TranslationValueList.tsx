@@ -20,12 +20,12 @@ const TranslationValueList = ({ selectedKey }: TranslationValueListProps) => {
   const [valuesState, setValuesState] = React.useState<TranslationValue[]>([]);
   const [showValueList, setShowValueList] = React.useState(false);
 
-  const { filesInfo } = useEditAllFileStore();
+  const { filesInfo, DBFilesInfo } = useEditAllFileStore();
 
   //this changedKeys is used as a dependent factor in useEffect to update valuesState when the state FilesInfo is changed
   //filesInfo can not be used directly in useEffect because it will cause a bug as filesInfo is a dynamic state that can change the size of dependencies array of the useEffect
   const changedKeys = useMemo(
-    () => filterTranslationKeys(filesInfo),
+    () => filterTranslationKeys(filesInfo, DBFilesInfo),
     [filesInfo]
   );
 

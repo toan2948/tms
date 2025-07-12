@@ -15,7 +15,7 @@ import { SelectChangeEvent } from "@mui/material/Select";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { SessionDialog } from "./Dialogs/SessionDialog";
 import TreeView from "./TreeView/TreeView";
-import AllChangesView from "./AllChangesView";
+import AllChangesView from "./AllChangesVew/AllChangesView";
 export const HeaderBox = styled(Stack)(({}) => ({
   width: "100%",
   borderBottom: "solid 1px black",

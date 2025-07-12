@@ -27,9 +27,10 @@ export interface SessionDialogProps {
 }
 
 export function SessionDialog({ open, onClose }: SessionDialogProps) {
-  const { filesInfo, initialSet } = useEditAllFileStore();
+  const { filesInfo, setFilesInfo, DBFilesInfo, setDBFilesInfo } =
+    useEditAllFileStore();
 
-  const changedKeys = filterTranslationKeys(filesInfo);
+  const changedKeys = filterTranslationKeys(filesInfo, DBFilesInfo);
   const sessionData = formatSessionDialogData(changedKeys);
 
   // console.log("changedKeys", changedKeys);
@@ -41,9 +42,9 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
     await updateChangedKeys(changedKeys);
     onClose(false);
     const data = await fetchAllTranslationFiles();
-    initialSet(data);
+    setFilesInfo(data);
+    setDBFilesInfo(data);
     localStorage.setItem("translationEdits", JSON.stringify(data));
-    localStorage.setItem("currentDBvalues", JSON.stringify(data));
     toast.success("Saved to DB!");
   };
 

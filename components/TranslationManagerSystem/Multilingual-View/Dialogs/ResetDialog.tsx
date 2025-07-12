@@ -37,16 +37,11 @@ export function ResetDialog({
     onClose(false);
   };
   const { fullKeyPath } = useKeyStore();
-  const { updateKeyChanged } = useEditAllFileStore();
-  const localStorageDBValues = React.useMemo(() => {
-    return localStorage.getItem("currentDBvalues")
-      ? JSON.parse(localStorage.getItem("currentDBvalues") as string)
-      : [];
-  }, [data]);
+  const { updateKeyChanged, DBFilesInfo } = useEditAllFileStore();
 
   const DBValue = React.useMemo(
-    () => findKeyStateByIdAcrossFiles(localStorageDBValues, data.id),
-    [data.id, localStorageDBValues]
+    () => findKeyStateByIdAcrossFiles(DBFilesInfo, data.id),
+    [data.id, DBFilesInfo]
   );
   const handleReset = () => {
     // console.log("Resetting value to DBValue:", DBValue?.value, value);

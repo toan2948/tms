@@ -3,16 +3,23 @@ import { create } from "zustand";
 
 type AllFileState = {
   filesInfo: FileState[];
-  initialSet: (files: FileState[]) => void;
+  DBFilesInfo: FileState[];
+  setFilesInfo: (files: FileState[]) => void;
   updateKeyChanged: (editedKey: KeyState) => void;
+  setDBFilesInfo: (files: FileState[]) => void;
   reset: () => void;
 };
 
 export const useEditAllFileStore = create<AllFileState>((set, get) => ({
   filesInfo: [],
-  initialSet: (files: FileState[]) =>
+  DBFilesInfo: [],
+  setFilesInfo: (files: FileState[]) =>
     set(() => ({
       filesInfo: files,
+    })),
+  setDBFilesInfo: (files: FileState[]) =>
+    set(() => ({
+      DBFilesInfo: files,
     })),
   updateKeyChanged: (editedKey: KeyState) => {
     set((state) => ({
