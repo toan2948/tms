@@ -44,14 +44,7 @@ export async function fetchTranslationKeysByFilenameAndLanguage(
   const { data: keys, error: keyError } = await supabase
     .from("translation_keys")
     .select(
-      `
-      id,
-      file_id,
-      parent_id,
-      key_path_segment,
-      full_key_path,
-      level
-    `
+      "id, file_id, parent_id, key_path_segment, full_key_path, level, has_children"
     )
     .eq("file_id", file.id)
     .order("level", { ascending: true });
@@ -85,7 +78,9 @@ export async function fetchAllTranslationFiles() {
   // Fetch all keys for these files
   const { data: keys, error: keysError } = await supabase
     .from("translation_keys")
-    .select("file_id, full_key_path, value, id, version, last_edited_at")
+    .select(
+      "file_id, full_key_path, value, id, version, last_edited_at, has_children"
+    )
     .in("file_id", fileIds);
 
   if (keysError) {
@@ -103,6 +98,7 @@ export async function fetchAllTranslationFiles() {
         isChanged: boolean;
         version: number | null;
         last_edited_at: Date | null;
+        has_children: boolean;
       }>
     >
   >((acc, k) => {
@@ -114,6 +110,7 @@ export async function fetchAllTranslationFiles() {
       version: k.version,
       last_edited_at: k.last_edited_at,
       isChanged: false, // default false for now
+      has_children: k.has_children,
     });
     return acc;
   }, {});
@@ -155,8 +152,6 @@ export async function updateChangedKeys(values: TranslationValue[]) {
       throw result.error;
     }
   }
-
-  console.log("All keys updated successfully", results);
 
   return results.map((r) => r.data).flat();
 }

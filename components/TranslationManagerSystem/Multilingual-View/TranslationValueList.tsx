@@ -18,6 +18,7 @@ const TranslationValueList = ({ selectedKey }: TranslationValueListProps) => {
   const { fullKeyPath } = useKeyStore();
 
   const [valuesState, setValuesState] = React.useState<TranslationValue[]>([]);
+  const [showValueList, setShowValueList] = React.useState(false);
 
   const { filesInfo } = useEditAllFileStore();
 
@@ -38,21 +39,28 @@ const TranslationValueList = ({ selectedKey }: TranslationValueListProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileNameState, fullKeyPath, selectedKey, changedKeys]); //valuesState in this condition will cause infinite loop
 
-  // useEffect(() => {
-  //   console.log("valuesState", valuesState);
-  // }, [valuesState]);
+  useEffect(() => {
+    console.log("valuesState", valuesState);
+    if (valuesState.find((e) => e.has_children === true)) {
+      setShowValueList(false);
+    } else {
+      setShowValueList(true);
+    }
+  }, [valuesState]);
 
-  return (
-    <Stack direction={"row"} width={"100%"} sx={{ overflowY: "scroll" }}>
-      <List sx={{ width: "100%" }}>
-        {/* //todo: note- if key= e.key, there will be an absurd rendering */}
+  if (showValueList) {
+    return (
+      <Stack direction={"row"} width={"100%"} sx={{ overflowY: "scroll" }}>
+        <List sx={{ width: "100%" }}>
+          {/* //todo: note- if key= e.key, there will be an absurd rendering */}
 
-        {valuesState.map((e, index) => (
-          <TranslationField index={index} key={index} data={e} />
-        ))}
-      </List>
-    </Stack>
-  );
+          {valuesState.map((e, index) => (
+            <TranslationField index={index} key={index} data={e} />
+          ))}
+        </List>
+      </Stack>
+    );
+  } else return null;
 };
 
 export default TranslationValueList;

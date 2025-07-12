@@ -36,7 +36,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
     [data.id, localStorageDBValues]
   );
 
-  console.log("DBValue:, Local/state Data:", DBValue?.value, "/", data.value);
+  // console.log("DBValue:, Local/state Data:", DBValue?.value, "/", data.value);
   const [isResetButtonEnabled, setIsResetButtonEnabled] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -51,6 +51,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
       value: value,
       version: data.version ? data.version + 1 : 1,
       last_edited_at: new Date(),
+      has_children: data.has_children,
     });
     setIsSaveButtonEnabled(false);
     setIsResetButtonEnabled(true);
@@ -67,6 +68,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
       last_edited_at: DBValue?.last_edited_at
         ? new Date(DBValue.last_edited_at)
         : new Date(),
+      has_children: data.has_children,
     });
     setValue(DBValue?.value ?? "");
     setIsSaveButtonEnabled(false);

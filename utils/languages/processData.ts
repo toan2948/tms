@@ -7,7 +7,9 @@ import {
   TranslationValue,
 } from "@/types/translation";
 
-export const filterTranslationKeys = (localStorageFilesInfo: FileState[]) => {
+export const filterTranslationKeys = (
+  localStorageFilesInfo: FileState[]
+): TranslationValue[] => {
   const changedKeys: TranslationValue[] = localStorageFilesInfo.flatMap(
     (file) =>
       file.keys
@@ -21,6 +23,7 @@ export const filterTranslationKeys = (localStorageFilesInfo: FileState[]) => {
           filename: file.fileName,
           version: key.version,
           last_edited_at: key.last_edited_at,
+          has_children: key.has_children,
         }))
   );
   return changedKeys;
@@ -90,7 +93,7 @@ export const getTranslationKeys = (
   fileN: string,
   path: string,
   files: FileState[]
-) => {
+): TranslationValue[] => {
   const searchedFiles = files.filter((e) => e.fileName === fileN);
   if (searchedFiles.length === 0) return [];
   const result: TranslationValue[] = [];
@@ -106,6 +109,7 @@ export const getTranslationKeys = (
         filename: element.fileName,
         version: foundKeys[0].version,
         last_edited_at: foundKeys[0].last_edited_at,
+        has_children: foundKeys[0].has_children,
       });
     }
   });

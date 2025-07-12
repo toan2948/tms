@@ -6,8 +6,8 @@ export interface TranslationKey {
   value: string | null;
   full_key_path: string;
   level: number;
-  added_at: string; // ISO date string
-  last_edited_at: string; // ISO date string
+  added_at: Date | null; // ISO date string
+  last_edited_at: Date | null;
   version: number;
   status: "done" | "error" | "missing";
   score: number | null;
@@ -25,6 +25,7 @@ export interface TranslationTreeKey {
   key_path_segment: string;
   full_key_path: string;
   level: number;
+  has_children: boolean;
 
   // For building UI trees
   children?: TranslationTreeKey[];
@@ -36,6 +37,7 @@ export type KeyState = {
   value: string | null;
   version: number | null;
   last_edited_at: Date | null;
+  has_children: boolean;
 };
 export interface FileState extends LanguageInfo {
   fileName: string; //or fileID
@@ -57,4 +59,5 @@ export type TranslationValue = {
   filename: string;
   version: number | null;
   last_edited_at: Date | null;
+  has_children: boolean;
 };
