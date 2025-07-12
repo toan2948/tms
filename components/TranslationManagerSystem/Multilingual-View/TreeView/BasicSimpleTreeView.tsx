@@ -28,35 +28,63 @@ export default function BasicSimpleTreeView({
       {node.children?.map((child) => renderTree(child))}
     </TreeItem>
   );
-  const [expanded, setExpanded] = React.useState<string[]>([]);
-  const handleExpandItem = (id: string) => {
-    setExpanded((prev) => [...new Set([...prev, id])]);
+  const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
+  const handleItemFocus = () => {
+    setTimeout(() => {
+      const fakeSyntheticEvent = {
+        currentTarget: null,
+        preventDefault: () => {},
+        stopPropagation: () => {},
+        nativeEvent: {} as Event,
+      } as unknown as React.SyntheticEvent;
+      apiRef.current?.focusItem(
+        fakeSyntheticEvent,
+        "4f89fb90-b5ff-4179-b587-faf2f94dd7c3"
+      );
+    }, 100);
   };
-  // console.log("expanded", expanded);
+  const expandToItem = (
+    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+    targetId: string
+  ) => {
+    const ancestors = [
+      "8eb713c7-7e7e-45e9-b04c-adbbdc25b8fe",
+      "88168632-a715-4df0-ad22-0521f969f48d",
+    ];
+    const newExpanded = Array.from(
+      new Set([...expandedItems, ...ancestors, targetId])
+    );
+    setExpandedItems(newExpanded);
 
-  // React.useEffect(() => {
-  //   console.log(
-  //     "apiRef",
-  //     apiRef.current?.getItem(selectedItem),
+    // Optionally, focus the item:
 
-  // }, [selectedItem]);
+    // apiRef.current?.focusItem(event, targetId);
+    // handleItemFocus();
+  };
 
   return (
     <Box sx={{ minWidth: 250, overflowY: "scroll" }}>
       <Button
-        onClick={() => handleExpandItem("8eb713c7-7e7e-45e9-b04c-adbbdc25b8fe")}
+        onClick={(event) => {
+          expandToItem(event, "4f89fb90-b5ff-4179-b587-faf2f94dd7c3");
+          handleItemFocus(); // Delay to ensure the item is expanded before focusing
+        }}
       >
-        Expand Item
+        Expand/focus Item
       </Button>
+
       <SimpleTreeView
+        onItemFocus={handleItemFocus}
         aria-label='custom tree'
         apiRef={apiRef}
         onItemClick={(event, itemId) => {
           setSelectedKey(itemId);
           console.log("Selected :", itemId);
         }}
-        expandedItems={expanded}
-        onExpandedItemsChange={(event, ids) => setExpanded(ids)}
+        expandedItems={expandedItems}
+        onExpandedItemsChange={(event, newExpandedItems) => {
+          setExpandedItems(newExpandedItems);
+        }}
       >
         {data.map((node) => renderTree(node))}
       </SimpleTreeView>
