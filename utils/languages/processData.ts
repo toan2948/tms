@@ -20,17 +20,12 @@ export const filterTranslationKeys = (
   localStorageFilesInfo: FileState[],
   DBFilesInfo: FileState[]
 ): TranslationValueWithOld[] => {
-  // console.log("localStorageDBValues", localStorageDBValues);
-
   const changedKeys = localStorageFilesInfo.flatMap((file) =>
     file.keys
       .filter((key) => key.isChanged)
       .map((key) => {
         // Find the corresponding key in the localStorageDBValues
         const old_value = findKeyById(DBFilesInfo, key.id);
-        // console.log("DBKey:", DBKey);
-        // console.log("Key:", key);
-        // const old_value = DBKey ? DBKey.value : null;
 
         return {
           id: key.id,
@@ -66,8 +61,6 @@ export const formatSessionDialogData = (changedKeys: TranslationValue[]) => {
     }
     groupedMap.get(groupKey)!.languages.add(item.language_code);
   });
-
-  // console.log("Grouped Map:", groupedMap);
 
   // 3. Assign a color per filename
   const filenameToColor = new Map<string, string>();
@@ -115,7 +108,6 @@ export const getTranslationKeys = (
   files: FileState[],
   selectedKey: string | null = null
 ): TranslationValue[] => {
-  console.log("getTranslationKeys called with:", selectedKey);
   if (!selectedKey) return [];
   const searchedFiles = files.filter((e) => e.fileName === fileN);
   if (searchedFiles.length === 0) return [];

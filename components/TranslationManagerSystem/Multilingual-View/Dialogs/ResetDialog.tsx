@@ -32,7 +32,6 @@ export function ResetDialog({
   setIsSaveButtonEnabled,
   setIsResetButtonEnabled,
 }: DialogProps) {
-  // console.log("changedKeys", changedKeys);
   const handleClose = () => {
     onClose(false);
   };
@@ -59,6 +58,7 @@ export function ResetDialog({
     setValue(DBValue?.value ?? "");
     setIsSaveButtonEnabled(false);
     setIsResetButtonEnabled(false);
+    onClose(false);
   };
 
   return (

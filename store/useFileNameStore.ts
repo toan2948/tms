@@ -1,3 +1,4 @@
+import { TranslationTreeKey } from "@/types/translation";
 import { create } from "zustand";
 
 type FilenameState = {
@@ -14,12 +15,17 @@ export const useFileNameStore = create<FilenameState>((set) => ({
 
 type KeyState = {
   fullKeyPath: string;
-  changeFullKeyPath: (newPath: string) => void;
+  updateFullKeyPathState: (newPath: string) => void;
+  DBkeys: TranslationTreeKey[];
+  setDBKeys: (keys: TranslationTreeKey[]) => void;
   reset: () => void;
 };
 
 export const useKeyStore = create<KeyState>((set) => ({
   fullKeyPath: "",
-  changeFullKeyPath: (newName: string) => set(() => ({ fullKeyPath: newName })),
+  DBkeys: [],
+  updateFullKeyPathState: (newName: string) =>
+    set(() => ({ fullKeyPath: newName })),
+  setDBKeys: (keys: TranslationTreeKey[]) => set(() => ({ DBkeys: keys })),
   reset: () => set({ fullKeyPath: "" }),
 }));

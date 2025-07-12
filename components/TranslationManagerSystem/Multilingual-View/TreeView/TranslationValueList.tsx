@@ -10,10 +10,10 @@ import {
   getTranslationKeys,
 } from "@/utils/languages/processData";
 interface TranslationValueListProps {
-  selectedKey: string | null;
+  path_segment: string | null;
 }
 
-const TranslationValueList = ({ selectedKey }: TranslationValueListProps) => {
+const TranslationValueList = ({ path_segment }: TranslationValueListProps) => {
   const { fileNameState } = useFileNameStore();
   const { fullKeyPath } = useKeyStore();
 
@@ -29,25 +29,16 @@ const TranslationValueList = ({ selectedKey }: TranslationValueListProps) => {
     [filesInfo]
   );
 
-  console.log(
-    "TranslationValueList - selectedKey:",
-    selectedKey,
-    fullKeyPath,
-    fileNameState,
-    changedKeys
-  );
-
   useEffect(() => {
     // const localStorageFilesInfo = localStorage.getItem("translationEdits")
     //   ? JSON.parse(localStorage.getItem("translationEdits") as string)
     //   : [];
-    // // console.log("Local Storage Files Info:", localStorageFilesInfo);
 
     setValuesState(
-      getTranslationKeys(fileNameState, fullKeyPath, filesInfo, selectedKey)
+      getTranslationKeys(fileNameState, fullKeyPath, filesInfo, path_segment)
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fileNameState, fullKeyPath, selectedKey, changedKeys]); //valuesState in this condition will cause infinite loop
+  }, [fileNameState, fullKeyPath, path_segment, changedKeys]); //valuesState in this condition will cause infinite loop
 
   useEffect(() => {
     console.log("valuesState", valuesState);

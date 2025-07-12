@@ -11,13 +11,13 @@ import {
 } from "@/utils/languages/dataFunctions";
 import { buildKeyTreeFromFlatList } from "@/utils/languages/processData";
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
-import { useFileNameStore } from "@/store/useFileNameStore";
+import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
 
 const TreeView = () => {
   const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
-
-  const [selectedKey, setSelectedKey] = useState<string | null>(null);
-
+  const { DBkeys, setDBKeys, updateFullKeyPathState } = useKeyStore();
+  const [selectedKeyID, setSelectedKeyID] = useState<string | null>(null);
+  const [path_segment, setPathSegment] = useState<string | null>(null);
   const { fileNameState } = useFileNameStore();
   const { setFilesInfo, setDBFilesInfo } = useEditAllFileStore();
 
@@ -44,8 +44,6 @@ const TreeView = () => {
     fetchKeysAndSaveToLocal();
   }, [fileNameState]);
 
-  // console.log("Files Info:", filesInfo);
-
   useEffect(() => {
     async function fetchKeysForBuildingTree() {
       try {
@@ -53,9 +51,9 @@ const TreeView = () => {
           fileNameState,
           "en" //it does not matter which language we use here, as we are fetching all keys
         );
+        setDBKeys(keys);
         const tree = buildKeyTreeFromFlatList(keys);
         setTreeKeys(tree);
-        // console.log("Fetched Keys:", keys);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -63,6 +61,16 @@ const TreeView = () => {
 
     fetchKeysForBuildingTree();
   }, [fileNameState]);
+
+  useEffect(() => {
+    const key = DBkeys.find((key) => key.id === selectedKeyID);
+    if (key) {
+      updateFullKeyPathState(key.full_key_path);
+      setPathSegment(key.key_path_segment);
+    } else {
+      setSelectedKeyID(null);
+    }
+  }, [selectedKeyID]);
   return (
     <>
       <Stack
@@ -76,8 +84,8 @@ const TreeView = () => {
             <Typo1424 textAlign={"center"}>Keys</Typo1424>
           </HeaderBox>
           <BasicSimpleTreeView
-            selectedKey={selectedKey}
-            setSelectedKey={setSelectedKey}
+            selectedKey={selectedKeyID}
+            setSelectedKey={setSelectedKeyID}
             data={treeKeys}
           />
         </Stack>
@@ -85,9 +93,9 @@ const TreeView = () => {
           <HeaderBox>
             <Typo1424 textAlign={"center"}>Language</Typo1424>
           </HeaderBox>
-          <Typo1424>Key to translate: {selectedKey}</Typo1424>
+          <Typo1424>Key to translate: {path_segment}</Typo1424>
 
-          <TranslationValueList selectedKey={selectedKey} />
+          <TranslationValueList path_segment={path_segment} />
         </Stack>
       </Stack>
     </>

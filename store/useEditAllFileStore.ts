@@ -2,6 +2,7 @@ import { FileState, KeyState } from "@/types/translation";
 import { create } from "zustand";
 
 type AllFileState = {
+  //these states are to handle the error: localStorage is not defined (in case only localStorage is used)
   filesInfo: FileState[];
   DBFilesInfo: FileState[];
   setFilesInfo: (files: FileState[]) => void;
@@ -24,7 +25,6 @@ export const useEditAllFileStore = create<AllFileState>((set, get) => ({
   updateKeyChanged: (editedKey: KeyState) => {
     set((state) => ({
       filesInfo: state.filesInfo.map((file) => {
-        // console.log("editedKey in updateKeyChanged", editedKey);
         const updatedKeys = file.keys.map((key) => {
           if (key.value === editedKey.value) {
             return { ...key, isChanged: false };

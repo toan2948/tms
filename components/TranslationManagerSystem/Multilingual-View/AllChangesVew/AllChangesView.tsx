@@ -14,16 +14,12 @@ const AllChangesView = () => {
     () => filterTranslationKeys(filesInfo, DBFilesInfo),
     [filesInfo]
   );
-  //   const sessionData = formatSessionDialogData(changedKeys);
-  // console.log("Session Data:", sessionData);
   //
-  //   console.log("Changed Keys:", changedKeys);
 
   const groupedKeys = useMemo(
     () => groupTranslationValues(changedKeys),
     [changedKeys]
   );
-  //   console.log("Grouped Keys:", groupedKeys);
 
   return (
     <Box>

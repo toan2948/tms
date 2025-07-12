@@ -51,8 +51,6 @@ export async function fetchTranslationsByPathAndFilename(
     );
   }
 
-  // console.log("Fetched Translations:", data);
-
   return data;
 }
 
@@ -88,11 +86,8 @@ export async function TStep(
     )
     .eq("filename", filename);
 
-  // console.log("TStep Data:", data);
-
   const keys = [];
   if (data) {
-    // console.log("Data:", data);
     for (const item of data) {
       const key = fetchKeyValue(item.id, fullKeyPath);
       keys.push({
