@@ -37,7 +37,7 @@ const TranslationValueList = ({ path_segment }: TranslationValueListProps) => {
   }, [fileNameState, fullKeyPath, path_segment, changedKeys]); //valuesState in this condition will cause infinite loop
 
   useEffect(() => {
-    console.log("valuesState", valuesState);
+    // console.log("valuesState", valuesState);
     if (valuesState.find((e) => e.has_children === true)) {
       setShowValueList(false);
     } else {

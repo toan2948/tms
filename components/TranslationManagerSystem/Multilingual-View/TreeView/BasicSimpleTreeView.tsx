@@ -16,7 +16,6 @@ type TreeViewProps = {
 export default function BasicSimpleTreeView({
   data,
   setSelectedKey,
-  selectedKey,
 }: TreeViewProps) {
   // const [selectedItem, setSelectedItem] = React.useState<string>("");
   const apiRef = useTreeViewApiRef();
@@ -62,7 +61,7 @@ export default function BasicSimpleTreeView({
     setSelectedKey(focusedKey.id);
   }, [expandedItems, focusedKey.id, setSelectedKey]);
 
-  console.log("selectedKey", selectedKey);
+  // console.log("selectedKey", selectedKey);
 
   return (
     <Box sx={{ minWidth: 250, overflowY: "scroll" }}>
@@ -72,7 +71,6 @@ export default function BasicSimpleTreeView({
         apiRef={apiRef}
         onItemClick={(event, itemId) => {
           setSelectedKey(itemId);
-          console.log("Selected :", itemId);
         }}
         expandedItems={expandedItems}
         onExpandedItemsChange={(event, newExpandedItems) => {

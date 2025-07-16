@@ -94,7 +94,11 @@ const MultilingualView = () => {
 
   return (
     <>
-      <SessionDialog open={openDialog} onClose={setOpenDialog} />
+      <SessionDialog
+        open={openDialog}
+        onClose={setOpenDialog}
+        setSeeAllChanges={setSeeAllChanges}
+      />
       <Stack direction={"row"} justifyContent={"space-between"}>
         <FormControl
           sx={{

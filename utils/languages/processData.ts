@@ -88,12 +88,23 @@ export const filterTranslationKeys = (
 
   return returnedKeys;
 };
+const colorPalette = [
+  "#2196f3",
+  "#4caf50",
+  "#ff9800",
+  "#9c27b0",
+  "#00bcd4",
+  "#e91e63",
+  "#795548",
+  "#607d8b",
+  "#ffc107",
+];
 
 export const formatSessionDialogData = (changedKeys: TranslationValue[]) => {
   // 2. Group language codes by "filename: fullKeyPath"
   const groupedMap = new Map<
     string,
-    { filename: string; languages: Set<string> }
+    { filename: string; fullKeyPath: string; languages: Set<string> }
   >();
 
   changedKeys.forEach((item) => {
@@ -101,6 +112,7 @@ export const formatSessionDialogData = (changedKeys: TranslationValue[]) => {
     if (!groupedMap.has(groupKey)) {
       groupedMap.set(groupKey, {
         filename: item.filename,
+        fullKeyPath: item.fullKeyPath,
         languages: new Set(),
       });
     }
@@ -109,18 +121,6 @@ export const formatSessionDialogData = (changedKeys: TranslationValue[]) => {
 
   // 3. Assign a color per filename
   const filenameToColor = new Map<string, string>();
-  const colorPalette = [
-    "#f44336",
-    "#2196f3",
-    "#4caf50",
-    "#ff9800",
-    "#9c27b0",
-    "#00bcd4",
-    "#e91e63",
-    "#795548",
-    "#607d8b",
-    "#ffc107",
-  ];
 
   let colorIndex = 0;
   for (const { filename } of groupedMap.values()) {
@@ -137,13 +137,17 @@ export const formatSessionDialogData = (changedKeys: TranslationValue[]) => {
   type ColoredChangedKey = {
     label: string;
     color: string;
+    filename: string;
+    fullKeyPath: string;
   };
 
   const changedKeyStrings: ColoredChangedKey[] = Array.from(
     groupedMap.entries()
-  ).map(([key, { filename, languages }]) => ({
+  ).map(([key, { filename, languages, fullKeyPath }]) => ({
     label: `${key} -- ${Array.from(languages).join(", ")}`,
     color: filenameToColor.get(filename)!,
+    filename: filename,
+    fullKeyPath: fullKeyPath,
   }));
   return changedKeyStrings;
 };
@@ -231,6 +235,7 @@ export type GroupedTranslationValues = {
   filename: string;
   fullKeyPath: string;
   list: TranslationValueWithOld[];
+  color: string; // color for the filename
 };
 
 export const groupTranslationValues = (
@@ -246,13 +251,31 @@ export const groupTranslationValues = (
         filename: item.filename,
         fullKeyPath: item.fullKeyPath,
         list: [item],
+        color: "", // to be assigned later
       });
     } else {
       groupedMap.get(key)!.list.push(item);
     }
   });
 
-  return Array.from(groupedMap.values());
+  const groups = Array.from(groupedMap.values());
+  const filenameColorMap = new Map<string, string>();
+  let colorIndex = 0;
+
+  for (const group of groups) {
+    const filename = group.filename;
+    if (!filenameColorMap.has(filename)) {
+      const color = colorPalette[colorIndex % colorPalette.length];
+      filenameColorMap.set(filename, color);
+      colorIndex++;
+    }
+  }
+
+  // Attach color to each group based on its filename
+  return groups.map((group) => ({
+    ...group,
+    color: filenameColorMap.get(group.filename)!,
+  }));
 };
 
 export function findParentIdsToRootByFullKeyPath(
@@ -261,7 +284,6 @@ export function findParentIdsToRootByFullKeyPath(
   language_code = "en", // default to English,
   fileName: string
 ): string[] {
-  console.log("files:", files);
   // Find the file for the language_code (English default)
   const file = files.find(
     (f) => f.language_code === language_code && f.fileName === fileName

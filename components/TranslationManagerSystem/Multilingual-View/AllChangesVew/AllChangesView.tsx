@@ -66,7 +66,7 @@ const AllChangesView = ({
           <Stack key={index} sx={{ margin: "30px 0" }}>
             <Typo1624
               weight={600}
-              color='blue'
+              color={group.color}
               sx={{ cursor: "pointer" }}
               onClick={() => handleGroupClick(group)}
             >
