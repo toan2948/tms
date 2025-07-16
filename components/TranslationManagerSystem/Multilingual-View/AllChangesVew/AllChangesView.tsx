@@ -6,10 +6,11 @@ import {
   groupTranslationValues,
 } from "@/utils/languages/processData";
 import { Box, Stack } from "@mui/material";
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import TranslationField from "../TreeView/TranslationField";
 import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
+import { useFileNameStore } from "@/store/useFileNameStore";
 
 const AllChangesView = ({
   setSeeAllChanges,
@@ -19,6 +20,7 @@ const AllChangesView = ({
   const { filesInfo, DBFilesInfo } = useEditAllFileStore();
 
   const { setFocusedKey, setParentIDs } = useTreeKeyStore();
+  const { changeFileName } = useFileNameStore();
   const changedKeys = useMemo(
     () => filterTranslationKeys(filesInfo, DBFilesInfo),
     [filesInfo]
@@ -29,28 +31,31 @@ const AllChangesView = ({
     [changedKeys]
   );
 
-  useEffect(() => {
-    console.log("changedKeys Keys:", changedKeys);
-  }, [changedKeys]);
+  // useEffect(() => {
+  //   console.log("changedKeys Keys:", changedKeys);
+  // }, [changedKeys]);
 
   const handleGroupClick = (group: GroupedTranslationValues) => {
     //only need a key, no need to care about which language
     const fullKeyPath = group.list[0].fullKeyPath;
     const filename = group.filename;
-    console.log("Group clicked:", group);
-    console.log("info clicked:", fullKeyPath, filename);
-    // console.log(
-    //   "DB keys",
-    //   DBFilesInfo.filter((file) => file.fileName === filename)
-    // );
+
+    changeFileName(filename); //to build a tree corresponding to the filename
+
     // This is to ensure that the view updates after the state change
 
-    const IDs = findParentIdsToRootByFullKeyPath(fullKeyPath, DBFilesInfo);
-    console.log(" IDs to root:", IDs);
+    const IDs = findParentIdsToRootByFullKeyPath(
+      fullKeyPath,
+      DBFilesInfo,
+      "en",
+      filename
+    );
+    // console.log(" IDs to root:", IDs);
+
     setFocusedKey(IDs[0]);
     const parentIDs = Array.isArray(IDs) ? IDs.slice(1).reverse() : [];
     setParentIDs(parentIDs);
-    console.log("Parent IDs :", parentIDs);
+    // console.log("Parent IDs :", parentIDs);
     setSeeAllChanges(false);
   };
 

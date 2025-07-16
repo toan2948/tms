@@ -10,7 +10,7 @@ import {
   Box,
 } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
-import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
+import { Typo1424, Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 import { useKeyStore } from "@/store/useFileNameStore";
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
 import { TranslationValue, TranslationValueWithOld } from "@/types/translation";
@@ -100,6 +100,8 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
           display: "flex",
           width: "100%",
           alignItems: "stretch", // this is CRITICAL
+          paddingBottom: "15px",
+          paddingTop: "15px",
           backgroundColor: index % 2 !== 0 ? "#d3d3d3" : "#F5F5F5", // Using a brighter color than grey
         }}
       >
@@ -124,13 +126,17 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
         >
           <Grid container>
             <Grid
-              size={2}
-              sx={{ borderRight: "1px solid", borderColor: "divider", p: 2 }}
+              size={1.5}
+              sx={{
+                borderRight: "1px solid",
+                borderColor: "divider",
+                padding: "4px 0px 4px 16px",
+              }}
             >
               <Typography>{isResetButtonEnabled && "New"}</Typography>
             </Grid>
 
-            <Grid size={10} sx={{ p: 2 }}>
+            <Grid size={10.5} sx={{ padding: "4px 4px 4px 16px" }}>
               <TextareaAutosize
                 minRows={2}
                 maxRows={2}
@@ -148,13 +154,17 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
           {isResetButtonEnabled && (
             <Grid container>
               <Grid
-                size={2}
-                sx={{ borderRight: "1px solid", borderColor: "divider", p: 2 }}
+                size={1.5}
+                sx={{
+                  borderRight: "1px solid",
+                  borderColor: "divider",
+                  padding: "0px 0px 4px 16px",
+                }}
               >
                 <Typography>Old</Typography>
               </Grid>
-              <Grid size={10} sx={{ p: 2 }}>
-                <Typo1424 color={"red"}>{DBValue?.value}</Typo1424>
+              <Grid size={10.5} sx={{ padding: "0px 0px 4px 16px" }}>
+                <Typo1624 color={"red"}>{DBValue?.value}</Typo1624>
               </Grid>
             </Grid>
           )}

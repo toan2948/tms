@@ -5,7 +5,7 @@ import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import { useTreeViewApiRef } from "@mui/x-tree-view/hooks";
 import { TranslationTreeKey } from "@/types/translation";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { Button } from "@mui/material";
+import { useFileNameStore } from "@/store/useFileNameStore";
 
 type TreeViewProps = {
   selectedKey: string | null;
@@ -16,13 +16,14 @@ type TreeViewProps = {
 export default function BasicSimpleTreeView({
   data,
   setSelectedKey,
+  selectedKey,
 }: TreeViewProps) {
   // const [selectedItem, setSelectedItem] = React.useState<string>("");
   const apiRef = useTreeViewApiRef();
   const { focusedKey, parentIDs } = useTreeKeyStore();
+  const { fileNameState } = useFileNameStore();
   const renderTree = (node: TranslationTreeKey) => (
     <TreeItem
-      // itemId={`${node.id}|${node.full_key_path}|${node.level}`}
       itemId={node.id}
       label={node.key_path_segment}
       key={node.id + node.full_key_path}
@@ -31,65 +32,40 @@ export default function BasicSimpleTreeView({
     </TreeItem>
   );
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
-  const handleItemFocus = () => {
-    setTimeout(() => {
+
+  React.useEffect(() => {
+    if (!focusedKey?.id) return;
+
+    // Expand all parent IDs plus the focused item
+    const newExpanded = Array.from(
+      new Set([...expandedItems, ...parentIDs, focusedKey.id])
+    );
+    setExpandedItems(newExpanded);
+    setSelectedKey(focusedKey.id);
+
+    // Focus after a short delay to ensure the item is expanded
+    const timeout = setTimeout(() => {
       const fakeSyntheticEvent = {
         currentTarget: null,
         preventDefault: () => {},
         stopPropagation: () => {},
         nativeEvent: {} as Event,
       } as unknown as React.SyntheticEvent;
-      // apiRef.current?.focusItem(
-      //   fakeSyntheticEvent,
-      //   "4f89fb90-b5ff-4179-b587-faf2f94dd7c3"
-      // );
 
-      // apiRef.current?.focusItem(
-      //   fakeSyntheticEvent,
-      //   "b33a359b-2dcd-40fc-a6ce-ce5533bd6fcd"
-      // );
-
-      apiRef.current?.focusItem(fakeSyntheticEvent, focusedKey.id || "");
+      apiRef.current?.focusItem(fakeSyntheticEvent, focusedKey.id);
     }, 100);
-  };
-  const expandToItem = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
-    targetId: string
-  ) => {
-    const ancestors = parentIDs;
 
-    //common.login.button
-    // const ancestors = [
-    //   "c6e71efe-c016-461a-a1b7-8d899e6b0353",
-    //   "4d528fa7-78b8-429a-8ebc-4ed55063dd7b",
-    // ];
+    return () => clearTimeout(timeout); // Cleanup on unmount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [focusedKey.id, parentIDs, fileNameState]);
+  React.useEffect(() => {
+    setSelectedKey(focusedKey.id);
+  }, [expandedItems, focusedKey.id, setSelectedKey]);
 
-    const newExpanded = Array.from(
-      new Set([...expandedItems, ...ancestors, targetId])
-    );
-    setExpandedItems(newExpanded);
-    setSelectedKey(focusedKey.id || null);
-
-    // Optionally, focus the item:
-
-    // apiRef.current?.focusItem(event, targetId);
-    // handleItemFocus();
-  };
+  console.log("selectedKey", selectedKey);
 
   return (
     <Box sx={{ minWidth: 250, overflowY: "scroll" }}>
-      <Button
-        onClick={(event) => {
-          console.log("Focused Key:", focusedKey, "Parent IDs:", parentIDs);
-
-          // expandToItem(event, "b33a359b-2dcd-40fc-a6ce-ce5533bd6fcd");
-          expandToItem(event, focusedKey.id || "");
-          handleItemFocus(); // Delay to ensure the item is expanded before focusing
-        }}
-      >
-        Expand/focus Item
-      </Button>
-
       <SimpleTreeView
         // onItemFocus={handleItemFocus}
         aria-label='custom tree'

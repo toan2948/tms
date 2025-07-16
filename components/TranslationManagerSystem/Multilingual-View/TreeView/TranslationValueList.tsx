@@ -30,10 +30,6 @@ const TranslationValueList = ({ path_segment }: TranslationValueListProps) => {
   );
 
   useEffect(() => {
-    // const localStorageFilesInfo = localStorage.getItem("translationEdits")
-    //   ? JSON.parse(localStorage.getItem("translationEdits") as string)
-    //   : [];
-
     setValuesState(
       getTranslationKeys(fileNameState, fullKeyPath, filesInfo, path_segment)
     );

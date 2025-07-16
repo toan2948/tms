@@ -147,6 +147,14 @@ export const formatSessionDialogData = (changedKeys: TranslationValue[]) => {
   }));
   return changedKeyStrings;
 };
+
+function moveEnglishToTopImmutable(
+  values: TranslationValue[]
+): TranslationValue[] {
+  const english = values.find((v) => v.language_code === "en");
+  const others = values.filter((v) => v.language_code !== "en");
+  return english ? [english, ...others] : values;
+}
 export const getTranslationKeys = (
   fileN: string,
   path: string,
@@ -174,7 +182,9 @@ export const getTranslationKeys = (
       });
     }
   });
-  return result;
+
+  const sortedResult = moveEnglishToTopImmutable(result);
+  return sortedResult;
 };
 
 export function buildKeyTreeFromFlatList(
@@ -248,10 +258,14 @@ export const groupTranslationValues = (
 export function findParentIdsToRootByFullKeyPath(
   fullKeyPath: string,
   files: FileState[],
-  language_code = "en" // default to English
+  language_code = "en", // default to English,
+  fileName: string
 ): string[] {
+  console.log("files:", files);
   // Find the file for the language_code (English default)
-  const file = files.find((f) => f.language_code === language_code);
+  const file = files.find(
+    (f) => f.language_code === language_code && f.fileName === fileName
+  );
   if (!file) return [];
 
   // Map id -> KeyState for fast parent lookup
