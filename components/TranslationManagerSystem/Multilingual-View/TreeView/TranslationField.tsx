@@ -54,9 +54,10 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
       id: data.id,
       isChanged: true,
       value: value,
-      version: data.version ? data.version + 1 : 1,
+      version: data.version,
       last_edited_at: new Date(),
       has_children: data.has_children,
+      parent_id: data.parent_id,
     });
     setIsSaveButtonEnabled(false);
     setIsResetButtonEnabled(true);

@@ -15,6 +15,8 @@ export async function fetchTranslationKeysByFilenameAndLanguage(
 ): Promise<TranslationTreeKey[]> {
   const supabase = await createClient();
 
+  //just look for keys of files in english
+
   const { data: language, error: langError } = await supabase
     .from("languages")
     .select("id")
@@ -79,7 +81,7 @@ export async function fetchAllTranslationFiles() {
   const { data: keys, error: keysError } = await supabase
     .from("translation_keys")
     .select(
-      "file_id, full_key_path, value, id, version, last_edited_at, has_children"
+      "file_id, full_key_path, value, id, version, last_edited_at, has_children, parent_id"
     )
     .in("file_id", fileIds);
 
@@ -99,6 +101,7 @@ export async function fetchAllTranslationFiles() {
         version: number | null;
         last_edited_at: Date | null;
         has_children: boolean;
+        parent_id: string | null;
       }>
     >
   >((acc, k) => {
@@ -111,6 +114,7 @@ export async function fetchAllTranslationFiles() {
       last_edited_at: k.last_edited_at,
       isChanged: false, // default false for now
       has_children: k.has_children,
+      parent_id: k.parent_id,
     });
     return acc;
   }, {});
@@ -132,12 +136,13 @@ export async function updateChangedKeys(values: TranslationValue[]) {
   const now = new Date().toISOString();
 
   // Batch update each row one-by-one (async parallel)
-  const promises = values.map(({ id, value }) =>
+  const promises = values.map(({ id, value, version }) =>
     supabase
       .from("translation_keys")
       .update({
         value,
         last_edited_at: now,
+        version: version,
       })
       .eq("id", id)
   );

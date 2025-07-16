@@ -54,6 +54,7 @@ export function ResetDialog({
         ? new Date(DBValue.last_edited_at)
         : new Date(),
       has_children: data.has_children,
+      parent_id: data.parent_id,
     });
     setValue(DBValue?.value ?? "");
     setIsSaveButtonEnabled(false);

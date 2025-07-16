@@ -1,5 +1,5 @@
 import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
-import { Stack } from "@mui/material";
+import { Button, Stack } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import { HeaderBox } from "../MultilingualView";
 import BasicSimpleTreeView from "./BasicSimpleTreeView";
@@ -51,7 +51,7 @@ const TreeView = () => {
           fileNameState,
           "en" //it does not matter which language we use here, as we are fetching all keys
         );
-        setDBKeys(keys);
+        setDBKeys(keys, fileNameState);
         const tree = buildKeyTreeFromFlatList(keys);
         setTreeKeys(tree);
       } catch (error) {
@@ -63,7 +63,12 @@ const TreeView = () => {
   }, [fileNameState]);
 
   useEffect(() => {
-    const key = DBkeys.find((key) => key.id === selectedKeyID);
+    const keysInFile = DBkeys.find((e) => e.fileName === fileNameState)?.keys;
+    if (!keysInFile) {
+      console.warn("No keys found for the current file:", fileNameState);
+      return;
+    }
+    const key = keysInFile.find((k) => k.id === selectedKeyID);
     if (key) {
       updateFullKeyPathState(key.full_key_path);
       setPathSegment(key.key_path_segment);
@@ -89,12 +94,15 @@ const TreeView = () => {
             data={treeKeys}
           />
         </Stack>
-        <Stack width={"100%"}>
+        <Stack width={"100%"} direction={"column"}>
           <HeaderBox>
             <Typo1424 textAlign={"center"}>Language</Typo1424>
           </HeaderBox>
-          <Typo1424>Key to translate: {path_segment}</Typo1424>
-
+          <Stack width={"100%"} direction={"row"}>
+            <Typo1424>Key to translate: {path_segment}</Typo1424>
+            <Button variant={"outlined"}>Delete</Button>
+            <Button variant={"outlined"}>Edit</Button>
+          </Stack>
           <TranslationValueList path_segment={path_segment} />
         </Stack>
       </Stack>

@@ -16,10 +16,24 @@ function findKeyById(files: FileState[], keyId: string): string | null {
   return null;
 }
 
+export function getEnglishKeyVersion(
+  fullKeyPath: string,
+  files: FileState[]
+): number | null {
+  const englishFile = files.find(
+    (file) => file.language_code.toLowerCase() === "en"
+  );
+  if (!englishFile) return null;
+
+  const key = englishFile.keys.find((k) => k.fullKeyPath === fullKeyPath);
+  return key ? key.version : null;
+}
+
 export const filterTranslationKeys = (
   localStorageFilesInfo: FileState[],
   DBFilesInfo: FileState[]
 ): TranslationValueWithOld[] => {
+  // 1st Step: filter out the changed keys from localStorageFilesInfo and updated version temporarily
   const changedKeys = localStorageFilesInfo.flatMap((file) =>
     file.keys
       .filter((key) => key.isChanged)
@@ -35,13 +49,44 @@ export const filterTranslationKeys = (
           language_code: file.language_code,
           language_name: file.language_name,
           filename: file.fileName,
-          version: key.version,
+          version: key.version === null ? 1 : key.version + 1, // Increment version for local changes
           last_edited_at: key.last_edited_at,
           has_children: key.has_children,
+          parent_id: key.parent_id,
         };
       })
   );
-  return changedKeys;
+
+  //2nd Step: check if english translation is also updated
+
+  const returnedKeys = changedKeys.map((key) => {
+    // Find the corresponding key in the localStorageDBValues
+    const englishVersion = getEnglishKeyVersion(key.fullKeyPath, DBFilesInfo);
+
+    const isEnglishKeyAlsoUpdated = changedKeys.find(
+      (e) => e.fullKeyPath === key.fullKeyPath && e.language_code === "en"
+    );
+    return {
+      id: key.id,
+      value: key.value,
+      old_value: key.old_value,
+      fullKeyPath: key.fullKeyPath,
+      language_code: key.language_code,
+      language_name: key.language_name,
+      filename: key.filename,
+      version: isEnglishKeyAlsoUpdated
+        ? englishVersion === null
+          ? 1
+          : englishVersion + 1
+        : englishVersion,
+      //todo: case of english and other languages are updated at the same time
+      last_edited_at: key.last_edited_at,
+      has_children: key.has_children,
+      parent_id: key.parent_id,
+    };
+  });
+
+  return returnedKeys;
 };
 
 export const formatSessionDialogData = (changedKeys: TranslationValue[]) => {
@@ -125,6 +170,7 @@ export const getTranslationKeys = (
         version: foundKeys[0].version,
         last_edited_at: foundKeys[0].last_edited_at,
         has_children: foundKeys[0].has_children,
+        parent_id: foundKeys[0].parent_id,
       });
     }
   });
@@ -171,7 +217,7 @@ export function findKeyStateByIdAcrossFiles(
   }
   return undefined;
 }
-type GroupedTranslationValues = {
+export type GroupedTranslationValues = {
   filename: string;
   fullKeyPath: string;
   list: TranslationValueWithOld[];
@@ -198,3 +244,33 @@ export const groupTranslationValues = (
 
   return Array.from(groupedMap.values());
 };
+
+export function findParentIdsToRootByFullKeyPath(
+  fullKeyPath: string,
+  files: FileState[],
+  language_code = "en" // default to English
+): string[] {
+  // Find the file for the language_code (English default)
+  const file = files.find((f) => f.language_code === language_code);
+  if (!file) return [];
+
+  // Map id -> KeyState for fast parent lookup
+  const map = new Map<string, KeyState>(file.keys.map((k) => [k.id, k]));
+
+  // Find the key by fullKeyPath
+  const key = file.keys.find((k) => k.fullKeyPath === fullKeyPath);
+  if (!key) return [];
+  const targetID = key.id;
+
+  const parentIds: string[] = [targetID];
+  let current = key;
+
+  // Traverse up parents by id
+  while (current.parent_id) {
+    parentIds.push(current.parent_id);
+    current = map.get(current.parent_id)!;
+    if (!current) break; // safety check in case of missing parent
+  }
+
+  return parentIds; // root → closest parent
+}

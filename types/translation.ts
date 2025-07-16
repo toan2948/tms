@@ -1,12 +1,15 @@
-export interface TranslationKey {
+interface BaseTranslationKey {
   id: string;
   file_id: string;
   parent_id: string | null;
   key_path_segment: string;
-  value: string | null;
   full_key_path: string;
   level: number;
-  added_at: Date | null; // ISO date string
+  has_children: boolean;
+}
+export interface TranslationKey extends BaseTranslationKey {
+  value: string | null;
+  added_at: Date | null;
   last_edited_at: Date | null;
   version: number;
   status: "done" | "error" | "missing";
@@ -18,16 +21,7 @@ export interface TranslationKey {
   // For building UI trees
   children?: TranslationKey[];
 }
-export interface TranslationTreeKey {
-  id: string;
-  file_id: string;
-  parent_id: string | null;
-  key_path_segment: string;
-  full_key_path: string;
-  level: number;
-  has_children: boolean;
-
-  // For building UI trees
+export interface TranslationTreeKey extends BaseTranslationKey {
   children?: TranslationTreeKey[];
 }
 export type KeyState = {
@@ -38,16 +32,16 @@ export type KeyState = {
   version: number | null;
   last_edited_at: Date | null;
   has_children: boolean;
+  parent_id: string | null;
 };
+export interface LanguageInfo {
+  language_code: string;
+  language_name: string;
+}
 export interface FileState extends LanguageInfo {
   fileName: string; //or fileID
   isDirty: boolean;
   keys: KeyState[];
-}
-
-export interface LanguageInfo {
-  language_code: string;
-  language_name: string;
 }
 
 export type TranslationValue = {
@@ -60,6 +54,7 @@ export type TranslationValue = {
   version: number | null;
   last_edited_at: Date | null;
   has_children: boolean;
+  parent_id: string | null;
 };
 export type TranslationValueWithOld = TranslationValue & {
   old_value: string | null;

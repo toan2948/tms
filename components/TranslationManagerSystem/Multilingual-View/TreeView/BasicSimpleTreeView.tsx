@@ -4,6 +4,7 @@ import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import { useTreeViewApiRef } from "@mui/x-tree-view/hooks";
 import { TranslationTreeKey } from "@/types/translation";
+import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { Button } from "@mui/material";
 
 type TreeViewProps = {
@@ -18,6 +19,7 @@ export default function BasicSimpleTreeView({
 }: TreeViewProps) {
   // const [selectedItem, setSelectedItem] = React.useState<string>("");
   const apiRef = useTreeViewApiRef();
+  const { focusedKey, parentIDs } = useTreeKeyStore();
   const renderTree = (node: TranslationTreeKey) => (
     <TreeItem
       // itemId={`${node.id}|${node.full_key_path}|${node.level}`}
@@ -37,24 +39,36 @@ export default function BasicSimpleTreeView({
         stopPropagation: () => {},
         nativeEvent: {} as Event,
       } as unknown as React.SyntheticEvent;
-      apiRef.current?.focusItem(
-        fakeSyntheticEvent,
-        "4f89fb90-b5ff-4179-b587-faf2f94dd7c3"
-      );
+      // apiRef.current?.focusItem(
+      //   fakeSyntheticEvent,
+      //   "4f89fb90-b5ff-4179-b587-faf2f94dd7c3"
+      // );
+
+      // apiRef.current?.focusItem(
+      //   fakeSyntheticEvent,
+      //   "b33a359b-2dcd-40fc-a6ce-ce5533bd6fcd"
+      // );
+
+      apiRef.current?.focusItem(fakeSyntheticEvent, focusedKey.id || "");
     }, 100);
   };
   const expandToItem = (
     event: React.MouseEvent<HTMLButtonElement, MouseEvent>,
     targetId: string
   ) => {
-    const ancestors = [
-      "8eb713c7-7e7e-45e9-b04c-adbbdc25b8fe",
-      "88168632-a715-4df0-ad22-0521f969f48d",
-    ];
+    const ancestors = parentIDs;
+
+    //common.login.button
+    // const ancestors = [
+    //   "c6e71efe-c016-461a-a1b7-8d899e6b0353",
+    //   "4d528fa7-78b8-429a-8ebc-4ed55063dd7b",
+    // ];
+
     const newExpanded = Array.from(
       new Set([...expandedItems, ...ancestors, targetId])
     );
     setExpandedItems(newExpanded);
+    setSelectedKey(focusedKey.id || null);
 
     // Optionally, focus the item:
 
@@ -66,7 +80,10 @@ export default function BasicSimpleTreeView({
     <Box sx={{ minWidth: 250, overflowY: "scroll" }}>
       <Button
         onClick={(event) => {
-          expandToItem(event, "4f89fb90-b5ff-4179-b587-faf2f94dd7c3");
+          console.log("Focused Key:", focusedKey, "Parent IDs:", parentIDs);
+
+          // expandToItem(event, "b33a359b-2dcd-40fc-a6ce-ce5533bd6fcd");
+          expandToItem(event, focusedKey.id || "");
           handleItemFocus(); // Delay to ensure the item is expanded before focusing
         }}
       >
@@ -74,7 +91,7 @@ export default function BasicSimpleTreeView({
       </Button>
 
       <SimpleTreeView
-        onItemFocus={handleItemFocus}
+        // onItemFocus={handleItemFocus}
         aria-label='custom tree'
         apiRef={apiRef}
         onItemClick={(event, itemId) => {

@@ -8,6 +8,7 @@ import {
   Select,
   Stack,
   styled,
+  TextField,
 } from "@mui/material";
 import React from "react";
 
@@ -58,6 +59,15 @@ const MultilingualView = () => {
             <MenuItem value={"movie"}>Movie</MenuItem>
           </Select>
         </FormControl>
+        <FormControl
+          sx={{
+            width: "20%",
+            marginBottom: "20px",
+          }}
+        >
+          <InputLabel id='demo-simple-select-label'></InputLabel>
+          <TextField>Add Key</TextField>
+        </FormControl>
 
         <Box>
           <Button
@@ -77,7 +87,11 @@ const MultilingualView = () => {
           </Button>
         </Box>
       </Stack>
-      {seeAllChanges ? <AllChangesView /> : <TreeView />}
+      {seeAllChanges ? (
+        <AllChangesView setSeeAllChanges={setSeeAllChanges} />
+      ) : (
+        <TreeView />
+      )}
     </>
   );
 };
