@@ -26,7 +26,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   const [value, setValue] = useState(data.value);
   const [openResetDialog, setOpenResetDialog] = React.useState(false);
 
-  const { fullKeyPath } = useKeyStore();
+  const { fullKeyPathState: fullKeyPath } = useKeyStore();
   const { updateKeyChanged, DBFilesInfo } = useEditAllFileStore();
 
   //**todo: localStorage is not defined in server-side rendering

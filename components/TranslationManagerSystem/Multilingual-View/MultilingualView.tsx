@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   FormControl,
+  InputAdornment,
   InputLabel,
   MenuItem,
   Select,
@@ -34,12 +35,13 @@ export const HeaderBox = styled(Stack)(({}) => ({
 }));
 const MultilingualView = () => {
   const { fileNameState, changeFileName: change } = useFileNameStore();
-
   const handleChange = (event: SelectChangeEvent) => {
     change(event.target.value as string);
+    // setFocusedKey(""); // Reset focused key when changing file
   };
 
   const [seeAllChanges, setSeeAllChanges] = React.useState(false);
+  const [openAddKeyField, setOpenAddKeyField] = React.useState(false);
 
   const [openDialog, setOpenDialog] = React.useState(false);
 
@@ -47,6 +49,7 @@ const MultilingualView = () => {
   const { setDBKeys } = useKeyStore();
   const { setFilesInfo, setDBFilesInfo } = useEditAllFileStore();
 
+  // Fetch file data once on mount
   useEffect(() => {
     async function fetchKeysAndSaveToLocal() {
       try {
@@ -70,6 +73,7 @@ const MultilingualView = () => {
     fetchKeysAndSaveToLocal();
   }, [fileNameState]);
 
+  // Fetch keys when file changes
   useEffect(() => {
     async function fetchKeysForBuildingTree() {
       try {
@@ -119,15 +123,69 @@ const MultilingualView = () => {
             <MenuItem value={"movie"}>Movie</MenuItem>
           </Select>
         </FormControl>
-        <FormControl
-          sx={{
-            width: "20%",
-            marginBottom: "20px",
-          }}
+        <Stack
+          direction={"row"}
+          justifyContent={"center"}
+          alignItems={"center"}
         >
-          <InputLabel id='demo-simple-select-label'></InputLabel>
-          <TextField>Add Key</TextField>
-        </FormControl>
+          <Button onClick={() => setOpenAddKeyField(true)}>Add Key</Button>
+          {openAddKeyField && (
+            <>
+              <TextField
+                variant='outlined'
+                sx={{
+                  "& .MuiOutlinedInput-root": {
+                    padding: "0px 0px 0px 5px",
+                    height: 40,
+                  },
+                  "& .MuiOutlinedInput-input": {
+                    padding: "0 8px",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center", // ensures text vertically aligns
+                  },
+                }}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position='start'>
+                        {fileNameState}:
+                      </InputAdornment>
+                    ),
+                    endAdornment: (
+                      <InputAdornment position='end' sx={{ p: 0 }}>
+                        <Button
+                          disableElevation
+                          sx={{
+                            borderLeft: "1px solid rgba(0, 0, 0, 0.23)",
+                            borderRadius: 0,
+                            minWidth: 40,
+                            height: 40,
+                            m: 0,
+                            p: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          +
+                        </Button>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+
+              <Button
+                variant='contained'
+                onClick={() => setOpenAddKeyField(false)}
+                sx={{ marginLeft: "10px" }}
+              >
+                Cancel
+              </Button>
+            </>
+          )}
+        </Stack>
 
         <Box>
           <Button

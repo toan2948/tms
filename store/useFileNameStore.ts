@@ -14,7 +14,7 @@ export const useFileNameStore = create<FilenameState>((set) => ({
 }));
 
 type KeyState = {
-  fullKeyPath: string;
+  fullKeyPathState: string;
   updateFullKeyPathState: (newPath: string) => void;
   DBkeys: {
     fileName: string;
@@ -42,5 +42,5 @@ export const useKeyStore = create<KeyState>((set, get) => ({
     }
   },
   //  set(() => ({ DBkeys: keys }))},
-  reset: () => set({ fullKeyPath: "" }),
+  reset: () => set({ fullKeyPathState: "" }),
 }));

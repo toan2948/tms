@@ -35,7 +35,7 @@ export function ResetDialog({
   const handleClose = () => {
     onClose(false);
   };
-  const { fullKeyPath } = useKeyStore();
+  const { fullKeyPathState: fullKeyPath } = useKeyStore();
   const { updateKeyChanged, DBFilesInfo } = useEditAllFileStore();
 
   const DBValue = React.useMemo(
