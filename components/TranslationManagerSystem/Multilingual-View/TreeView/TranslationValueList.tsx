@@ -15,7 +15,7 @@ interface TranslationValueListProps {
 
 const TranslationValueList = ({ path_segment }: TranslationValueListProps) => {
   const { fileNameState } = useFileNameStore();
-  const { fullKeyPath } = useKeyStore();
+  const { fullKeyPathState } = useKeyStore();
 
   const [valuesState, setValuesState] = React.useState<TranslationValue[]>([]);
   const [showValueList, setShowValueList] = React.useState(false);
@@ -31,10 +31,15 @@ const TranslationValueList = ({ path_segment }: TranslationValueListProps) => {
 
   useEffect(() => {
     setValuesState(
-      getTranslationKeys(fileNameState, fullKeyPath, filesInfo, path_segment)
+      getTranslationKeys(
+        fileNameState,
+        fullKeyPathState,
+        filesInfo,
+        path_segment
+      )
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fileNameState, fullKeyPath, path_segment, changedKeys]); //valuesState in this condition will cause infinite loop
+  }, [fileNameState, fullKeyPathState, path_segment, changedKeys]); //valuesState in this condition will cause infinite loop
 
   useEffect(() => {
     // console.log("valuesState", valuesState);
