@@ -25,10 +25,11 @@ type KeyState = {
 };
 
 export const useKeyStore = create<KeyState>((set, get) => ({
-  fullKeyPath: "",
+  fullKeyPathState: "",
   DBkeys: [],
+
   updateFullKeyPathState: (newName: string) =>
-    set(() => ({ fullKeyPath: newName })),
+    set(() => ({ fullKeyPathState: newName })),
   setDBKeys: (keys: TranslationTreeKey[], file_name: string) => {
     const DBkeys = get().DBkeys;
     const checkFileName = DBkeys.find(
