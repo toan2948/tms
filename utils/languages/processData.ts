@@ -19,14 +19,19 @@ function findKeyById(files: FileState[], keyId: string): string | null {
 export function getEnglishKeyVersion(
   fullKeyPath: string,
   files: FileState[]
-): number | null {
-  const englishFile = files.find(
+): number {
+  const englishFiles = files.filter(
     (file) => file.language_code.toLowerCase() === "en"
   );
-  if (!englishFile) return null;
 
-  const key = englishFile.keys.find((k) => k.fullKeyPath === fullKeyPath);
-  return key ? key.version : null;
+  for (const file of englishFiles) {
+    const key = file.keys.find((k) => k.fullKeyPath === fullKeyPath);
+    if (key) {
+      return key.version;
+    }
+  }
+
+  return 1;
 }
 
 export const filterTranslationKeys = (
@@ -49,7 +54,7 @@ export const filterTranslationKeys = (
           language_code: file.language_code,
           language_name: file.language_name,
           filename: file.fileName,
-          version: key.version === null ? 1 : key.version + 1, // Increment version for local changes
+          version: key.version + 1, // Increment version for local changes
           last_edited_at: key.last_edited_at,
           has_children: key.has_children,
           parent_id: key.parent_id,
@@ -63,9 +68,10 @@ export const filterTranslationKeys = (
     // Find the corresponding key in the localStorageDBValues
     const englishVersion = getEnglishKeyVersion(key.fullKeyPath, DBFilesInfo);
 
-    const isEnglishKeyAlsoUpdated = changedKeys.find(
+    const isUpdatedEnglishKey = changedKeys.find(
       (e) => e.fullKeyPath === key.fullKeyPath && e.language_code === "en"
-    );
+    )?.version;
+    // console.log("isEnglishKeyAlsoUpdated", isUpdatedEnglishKey, englishVersion);
     return {
       id: key.id,
       value: key.value,
@@ -74,11 +80,8 @@ export const filterTranslationKeys = (
       language_code: key.language_code,
       language_name: key.language_name,
       filename: key.filename,
-      version: isEnglishKeyAlsoUpdated
-        ? englishVersion === null
-          ? 1
-          : englishVersion + 1
-        : englishVersion,
+      version: isUpdatedEnglishKey ? isUpdatedEnglishKey : englishVersion, // Use the updated version if English key is also changed
+
       //todo: case of english and other languages are updated at the same time
       last_edited_at: key.last_edited_at,
       has_children: key.has_children,

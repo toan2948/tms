@@ -29,7 +29,7 @@ export type KeyState = {
   id: string;
   isChanged: boolean;
   value: string | null;
-  version: number | null;
+  version: number;
   last_edited_at: Date | null;
   has_children: boolean;
   parent_id: string | null;
@@ -51,7 +51,7 @@ export type TranslationValue = {
   language_code: string;
   language_name: string;
   filename: string;
-  version: number | null;
+  version: number;
   last_edited_at: Date | null;
   has_children: boolean;
   parent_id: string | null;

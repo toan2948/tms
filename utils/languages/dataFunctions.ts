@@ -98,7 +98,7 @@ export async function fetchAllTranslationFiles() {
         id: string;
         value: string | null;
         isChanged: boolean;
-        version: number | null;
+        version: number;
         last_edited_at: Date | null;
         has_children: boolean;
         parent_id: string | null;
