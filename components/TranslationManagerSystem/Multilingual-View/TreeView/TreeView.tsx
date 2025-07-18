@@ -6,12 +6,14 @@ import BasicSimpleTreeView from "./BasicSimpleTreeView";
 import TranslationValueList from "./TranslationValueList";
 import { TranslationTreeKey } from "@/types/translation";
 import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
+import { DeleteKeyDialog } from "../Dialogs/DeleteKeyDialog";
 
 const TreeView = ({ treeKeys }: { treeKeys: TranslationTreeKey[] }) => {
   const { DBkeys, updateFullKeyPathState } = useKeyStore();
   const [selectedKeyID, setSelectedKeyID] = useState<string>("");
   const [path_segment, setPathSegment] = useState<string>("");
   const { fileNameState } = useFileNameStore();
+  const [openDeleteKeyDialog, setOpenDeleteKeyDialog] = useState(false);
 
   useEffect(() => {
     const keysInFile = DBkeys.find((e) => e.fileName === fileNameState)?.keys;
@@ -31,6 +33,12 @@ const TreeView = ({ treeKeys }: { treeKeys: TranslationTreeKey[] }) => {
   }, [selectedKeyID, fileNameState]);
   return (
     <>
+      <DeleteKeyDialog
+        open={openDeleteKeyDialog}
+        setOpenDeleteKeyDialog={setOpenDeleteKeyDialog}
+        selectedKey={selectedKeyID}
+        setSelectedKeyID={setSelectedKeyID} //update path_segment when key is deleted
+      />
       <Stack
         direction={"row"}
         border={"solid 1px black"}
@@ -51,12 +59,40 @@ const TreeView = ({ treeKeys }: { treeKeys: TranslationTreeKey[] }) => {
           <HeaderBox>
             <Typo1424 textAlign={"center"}>Language</Typo1424>
           </HeaderBox>
-          <Stack width={"100%"} direction={"row"}>
-            <Typo1424>Key to translate: {path_segment}</Typo1424>
-            <Button variant={"outlined"}>Delete</Button>
-            <Button variant={"outlined"}>Edit</Button>
-          </Stack>
-          <TranslationValueList path_segment={path_segment} />
+          {selectedKeyID && (
+            <>
+              <Stack
+                width={"100%"}
+                direction={"row"}
+                alignItems={"center"}
+                sx={{
+                  marginTop: "10px",
+                }}
+              >
+                <Typo1424 weight={600}>
+                  Key to translate: {path_segment}
+                </Typo1424>
+                <Button
+                  variant={"outlined"}
+                  sx={{
+                    marginRight: "10px",
+                    marginLeft: "10px",
+                    color: "red",
+                    borderColor: "red", // <-- this is key for the outline
+                    "&:hover": {
+                      backgroundColor: "rgba(255, 0, 0, 0.04)", // subtle red on hover
+                      borderColor: "red",
+                    },
+                  }}
+                  onClick={() => setOpenDeleteKeyDialog(true)}
+                >
+                  Delete
+                </Button>
+                <Button variant={"outlined"}>Edit</Button>
+              </Stack>
+              <TranslationValueList path_segment={path_segment} />
+            </>
+          )}
         </Stack>
       </Stack>
     </>

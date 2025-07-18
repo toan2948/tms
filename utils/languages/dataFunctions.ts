@@ -160,3 +160,38 @@ export async function updateChangedKeys(values: TranslationValue[]) {
 
   return results.map((r) => r.data).flat();
 }
+
+export async function deleteTranslationKey(
+  fullKeyPath: string,
+  filename: string
+) {
+  const supabase = await createClient();
+
+  // Step 1: Get all file IDs with the given filename
+  const { data: files, error: fileError } = await supabase
+    .from("translation_files")
+    .select("id")
+    .eq("filename", filename);
+
+  if (fileError) throw fileError;
+
+  if (!files || files.length === 0) {
+    throw new Error(`No translation_files found for filename: ${filename}`);
+  }
+
+  const fileIds = files.map((f) => f.id);
+
+  // Step 2: Delete keys with the matching full_key_path for those files
+  const { error: deleteError } = await supabase
+    .from("translation_keys")
+    .delete()
+    .in("file_id", fileIds)
+    .eq("full_key_path", fullKeyPath);
+
+  if (deleteError) {
+    console.error("Error deleting translation keys:", deleteError);
+    throw deleteError;
+  }
+
+  return { success: true, deletedFromFileCount: fileIds.length };
+}
