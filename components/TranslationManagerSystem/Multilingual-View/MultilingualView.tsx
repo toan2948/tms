@@ -40,7 +40,6 @@ const MultilingualView = () => {
   };
 
   const [seeAllChanges, setSeeAllChanges] = React.useState(false);
-  const [openAddKeyField, setOpenAddKeyField] = React.useState(false);
 
   const [openDialog, setOpenDialog] = React.useState(false);
 
@@ -128,22 +127,8 @@ const MultilingualView = () => {
             <MenuItem value={"movie"}>Movie</MenuItem>
           </Select>
         </FormControl>
-        <Stack
-          direction={"row"}
-          justifyContent={"center"}
-          alignItems={"center"}
-        >
-          <Button
-            sx={{ marginRight: "10px" }}
-            onClick={() => setOpenAddKeyField(true)}
-            variant='contained'
-          >
-            Add Key
-          </Button>
-          {openAddKeyField && (
-            <AddKeyField setOpenAddKeyField={setOpenAddKeyField} />
-          )}
-        </Stack>
+
+        <AddKeyField />
 
         <Box>
           <Button
