@@ -9,14 +9,15 @@ import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
 
 const TreeView = ({ treeKeys }: { treeKeys: TranslationTreeKey[] }) => {
   const { DBkeys, updateFullKeyPathState } = useKeyStore();
-  const [selectedKeyID, setSelectedKeyID] = useState<string | null>(null);
-  const [path_segment, setPathSegment] = useState<string | null>(null);
+  const [selectedKeyID, setSelectedKeyID] = useState<string>("");
+  const [path_segment, setPathSegment] = useState<string>("");
   const { fileNameState } = useFileNameStore();
 
   useEffect(() => {
     const keysInFile = DBkeys.find((e) => e.fileName === fileNameState)?.keys;
     if (!keysInFile) {
       console.warn("No keys found for the current file:", fileNameState);
+
       return;
     }
     const key = keysInFile.find((k) => k.id === selectedKeyID);
@@ -24,9 +25,10 @@ const TreeView = ({ treeKeys }: { treeKeys: TranslationTreeKey[] }) => {
       updateFullKeyPathState(key.full_key_path);
       setPathSegment(key.key_path_segment);
     } else {
-      setSelectedKeyID(null);
+      setSelectedKeyID("");
+      setPathSegment("");
     }
-  }, [selectedKeyID]);
+  }, [selectedKeyID, fileNameState]);
   return (
     <>
       <Stack

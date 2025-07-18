@@ -58,6 +58,7 @@ export const filterTranslationKeys = (
           last_edited_at: key.last_edited_at,
           has_children: key.has_children,
           parent_id: key.parent_id,
+          isNew: key.isNew, // Indicates if the key is newly added
         };
       })
   );
@@ -80,12 +81,17 @@ export const filterTranslationKeys = (
       language_code: key.language_code,
       language_name: key.language_name,
       filename: key.filename,
-      version: isUpdatedEnglishKey ? isUpdatedEnglishKey : englishVersion, // Use the updated version if English key is also changed
+      version: key.isNew
+        ? 1
+        : isUpdatedEnglishKey
+        ? isUpdatedEnglishKey
+        : englishVersion, // Use the updated version if English key is also changed
 
       //todo: case of english and other languages are updated at the same time
       last_edited_at: key.last_edited_at,
       has_children: key.has_children,
       parent_id: key.parent_id,
+      isNew: key.isNew, // Indicates if the key is newly added
     };
   });
 
@@ -186,6 +192,7 @@ export const getTranslationKeys = (
         last_edited_at: foundKeys[0].last_edited_at,
         has_children: foundKeys[0].has_children,
         parent_id: foundKeys[0].parent_id,
+        isNew: foundKeys[0].isNew,
       });
     }
   });

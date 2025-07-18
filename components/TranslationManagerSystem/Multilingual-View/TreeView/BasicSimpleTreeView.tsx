@@ -8,8 +8,8 @@ import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 
 type TreeViewProps = {
-  selectedKey: string | null;
-  setSelectedKey: (value: string | null) => void;
+  selectedKey: string;
+  setSelectedKey: (value: string) => void;
   data: TranslationTreeKey[];
 };
 

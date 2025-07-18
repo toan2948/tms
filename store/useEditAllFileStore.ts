@@ -5,6 +5,7 @@ type AllFileState = {
   //these states are to handle the error: localStorage is not defined (in case only localStorage is used)
   filesInfo: FileState[];
   DBFilesInfo: FileState[];
+  addKEyToFilesInfo: (key: KeyState, fileName: string) => void;
   setFilesInfo: (files: FileState[]) => void;
   updateKeyChanged: (editedKey: KeyState) => void;
   setDBFilesInfo: (files: FileState[]) => void;
@@ -22,6 +23,24 @@ export const useEditAllFileStore = create<AllFileState>((set, get) => ({
     set(() => ({
       DBFilesInfo: files,
     })),
+  addKEyToFilesInfo: (key: KeyState, fileName: string) => {
+    set((state) => {
+      const updatedFiles = state.filesInfo.map((file) => {
+        if (file.fileName === fileName) {
+          const updatedKeys = [...file.keys, key];
+          return {
+            ...file,
+            keys: updatedKeys,
+            isDirty: true,
+          };
+        }
+        return file;
+      });
+      localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
+      return { filesInfo: updatedFiles };
+    });
+  },
+
   updateKeyChanged: (editedKey: KeyState) => {
     set((state) => ({
       filesInfo: state.filesInfo.map((file) => {

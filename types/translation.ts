@@ -33,6 +33,7 @@ export type KeyState = {
   last_edited_at: Date | null;
   has_children: boolean;
   parent_id: string | null;
+  isNew?: boolean; // Indicates if the key is newly added
 };
 export interface LanguageInfo {
   language_code: string;
@@ -55,6 +56,7 @@ export type TranslationValue = {
   last_edited_at: Date | null;
   has_children: boolean;
   parent_id: string | null;
+  isNew?: boolean; // Indicates if the value is newly added
 };
 export type TranslationValueWithOld = TranslationValue & {
   old_value: string | null;

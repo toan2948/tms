@@ -21,6 +21,7 @@ type KeyState = {
     keys: TranslationTreeKey[];
   }[];
   setDBKeys: (keys: TranslationTreeKey[], file_name: string) => void;
+  addKeyToTree: (key: TranslationTreeKey, file_name: string) => void;
   reset: () => void;
 };
 
@@ -42,6 +43,22 @@ export const useKeyStore = create<KeyState>((set, get) => ({
       }));
     }
   },
+
+  addKeyToTree: (key, file_name) => {
+    const DBkeys = get().DBkeys;
+    const fileIndex = DBkeys.findIndex((e) => e.fileName === file_name);
+
+    if (fileIndex !== -1) {
+      const updatedKeys = [...DBkeys[fileIndex].keys, key];
+      const updatedFile = { ...DBkeys[fileIndex], keys: updatedKeys };
+      const newDBkeys = [...DBkeys];
+      newDBkeys[fileIndex] = updatedFile;
+      set(() => ({ DBkeys: newDBkeys }));
+    } else {
+      console.error(`File with name ${file_name} not found in DBkeys.`);
+    }
+  },
+
   //  set(() => ({ DBkeys: keys }))},
   reset: () => set({ fullKeyPathState: "" }),
 }));

@@ -29,12 +29,14 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   const { fullKeyPathState: fullKeyPath } = useKeyStore();
   const { updateKeyChanged, DBFilesInfo } = useEditAllFileStore();
 
-  //**todo: localStorage is not defined in server-side rendering
+  //**notice: localStorage is not defined in server-side rendering
   // const localStorageDBValues = useMemo(() => {
   //   return localStorage.getItem("currentDBvalues")
   //     ? JSON.parse(localStorage.getItem("currentDBvalues") as string)
   //     : [];
   // }, [data]);
+
+  console.log("TranslationField data:", data);
 
   const DBValue = useMemo(
     () => findKeyStateByIdAcrossFiles(DBFilesInfo, data.id),
@@ -75,7 +77,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   }, [data.value]);
 
   useEffect(() => {
-    if (DBValue?.value !== data.value) {
+    if (DBValue?.value !== data.value && data.isNew !== true) {
       //set the reset button at initial render
       setIsResetButtonEnabled(true);
     } else {
