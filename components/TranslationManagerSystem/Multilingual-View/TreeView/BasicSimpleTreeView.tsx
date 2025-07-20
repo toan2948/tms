@@ -1,4 +1,4 @@
-import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
+import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { TranslationTreeKey } from "@/types/translation";
 import { findSelectedKey } from "@/utils/languages/processData";
@@ -15,7 +15,7 @@ type TreeViewProps = {
 export default function BasicSimpleTreeView({ data }: TreeViewProps) {
   const apiRef = useTreeViewApiRef();
   const { parentIDs } = useTreeKeyStore();
-  const { selectedTreeKey, setSelectedTreeKey, DBkeys } = useKeyStore();
+  const { selectedTreeKey, setSelectedTreeKey, DBkeys } = useTreeKeyStore();
   const { fileNameState } = useFileNameStore();
   const renderTree = (node: TranslationTreeKey) => (
     <TreeItem

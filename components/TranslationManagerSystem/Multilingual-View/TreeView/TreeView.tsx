@@ -1,5 +1,5 @@
 import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
-import { useKeyStore } from "@/store/useFileNameStore";
+import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { TranslationTreeKey } from "@/types/translation";
 import { Button, Stack } from "@mui/material";
 import { useState } from "react";
@@ -9,7 +9,7 @@ import BasicSimpleTreeView from "./BasicSimpleTreeView";
 import TranslationValueList from "./TranslationValueList";
 
 const TreeView = ({ treeKeys }: { treeKeys: TranslationTreeKey[] }) => {
-  const { selectedTreeKey } = useKeyStore();
+  const { selectedTreeKey } = useTreeKeyStore();
   const [openDeleteKeyDialog, setOpenDeleteKeyDialog] = useState(false);
 
   return (

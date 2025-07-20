@@ -12,7 +12,8 @@ import {
 import React, { useEffect, useState } from "react";
 
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
-import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
+import { useFileNameStore } from "@/store/useFileNameStore";
+import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { TranslationTreeKey } from "@/types/translation";
 import {
   fetchAllTranslationFiles,
@@ -34,7 +35,6 @@ export const HeaderBox = styled(Stack)(({}) => ({
 }));
 const MultilingualView = () => {
   const { fileNameState, changeFileName: change } = useFileNameStore();
-  const { setSelectedTreeKey } = useKeyStore();
   const handleChange = (event: SelectChangeEvent) => {
     setSelectedTreeKey(null); // Reset selected key when changing file
 
@@ -46,7 +46,7 @@ const MultilingualView = () => {
   const [openDialog, setOpenDialog] = React.useState(false);
 
   const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
-  const { DBkeys, setDBKeys } = useKeyStore();
+  const { DBkeys, setDBKeys, setSelectedTreeKey } = useTreeKeyStore();
   const { setFilesInfo, setDBFilesInfo } = useEditAllFileStore();
 
   // Fetch file data once on mount

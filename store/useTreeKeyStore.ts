@@ -1,16 +1,74 @@
+import { TranslationTreeKey } from "@/types/translation";
 import { create } from "zustand";
 
-type ControlledTreeKey = {
+type TreeKeyState = {
+  selectedTreeKey: TranslationTreeKey | null;
   parentIDs: string[];
+  DBkeys: {
+    fileName: string;
+    keys: TranslationTreeKey[];
+  }[];
   setParentIDs: (ids: string[]) => void;
+
+  setSelectedTreeKey: (key: TranslationTreeKey | null) => void;
+  setDBKeys: (keys: TranslationTreeKey[], file_name: string) => void;
+  addKeyToTree: (key: TranslationTreeKey, file_name: string) => void;
+  removeKeyFromTree: (keyId: string, file_name: string) => void;
+
   reset: () => void;
 };
 
-export const useTreeKeyStore = create<ControlledTreeKey>((set) => ({
+export const useTreeKeyStore = create<TreeKeyState>((set, get) => ({
+  selectedTreeKey: null,
+  DBkeys: [],
   parentIDs: [],
   setParentIDs: (ids: string[]) => set(() => ({ parentIDs: ids })),
-  reset: () =>
-    set(() => ({
-      parentIDs: [],
-    })),
+  setSelectedTreeKey: (key: TranslationTreeKey | null) =>
+    set(() => ({ selectedTreeKey: key })),
+
+  setDBKeys: (keys: TranslationTreeKey[], file_name: string) => {
+    const DBkeys = get().DBkeys;
+    const checkFileName = DBkeys.find(
+      (e: { fileName: string; keys: TranslationTreeKey[] }) =>
+        e.fileName === file_name
+    );
+    if (!checkFileName) {
+      set(() => ({
+        DBkeys: [...DBkeys, { fileName: file_name, keys }],
+      }));
+    }
+  },
+
+  addKeyToTree: (key, file_name) => {
+    const DBkeys = get().DBkeys;
+    const fileIndex = DBkeys.findIndex((e) => e.fileName === file_name);
+
+    if (fileIndex !== -1) {
+      const updatedKeys = [...DBkeys[fileIndex].keys, key];
+      const updatedFile = { ...DBkeys[fileIndex], keys: updatedKeys };
+      const newDBkeys = [...DBkeys];
+      newDBkeys[fileIndex] = updatedFile;
+      set(() => ({ DBkeys: newDBkeys }));
+    } else {
+      console.error(`File with name ${file_name} not found in DBkeys.`);
+    }
+  },
+  removeKeyFromTree: (keyId: string, file_name: string) => {
+    const DBkeys = get().DBkeys;
+    const fileIndex = DBkeys.findIndex((e) => e.fileName === file_name);
+
+    if (fileIndex !== -1) {
+      const updatedKeys = DBkeys[fileIndex].keys.filter(
+        (key) => key.id !== keyId
+      );
+      const updatedFile = { ...DBkeys[fileIndex], keys: updatedKeys };
+      const newDBkeys = [...DBkeys];
+      newDBkeys[fileIndex] = updatedFile;
+      set(() => ({ DBkeys: newDBkeys }));
+    } else {
+      console.error(`File with name ${file_name} not found in DBkeys.`);
+    }
+  },
+
+  reset: () => set({ selectedTreeKey: null, parentIDs: [] }),
 }));

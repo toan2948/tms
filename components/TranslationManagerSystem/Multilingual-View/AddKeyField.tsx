@@ -1,14 +1,15 @@
 import { Typo1224 } from "@/components/ui/StyledElementPaymentDetail";
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
-import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
+import { useFileNameStore } from "@/store/useFileNameStore";
+import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { TranslationTreeKey } from "@/types/translation";
-import { TextField, InputAdornment, Button, Stack, Box } from "@mui/material";
+import { Box, Button, InputAdornment, Stack, TextField } from "@mui/material";
 import { useState } from "react";
 
 export const AddKeyField = () => {
   const { fileNameState } = useFileNameStore();
   const { addKEyToFilesInfo } = useEditAllFileStore();
-  const { DBkeys, addKeyToTree } = useKeyStore();
+  const { DBkeys, addKeyToTree } = useTreeKeyStore();
   const [newKeyState, setNewKeyState] = useState("");
   const [isKeyExisted, setIsKeyExisted] = useState(false);
   const [isNewKeyAdded, setIsNewKeyAdded] = useState(false);

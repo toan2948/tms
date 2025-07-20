@@ -1,5 +1,5 @@
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
-import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
+import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import {
   fetchAllTranslationFiles,
@@ -37,7 +37,7 @@ export function SessionDialog({
   const { filesInfo, setFilesInfo, DBFilesInfo, setDBFilesInfo } =
     useEditAllFileStore();
 
-  const { setSelectedTreeKey, DBkeys } = useKeyStore();
+  const { setSelectedTreeKey, DBkeys } = useTreeKeyStore();
 
   const { setParentIDs } = useTreeKeyStore();
   const { changeFileName } = useFileNameStore();

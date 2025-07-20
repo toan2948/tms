@@ -1,6 +1,6 @@
 import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
-import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
+import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import {
   filterTranslationKeys,
@@ -21,7 +21,7 @@ const AllChangesView = ({
   const { filesInfo, DBFilesInfo } = useEditAllFileStore();
 
   const { setParentIDs } = useTreeKeyStore();
-  const { setSelectedTreeKey, DBkeys } = useKeyStore();
+  const { setSelectedTreeKey, DBkeys } = useTreeKeyStore();
   const { changeFileName } = useFileNameStore();
   const changedKeys = useMemo(
     () => filterTranslationKeys(filesInfo, DBFilesInfo),

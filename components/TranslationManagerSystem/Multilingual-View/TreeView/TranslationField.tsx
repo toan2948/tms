@@ -1,20 +1,20 @@
 "use client";
-import {
-  ListItem,
-  TextareaAutosize,
-  Button,
-  Grid,
-  Paper,
-  Typography,
-  Stack,
-  Box,
-} from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
 import { Typo1424, Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
-import { useKeyStore } from "@/store/useFileNameStore";
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
+import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { TranslationValue, TranslationValueWithOld } from "@/types/translation";
 import { findKeyStateByIdAcrossFiles } from "@/utils/languages/processData";
+import {
+  Box,
+  Button,
+  Grid,
+  ListItem,
+  Paper,
+  Stack,
+  TextareaAutosize,
+  Typography,
+} from "@mui/material";
+import React, { useEffect, useMemo, useState } from "react";
 import { ResetDialog } from "../Dialogs/ResetDialog";
 type TranslationFieldProps = {
   index: number;
@@ -26,7 +26,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   const [value, setValue] = useState(data.value);
   const [openResetDialog, setOpenResetDialog] = React.useState(false);
 
-  const { selectedTreeKey } = useKeyStore();
+  const { selectedTreeKey } = useTreeKeyStore();
   const { updateKeyChanged, DBFilesInfo } = useEditAllFileStore();
 
   //**notice: localStorage is not defined in server-side rendering

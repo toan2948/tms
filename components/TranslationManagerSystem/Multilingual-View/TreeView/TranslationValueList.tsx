@@ -1,18 +1,19 @@
 "use client";
-import { List, Stack } from "@mui/material";
-import React, { useEffect, useMemo } from "react";
-import TranslationField from "./TranslationField";
-import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
+import { useFileNameStore } from "@/store/useFileNameStore";
+import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { TranslationValue } from "@/types/translation";
 import {
   filterTranslationKeys,
   getTranslationKeys,
 } from "@/utils/languages/processData";
+import { List, Stack } from "@mui/material";
+import React, { useEffect, useMemo } from "react";
+import TranslationField from "./TranslationField";
 
 const TranslationValueList = () => {
   const { fileNameState } = useFileNameStore();
-  const { selectedTreeKey } = useKeyStore();
+  const { selectedTreeKey } = useTreeKeyStore();
 
   const [valuesState, setValuesState] = React.useState<TranslationValue[]>([]);
   const [showValueList, setShowValueList] = React.useState(false);

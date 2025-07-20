@@ -1,5 +1,9 @@
 import * as React from "react";
 
+import { useEditAllFileStore } from "@/store/useEditAllFileStore";
+import { useTreeKeyStore } from "@/store/useTreeKeyStore";
+import { TranslationValue, TranslationValueWithOld } from "@/types/translation";
+import { findKeyStateByIdAcrossFiles } from "@/utils/languages/processData";
 import {
   Box,
   Button,
@@ -9,10 +13,6 @@ import {
   Typography,
 } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
-import { useEditAllFileStore } from "@/store/useEditAllFileStore";
-import { useKeyStore } from "@/store/useFileNameStore";
-import { findKeyStateByIdAcrossFiles } from "@/utils/languages/processData";
-import { TranslationValue, TranslationValueWithOld } from "@/types/translation";
 
 export interface DialogProps {
   open: boolean;
@@ -35,7 +35,7 @@ export function ResetDialog({
   const handleClose = () => {
     onClose(false);
   };
-  const { selectedTreeKey } = useKeyStore();
+  const { selectedTreeKey } = useTreeKeyStore();
   const { updateKeyChanged, DBFilesInfo } = useEditAllFileStore();
 
   const DBValue = React.useMemo(
