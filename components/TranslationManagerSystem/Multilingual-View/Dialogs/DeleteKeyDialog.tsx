@@ -1,5 +1,3 @@
-import * as React from "react";
-
 import {
   Box,
   Button,
@@ -10,25 +8,22 @@ import {
 } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 
+import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
+import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
 import { deleteTranslationKey } from "@/utils/languages/dataFunctions";
 import { toast } from "react-toastify";
-import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
-import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 
 export interface DeleteKeyDialogProps {
   open: boolean;
   setOpenDeleteKeyDialog: Dispatch<SetStateAction<boolean>>;
-  selectedKey: string;
-  setSelectedKeyID: Dispatch<SetStateAction<string>>;
 }
 
 export function DeleteKeyDialog({
   open,
   setOpenDeleteKeyDialog,
-  selectedKey,
-  setSelectedKeyID,
 }: DeleteKeyDialogProps) {
-  const { removeKeyFromTree, selectedTreeKey } = useKeyStore();
+  const { removeKeyFromTree, selectedTreeKey, setSelectedTreeKey } =
+    useKeyStore();
   const { fileNameState } = useFileNameStore();
   const handleClose = () => {
     setOpenDeleteKeyDialog(false);
@@ -40,8 +35,12 @@ export function DeleteKeyDialog({
       fileNameState
     );
     setOpenDeleteKeyDialog(false);
-    removeKeyFromTree(selectedKey, fileNameState); // Remove key from the tree in the store
-    setSelectedKeyID(""); // Reset selected key ID after deletion
+    if (!selectedTreeKey?.id) {
+      toast.error("Key ID is missing, cannot delete key.");
+    } else {
+      removeKeyFromTree(selectedTreeKey.id, fileNameState); // Remove key from the tree in the store}
+    }
+    setSelectedTreeKey(null); // Reset selected key ID after deletion
     toast.success("the key is deleted!");
   };
 

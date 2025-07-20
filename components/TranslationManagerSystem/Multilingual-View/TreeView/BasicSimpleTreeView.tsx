@@ -1,25 +1,21 @@
-import * as React from "react";
+import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
+import { useTreeKeyStore } from "@/store/useTreeKeyStore";
+import { TranslationTreeKey } from "@/types/translation";
+import { findSelectedKey } from "@/utils/languages/processData";
 import Box from "@mui/material/Box";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";
 import { TreeItem } from "@mui/x-tree-view/TreeItem";
 import { useTreeViewApiRef } from "@mui/x-tree-view/hooks";
-import { TranslationTreeKey } from "@/types/translation";
-import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { useFileNameStore } from "@/store/useFileNameStore";
+import * as React from "react";
 
 type TreeViewProps = {
-  selectedKey: string;
-  setSelectedKey: (value: string) => void;
   data: TranslationTreeKey[];
 };
 
-export default function BasicSimpleTreeView({
-  data,
-  setSelectedKey,
-}: TreeViewProps) {
-  // const [selectedItem, setSelectedItem] = React.useState<string>("");
+export default function BasicSimpleTreeView({ data }: TreeViewProps) {
   const apiRef = useTreeViewApiRef();
   const { focusedKey, parentIDs } = useTreeKeyStore();
+  const { setSelectedTreeKey, DBkeys } = useKeyStore();
   const { fileNameState } = useFileNameStore();
   const renderTree = (node: TranslationTreeKey) => (
     <TreeItem
@@ -40,7 +36,8 @@ export default function BasicSimpleTreeView({
       new Set([...expandedItems, ...parentIDs, focusedKey.id])
     );
     setExpandedItems(newExpanded);
-    setSelectedKey(focusedKey.id);
+    const theKey = findSelectedKey(focusedKey.id, fileNameState, DBkeys);
+    setSelectedTreeKey(theKey);
 
     // Focus after a short delay to ensure the item is expanded
     const timeout = setTimeout(() => {
@@ -57,11 +54,6 @@ export default function BasicSimpleTreeView({
     return () => clearTimeout(timeout); // Cleanup on unmount
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusedKey.id, parentIDs, fileNameState]);
-  React.useEffect(() => {
-    setSelectedKey(focusedKey.id);
-  }, [expandedItems, focusedKey.id, setSelectedKey]);
-
-  // console.log("selectedKey", selectedKey);
 
   return (
     <Box sx={{ minWidth: 250, overflowY: "scroll" }}>
@@ -70,7 +62,8 @@ export default function BasicSimpleTreeView({
         aria-label='custom tree'
         apiRef={apiRef}
         onItemClick={(event, itemId) => {
-          setSelectedKey(itemId);
+          const theKey = findSelectedKey(itemId, fileNameState, DBkeys);
+          setSelectedTreeKey(theKey);
         }}
         expandedItems={expandedItems}
         onExpandedItemsChange={(event, newExpandedItems) => {

@@ -1,46 +1,22 @@
 import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
+import { useKeyStore } from "@/store/useFileNameStore";
+import { TranslationTreeKey } from "@/types/translation";
 import { Button, Stack } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
+import { DeleteKeyDialog } from "../Dialogs/DeleteKeyDialog";
 import { HeaderBox } from "../MultilingualView";
 import BasicSimpleTreeView from "./BasicSimpleTreeView";
 import TranslationValueList from "./TranslationValueList";
-import { TranslationTreeKey } from "@/types/translation";
-import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
-import { DeleteKeyDialog } from "../Dialogs/DeleteKeyDialog";
 
 const TreeView = ({ treeKeys }: { treeKeys: TranslationTreeKey[] }) => {
-  const { DBkeys, setSelectedTreeKey, selectedTreeKey } = useKeyStore();
-  const [selectedKeyID, setSelectedKeyID] = useState<string>("");
-  const { fileNameState } = useFileNameStore();
+  const { selectedTreeKey } = useKeyStore();
   const [openDeleteKeyDialog, setOpenDeleteKeyDialog] = useState(false);
 
-  useEffect(() => {
-    const keysOfCurrentFile = DBkeys.find(
-      (e) => e.fileName === fileNameState
-    )?.keys;
-    if (!keysOfCurrentFile) {
-      console.warn("No keys found for the current file:", fileNameState);
-
-      return;
-    }
-    const currentSelectedKey = keysOfCurrentFile.find(
-      (k) => k.id === selectedKeyID
-    );
-
-    console.log("currentSelectedKey", currentSelectedKey);
-    setSelectedTreeKey(currentSelectedKey || null);
-    if (currentSelectedKey) {
-    } else {
-      setSelectedKeyID("");
-    }
-  }, [selectedKeyID, fileNameState]);
   return (
     <>
       <DeleteKeyDialog
         open={openDeleteKeyDialog}
         setOpenDeleteKeyDialog={setOpenDeleteKeyDialog}
-        selectedKey={selectedKeyID}
-        setSelectedKeyID={setSelectedKeyID} //update path_segment when key is deleted
       />
       <Stack
         direction={"row"}
@@ -52,17 +28,13 @@ const TreeView = ({ treeKeys }: { treeKeys: TranslationTreeKey[] }) => {
           <HeaderBox>
             <Typo1424 textAlign={"center"}>Keys</Typo1424>
           </HeaderBox>
-          <BasicSimpleTreeView
-            selectedKey={selectedKeyID}
-            setSelectedKey={setSelectedKeyID}
-            data={treeKeys}
-          />
+          <BasicSimpleTreeView data={treeKeys} />
         </Stack>
         <Stack width={"100%"} direction={"column"}>
           <HeaderBox>
             <Typo1424 textAlign={"center"}>Language</Typo1424>
           </HeaderBox>
-          {selectedKeyID && (
+          {selectedTreeKey?.has_children === false && (
             <>
               <Stack
                 width={"100%"}

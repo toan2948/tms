@@ -84,8 +84,8 @@ export const filterTranslationKeys = (
       version: key.isNew
         ? 1
         : isUpdatedEnglishKey
-        ? isUpdatedEnglishKey
-        : englishVersion, // Use the updated version if English key is also changed
+          ? isUpdatedEnglishKey
+          : englishVersion, // Use the updated version if English key is also changed
 
       //todo: case of english and other languages are updated at the same time
       last_edited_at: key.last_edited_at,
@@ -320,3 +320,21 @@ export function findParentIdsToRootByFullKeyPath(
 
   return parentIds; // root → closest parent
 }
+
+export const findSelectedKey = (
+  ID: string,
+  filename: string,
+  keyList: {
+    fileName: string;
+    keys: TranslationTreeKey[];
+  }[]
+): TranslationTreeKey | null => {
+  const keysOfCurrentFile = keyList.find((e) => e.fileName === filename)?.keys;
+  if (!keysOfCurrentFile) {
+    console.warn("No keys found for the current file:", filename);
+    return null;
+  }
+  const currentSelectedKey = keysOfCurrentFile.find((k) => k.id === ID);
+
+  return currentSelectedKey || null;
+};

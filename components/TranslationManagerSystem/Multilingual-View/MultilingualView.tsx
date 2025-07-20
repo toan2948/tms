@@ -11,19 +11,19 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
-import { SelectChangeEvent } from "@mui/material/Select";
-import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
-import { SessionDialog } from "./Dialogs/SessionDialog";
-import TreeView from "./TreeView/TreeView";
-import AllChangesView from "./AllChangesVew/AllChangesView";
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
+import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
 import { TranslationTreeKey } from "@/types/translation";
 import {
   fetchAllTranslationFiles,
   fetchTranslationKeysByFilenameAndLanguage,
 } from "@/utils/languages/dataFunctions";
 import { buildKeyTreeFromFlatList } from "@/utils/languages/processData";
+import { SelectChangeEvent } from "@mui/material/Select";
 import { AddKeyField } from "./AddKeyField";
+import AllChangesView from "./AllChangesVew/AllChangesView";
+import { SessionDialog } from "./Dialogs/SessionDialog";
+import TreeView from "./TreeView/TreeView";
 export const HeaderBox = styled(Stack)(({}) => ({
   width: "100%",
   borderBottom: "solid 1px black",
@@ -36,8 +36,9 @@ const MultilingualView = () => {
   const { fileNameState, changeFileName: change } = useFileNameStore();
   const { setSelectedTreeKey } = useKeyStore();
   const handleChange = (event: SelectChangeEvent) => {
-    change(event.target.value as string);
     setSelectedTreeKey(null); // Reset selected key when changing file
+
+    change(event.target.value as string);
     // setFocusedKey(""); // Reset focused key when changing file
   };
 
