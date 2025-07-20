@@ -22,7 +22,7 @@ const AllChangesView = ({
 
   const { setParentIDs } = useTreeKeyStore();
   const { setSelectedTreeKey, DBkeys } = useTreeKeyStore();
-  const { changeFileName } = useFileNameStore();
+  const { setFileName } = useFileNameStore();
   const changedKeys = useMemo(
     () => filterTranslationKeys(filesInfo, DBFilesInfo),
     [filesInfo]
@@ -45,7 +45,7 @@ const AllChangesView = ({
     const filename = group.filename;
     setParentIDs([]); // Reset parent IDs when changing file
 
-    changeFileName(filename); //to build a tree corresponding to the filename
+    setFileName(filename); //to build a tree corresponding to the filename
 
     // This is to ensure that the view updates after the state change
 

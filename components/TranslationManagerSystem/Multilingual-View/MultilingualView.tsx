@@ -34,11 +34,11 @@ export const HeaderBox = styled(Stack)(({}) => ({
   justifyContent: "center",
 }));
 const MultilingualView = () => {
-  const { fileNameState, changeFileName: change } = useFileNameStore();
+  const { fileNameState, setFileName } = useFileNameStore();
   const handleChange = (event: SelectChangeEvent) => {
     setSelectedTreeKey(null); // Reset selected key when changing file
 
-    change(event.target.value as string);
+    setFileName(event.target.value as string);
   };
 
   const [seeAllChanges, setSeeAllChanges] = React.useState(false);

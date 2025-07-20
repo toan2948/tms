@@ -40,7 +40,7 @@ export function SessionDialog({
   const { setSelectedTreeKey, DBkeys } = useTreeKeyStore();
 
   const { setParentIDs } = useTreeKeyStore();
-  const { changeFileName } = useFileNameStore();
+  const { setFileName } = useFileNameStore();
   const changedKeys = filterTranslationKeys(filesInfo, DBFilesInfo);
   const sessionData = formatSessionDialogData(changedKeys);
 
@@ -61,7 +61,7 @@ export function SessionDialog({
 
   // This function can be used to navigate to the specific key in the translation editor
   const handleClick = (fullKeyPath: string, filename: string) => {
-    changeFileName(filename); //to build a tree corresponding to the filename
+    setFileName(filename); //to build a tree corresponding to the filename
     const IDs = findParentIdsToRootByFullKeyPath(
       fullKeyPath,
       DBFilesInfo,
