@@ -43,6 +43,7 @@ const AllChangesView = ({
     //only need a key, no need to care about which language
     const fullKeyPath = group.list[0].fullKeyPath;
     const filename = group.filename;
+    setParentIDs([]); // Reset parent IDs when changing file
 
     changeFileName(filename); //to build a tree corresponding to the filename
 

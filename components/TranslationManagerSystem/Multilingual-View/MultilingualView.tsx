@@ -98,7 +98,7 @@ const MultilingualView = () => {
     } else if (fileNameState) {
       fetchKeysForBuildingTree();
     } else {
-      console.warn("fileNameState is empty, skipping key fetch");
+      console.warn(`${fileNameState} is empty, skipping key fetch`);
     }
   }, [fileNameState, JSON.stringify(DBkeys)]);
 

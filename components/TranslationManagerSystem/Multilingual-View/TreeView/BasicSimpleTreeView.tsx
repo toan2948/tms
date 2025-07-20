@@ -32,10 +32,15 @@ export default function BasicSimpleTreeView({ data }: TreeViewProps) {
     if (!selectedTreeKey?.id) return;
 
     // Expand all parent IDs plus the focused item
-    const newExpanded = Array.from(
-      new Set([...expandedItems, ...parentIDs, selectedTreeKey.id])
-    );
+    const newExpanded = Array.from(new Set([...expandedItems, ...parentIDs]));
     setExpandedItems(newExpanded);
+    // Only update if there are new items to expand
+    if (
+      newExpanded.length !== expandedItems.length ||
+      !newExpanded.every((id) => expandedItems.includes(id))
+    ) {
+      setExpandedItems(newExpanded);
+    }
 
     // Focus after a short delay to ensure the item is expanded
     const timeout = setTimeout(() => {
@@ -62,6 +67,16 @@ export default function BasicSimpleTreeView({ data }: TreeViewProps) {
         onItemClick={(event, itemId) => {
           const theKey = findSelectedKey(itemId, fileNameState, DBkeys);
           setSelectedTreeKey(theKey);
+          // Toggle expanded state if this is a parent node
+          // const isParent = isParentNode(data, itemId);
+          // if (isParent) {
+          //   setExpandedItems(
+          //     (prev) =>
+          //       prev.includes(itemId)
+          //         ? prev.filter((id) => id !== itemId) // collapse
+          //         : [...prev, itemId] // expand
+          //   );
+          // }
         }}
         expandedItems={expandedItems}
         onExpandedItemsChange={(event, newExpandedItems) => {
@@ -72,4 +87,14 @@ export default function BasicSimpleTreeView({ data }: TreeViewProps) {
       </SimpleTreeView>
     </Box>
   );
+}
+function isParentNode(nodes: TranslationTreeKey[], id: string): boolean {
+  for (const node of nodes) {
+    if (node.id === id) return !!node.children?.length;
+    if (node.children?.length) {
+      const found = isParentNode(node.children, id);
+      if (found) return true;
+    }
+  }
+  return false;
 }
