@@ -46,7 +46,6 @@ export const AddKeyField = () => {
       const newKey = {
         id: crypto.randomUUID(),
         full_key_path: trimmedNewKeyState,
-        value: "",
         has_children: false,
         file_id: fileNameState,
         parent_id: parentID,
@@ -57,7 +56,7 @@ export const AddKeyField = () => {
         fullKeyPath: trimmedNewKeyState,
         id: newKey.id,
         isChanged: true,
-        value: newKey.value,
+        value: "",
         version: 1,
         last_edited_at: null,
         has_children: false,

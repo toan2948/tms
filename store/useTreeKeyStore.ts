@@ -33,22 +33,26 @@ export const useTreeKeyStore = create<TreeKeyState>((set, get) => ({
         e.fileName === file_name
     );
     if (!checkFileName) {
+      const updatedDBKeys = [...DBkeys, { fileName: file_name, keys }];
       set(() => ({
-        DBkeys: [...DBkeys, { fileName: file_name, keys }],
+        DBkeys: updatedDBKeys,
       }));
+      localStorage.setItem("DBkeys", JSON.stringify(updatedDBKeys));
     }
   },
 
   addKeyToTree: (key, file_name) => {
     const DBkeys = get().DBkeys;
     const fileIndex = DBkeys.findIndex((e) => e.fileName === file_name);
-
     if (fileIndex !== -1) {
       const updatedKeys = [...DBkeys[fileIndex].keys, key];
+      console.log("updatedKeys", updatedKeys);
       const updatedFile = { ...DBkeys[fileIndex], keys: updatedKeys };
+      console.log("updatedFile", updatedFile);
       const newDBkeys = [...DBkeys];
       newDBkeys[fileIndex] = updatedFile;
       set(() => ({ DBkeys: newDBkeys }));
+      localStorage.setItem("DBkeys", JSON.stringify(newDBkeys));
     } else {
       console.error(`File with name ${file_name} not found in DBkeys.`);
     }

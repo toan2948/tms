@@ -88,19 +88,24 @@ const MultilingualView = () => {
         console.error("Error fetching data:", error);
       }
     }
+    if (!fileNameState) {
+      console.warn("⚠️ fileNameState is empty, skipping fetch");
+      return;
+    }
 
-    // Check if keys are already available in the store
-    if (fileNameState) {
-      const treeKeys = DBkeys.find((e) => e.fileName === fileNameState)?.keys;
-      if (treeKeys) {
-        const tree = buildKeyTreeFromFlatList(treeKeys);
+    const localStorageDBKeys = localStorage.getItem("DBkeys");
 
-        setTreeKeys(tree);
-      } else {
-        fetchKeysForBuildingTree();
-      }
+    if (localStorageDBKeys) {
+      const parsedData: { fileName: string; keys: TranslationTreeKey[] }[] =
+        JSON.parse(localStorageDBKeys);
+      const entry = parsedData.find((e) => e.fileName === fileNameState) || {
+        fileName: fileNameState,
+        keys: [],
+      };
+      setDBKeys(entry.keys, fileNameState);
+      setTreeKeys(buildKeyTreeFromFlatList(entry?.keys));
     } else {
-      console.warn(`${fileNameState} is empty, skipping key fetch`);
+      fetchKeysForBuildingTree();
     }
   }, [fileNameState, JSON.stringify(DBkeys)]);
 
