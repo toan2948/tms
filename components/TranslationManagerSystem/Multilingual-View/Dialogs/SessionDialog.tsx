@@ -69,10 +69,8 @@ export function SessionDialog({
       filename
     );
     setSelectedTreeKey(findSelectedKey(IDs[0], filename, DBkeys));
-    const parentIDs = Array.isArray(IDs) ? IDs.slice(1).reverse() : [];
-    setParentIDs(parentIDs);
+    setParentIDs(Array.isArray(IDs) ? IDs.slice(1).reverse() : []);
     setSeeAllChanges(false); // Close the session dialog and switch to the tree view
-    // console.log("Parent IDs :", parentIDs);
     handleClose();
   };
 

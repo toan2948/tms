@@ -14,7 +14,7 @@ type TreeViewProps = {
 
 export default function BasicSimpleTreeView({ data }: TreeViewProps) {
   const apiRef = useTreeViewApiRef();
-  const { parentIDs } = useTreeKeyStore();
+  const { parentIDs, setParentIDs } = useTreeKeyStore();
   const { selectedTreeKey, setSelectedTreeKey, DBkeys } = useTreeKeyStore();
   const { fileNameState } = useFileNameStore();
   const renderTree = (node: TranslationTreeKey) => (
@@ -29,11 +29,13 @@ export default function BasicSimpleTreeView({ data }: TreeViewProps) {
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
 
   React.useEffect(() => {
-    if (!selectedTreeKey?.id) return;
+    if (!selectedTreeKey?.id) {
+      setExpandedItems([]); //remove all expanding items when open another file
+      return;
+    }
 
     // Expand all parent IDs plus the focused item
     const newExpanded = Array.from(new Set([...expandedItems, ...parentIDs]));
-    setExpandedItems(newExpanded);
     // Only update if there are new items to expand
     if (
       newExpanded.length !== expandedItems.length ||
@@ -56,7 +58,7 @@ export default function BasicSimpleTreeView({ data }: TreeViewProps) {
 
     return () => clearTimeout(timeout); // Cleanup on unmount
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedTreeKey, parentIDs, fileNameState]);
+  }, [selectedTreeKey, fileNameState]);
 
   return (
     <Box sx={{ minWidth: 250, overflowY: "scroll" }}>
@@ -65,6 +67,8 @@ export default function BasicSimpleTreeView({ data }: TreeViewProps) {
         aria-label='custom tree'
         apiRef={apiRef}
         onItemClick={(event, itemId) => {
+          setParentIDs([]); //no longer needed, only need when redirect from AllChangeView or SessionDialog
+
           const theKey = findSelectedKey(itemId, fileNameState, DBkeys);
           setSelectedTreeKey(theKey);
         }}

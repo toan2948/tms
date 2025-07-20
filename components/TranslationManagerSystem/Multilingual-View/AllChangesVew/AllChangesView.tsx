@@ -43,7 +43,6 @@ const AllChangesView = ({
     //only need a key, no need to care about which language
     const fullKeyPath = group.list[0].fullKeyPath;
     const filename = group.filename;
-    setParentIDs([]); // Reset parent IDs when changing file
 
     setFileName(filename); //to build a tree corresponding to the filename
 
@@ -58,8 +57,7 @@ const AllChangesView = ({
     // console.log(" IDs to root:", IDs);
 
     setSelectedTreeKey(findSelectedKey(IDs[0], filename, DBkeys));
-    const parentIDs = Array.isArray(IDs) ? IDs.slice(1).reverse() : [];
-    setParentIDs(parentIDs);
+    setParentIDs(Array.isArray(IDs) ? IDs.slice(1).reverse() : []);
     setSeeAllChanges(false);
   };
 
