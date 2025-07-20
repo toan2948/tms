@@ -12,7 +12,7 @@ import {
 
 const TranslationValueList = () => {
   const { fileNameState } = useFileNameStore();
-  const { fullKeyPathState, selectedTreeKey } = useKeyStore();
+  const { selectedTreeKey } = useKeyStore();
 
   const [valuesState, setValuesState] = React.useState<TranslationValue[]>([]);
   const [showValueList, setShowValueList] = React.useState(false);
@@ -30,13 +30,13 @@ const TranslationValueList = () => {
     setValuesState(
       getTranslationKeys(
         fileNameState,
-        fullKeyPathState,
+        selectedTreeKey?.full_key_path ? selectedTreeKey.full_key_path : "",
         filesInfo,
         selectedTreeKey?.key_path_segment
       )
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fileNameState, fullKeyPathState, selectedTreeKey, changedKeys]); //valuesState in this condition will cause infinite loop
+  }, [fileNameState, selectedTreeKey, changedKeys]); //valuesState in this condition will cause infinite loop
 
   useEffect(() => {
     // console.log("valuesState", valuesState);

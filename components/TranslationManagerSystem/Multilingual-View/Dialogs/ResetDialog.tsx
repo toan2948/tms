@@ -35,7 +35,7 @@ export function ResetDialog({
   const handleClose = () => {
     onClose(false);
   };
-  const { fullKeyPathState: fullKeyPath } = useKeyStore();
+  const { selectedTreeKey } = useKeyStore();
   const { updateKeyChanged, DBFilesInfo } = useEditAllFileStore();
 
   const DBValue = React.useMemo(
@@ -45,7 +45,9 @@ export function ResetDialog({
   const handleReset = () => {
     // console.log("Resetting value to DBValue:", DBValue?.value, value);
     updateKeyChanged({
-      fullKeyPath: fullKeyPath,
+      fullKeyPath: selectedTreeKey?.full_key_path
+        ? selectedTreeKey.full_key_path
+        : "",
       id: data.id,
       isChanged: false,
       value: DBValue?.value ?? "",

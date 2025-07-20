@@ -28,14 +28,17 @@ export function DeleteKeyDialog({
   selectedKey,
   setSelectedKeyID,
 }: DeleteKeyDialogProps) {
-  const { removeKeyFromTree, fullKeyPathState } = useKeyStore();
+  const { removeKeyFromTree, selectedTreeKey } = useKeyStore();
   const { fileNameState } = useFileNameStore();
   const handleClose = () => {
     setOpenDeleteKeyDialog(false);
   };
 
   const handleDelete = async () => {
-    await deleteTranslationKey(fullKeyPathState, fileNameState);
+    await deleteTranslationKey(
+      selectedTreeKey?.full_key_path ? selectedTreeKey.full_key_path : "",
+      fileNameState
+    );
     setOpenDeleteKeyDialog(false);
     removeKeyFromTree(selectedKey, fileNameState); // Remove key from the tree in the store
     setSelectedKeyID(""); // Reset selected key ID after deletion
@@ -53,7 +56,7 @@ export function DeleteKeyDialog({
         <Typography sx={{ padding: "10px" }} component='span'>
           Are you sure to delete this key:
         </Typography>
-        <Typo1624 color='red'>{fullKeyPathState}</Typo1624>
+        <Typo1624 color='red'>{selectedTreeKey?.full_key_path}</Typo1624>
         <Stack direction={"row"} justifyContent={"flex-end"}>
           <Button
             variant='outlined'

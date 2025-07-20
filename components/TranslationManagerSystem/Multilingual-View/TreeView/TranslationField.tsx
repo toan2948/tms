@@ -26,7 +26,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   const [value, setValue] = useState(data.value);
   const [openResetDialog, setOpenResetDialog] = React.useState(false);
 
-  const { fullKeyPathState: fullKeyPath } = useKeyStore();
+  const { selectedTreeKey } = useKeyStore();
   const { updateKeyChanged, DBFilesInfo } = useEditAllFileStore();
 
   //**notice: localStorage is not defined in server-side rendering
@@ -52,7 +52,9 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   };
   const handleSave = () => {
     updateKeyChanged({
-      fullKeyPath: fullKeyPath,
+      fullKeyPath: selectedTreeKey?.full_key_path
+        ? selectedTreeKey.full_key_path
+        : "",
       id: data.id,
       isChanged: true,
       value: value,

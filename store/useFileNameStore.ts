@@ -14,8 +14,6 @@ export const useFileNameStore = create<FilenameState>((set) => ({
 }));
 
 type KeyState = {
-  fullKeyPathState: string;
-  updateFullKeyPathState: (newPath: string) => void;
   selectedTreeKey: TranslationTreeKey | null;
   DBkeys: {
     fileName: string;
@@ -29,13 +27,11 @@ type KeyState = {
 };
 
 export const useKeyStore = create<KeyState>((set, get) => ({
-  fullKeyPathState: "",
   selectedTreeKey: null,
   DBkeys: [],
   setSelectedTreeKey: (key: TranslationTreeKey | null) =>
     set(() => ({ selectedTreeKey: key })),
-  updateFullKeyPathState: (newName: string) =>
-    set(() => ({ fullKeyPathState: newName })),
+
   setDBKeys: (keys: TranslationTreeKey[], file_name: string) => {
     const DBkeys = get().DBkeys;
     const checkFileName = DBkeys.find(
@@ -81,5 +77,5 @@ export const useKeyStore = create<KeyState>((set, get) => ({
   },
 
   //  set(() => ({ DBkeys: keys }))},
-  reset: () => set({ fullKeyPathState: "" }),
+  reset: () => set({ selectedTreeKey: null }),
 }));

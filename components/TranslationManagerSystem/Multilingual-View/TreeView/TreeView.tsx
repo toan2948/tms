@@ -9,12 +9,7 @@ import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
 import { DeleteKeyDialog } from "../Dialogs/DeleteKeyDialog";
 
 const TreeView = ({ treeKeys }: { treeKeys: TranslationTreeKey[] }) => {
-  const {
-    DBkeys,
-    updateFullKeyPathState,
-    setSelectedTreeKey,
-    selectedTreeKey,
-  } = useKeyStore();
+  const { DBkeys, setSelectedTreeKey, selectedTreeKey } = useKeyStore();
   const [selectedKeyID, setSelectedKeyID] = useState<string>("");
   const { fileNameState } = useFileNameStore();
   const [openDeleteKeyDialog, setOpenDeleteKeyDialog] = useState(false);
@@ -35,7 +30,6 @@ const TreeView = ({ treeKeys }: { treeKeys: TranslationTreeKey[] }) => {
     console.log("currentSelectedKey", currentSelectedKey);
     setSelectedTreeKey(currentSelectedKey || null);
     if (currentSelectedKey) {
-      updateFullKeyPathState(currentSelectedKey.full_key_path);
     } else {
       setSelectedKeyID("");
     }
