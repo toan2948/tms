@@ -9,26 +9,35 @@ import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
 import { DeleteKeyDialog } from "../Dialogs/DeleteKeyDialog";
 
 const TreeView = ({ treeKeys }: { treeKeys: TranslationTreeKey[] }) => {
-  const { DBkeys, updateFullKeyPathState } = useKeyStore();
+  const {
+    DBkeys,
+    updateFullKeyPathState,
+    setSelectedTreeKey,
+    selectedTreeKey,
+  } = useKeyStore();
   const [selectedKeyID, setSelectedKeyID] = useState<string>("");
-  const [path_segment, setPathSegment] = useState<string>("");
   const { fileNameState } = useFileNameStore();
   const [openDeleteKeyDialog, setOpenDeleteKeyDialog] = useState(false);
 
   useEffect(() => {
-    const keysInFile = DBkeys.find((e) => e.fileName === fileNameState)?.keys;
-    if (!keysInFile) {
+    const keysOfCurrentFile = DBkeys.find(
+      (e) => e.fileName === fileNameState
+    )?.keys;
+    if (!keysOfCurrentFile) {
       console.warn("No keys found for the current file:", fileNameState);
 
       return;
     }
-    const key = keysInFile.find((k) => k.id === selectedKeyID);
-    if (key) {
-      updateFullKeyPathState(key.full_key_path);
-      setPathSegment(key.key_path_segment);
+    const currentSelectedKey = keysOfCurrentFile.find(
+      (k) => k.id === selectedKeyID
+    );
+
+    console.log("currentSelectedKey", currentSelectedKey);
+    setSelectedTreeKey(currentSelectedKey || null);
+    if (currentSelectedKey) {
+      updateFullKeyPathState(currentSelectedKey.full_key_path);
     } else {
       setSelectedKeyID("");
-      setPathSegment("");
     }
   }, [selectedKeyID, fileNameState]);
   return (
@@ -70,7 +79,7 @@ const TreeView = ({ treeKeys }: { treeKeys: TranslationTreeKey[] }) => {
                 }}
               >
                 <Typo1424 weight={600}>
-                  Key to translate: {path_segment}
+                  Key to translate: {selectedTreeKey?.key_path_segment}
                 </Typo1424>
                 <Button
                   variant={"outlined"}
@@ -90,7 +99,7 @@ const TreeView = ({ treeKeys }: { treeKeys: TranslationTreeKey[] }) => {
                 </Button>
                 <Button variant={"outlined"}>Edit</Button>
               </Stack>
-              <TranslationValueList path_segment={path_segment} />
+              <TranslationValueList />
             </>
           )}
         </Stack>

@@ -13,7 +13,7 @@ import { Dispatch, SetStateAction } from "react";
 import { deleteTranslationKey } from "@/utils/languages/dataFunctions";
 import { toast } from "react-toastify";
 import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
-import { Typo1424, Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
+import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 
 export interface DeleteKeyDialogProps {
   open: boolean;
@@ -53,9 +53,7 @@ export function DeleteKeyDialog({
         <Typography sx={{ padding: "10px" }} component='span'>
           Are you sure to delete this key:
         </Typography>
-        <Typo1624 component='span' color='red'>
-          {fullKeyPathState}
-        </Typo1624>
+        <Typo1624 color='red'>{fullKeyPathState}</Typo1624>
         <Stack direction={"row"} justifyContent={"flex-end"}>
           <Button
             variant='outlined'

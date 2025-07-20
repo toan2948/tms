@@ -31,7 +31,7 @@ const AllChangesView = ({
     [changedKeys]
   );
 
-  console.log("Grouped Keys:", groupedKeys);
+  // console.log("Grouped Keys:", groupedKeys);
 
   // useEffect(() => {
   //   console.log("changedKeys Keys:", changedKeys);

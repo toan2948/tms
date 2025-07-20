@@ -34,8 +34,10 @@ export const HeaderBox = styled(Stack)(({}) => ({
 }));
 const MultilingualView = () => {
   const { fileNameState, changeFileName: change } = useFileNameStore();
+  const { setSelectedTreeKey } = useKeyStore();
   const handleChange = (event: SelectChangeEvent) => {
     change(event.target.value as string);
+    setSelectedTreeKey(null); // Reset selected key when changing file
     // setFocusedKey(""); // Reset focused key when changing file
   };
 

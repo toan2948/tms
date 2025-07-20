@@ -36,7 +36,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   //     : [];
   // }, [data]);
 
-  console.log("TranslationField data:", data);
+  // console.log("TranslationField data:", data);
 
   const DBValue = useMemo(
     () => findKeyStateByIdAcrossFiles(DBFilesInfo, data.id),
