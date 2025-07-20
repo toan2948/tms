@@ -14,8 +14,8 @@ type TreeViewProps = {
 
 export default function BasicSimpleTreeView({ data }: TreeViewProps) {
   const apiRef = useTreeViewApiRef();
-  const { focusedKey, parentIDs } = useTreeKeyStore();
-  const { setSelectedTreeKey, DBkeys } = useKeyStore();
+  const { parentIDs } = useTreeKeyStore();
+  const { selectedTreeKey, setSelectedTreeKey, DBkeys } = useKeyStore();
   const { fileNameState } = useFileNameStore();
   const renderTree = (node: TranslationTreeKey) => (
     <TreeItem
@@ -29,15 +29,13 @@ export default function BasicSimpleTreeView({ data }: TreeViewProps) {
   const [expandedItems, setExpandedItems] = React.useState<string[]>([]);
 
   React.useEffect(() => {
-    if (!focusedKey?.id) return;
+    if (!selectedTreeKey?.id) return;
 
     // Expand all parent IDs plus the focused item
     const newExpanded = Array.from(
-      new Set([...expandedItems, ...parentIDs, focusedKey.id])
+      new Set([...expandedItems, ...parentIDs, selectedTreeKey.id])
     );
     setExpandedItems(newExpanded);
-    const theKey = findSelectedKey(focusedKey.id, fileNameState, DBkeys);
-    setSelectedTreeKey(theKey);
 
     // Focus after a short delay to ensure the item is expanded
     const timeout = setTimeout(() => {
@@ -48,12 +46,12 @@ export default function BasicSimpleTreeView({ data }: TreeViewProps) {
         nativeEvent: {} as Event,
       } as unknown as React.SyntheticEvent;
 
-      apiRef.current?.focusItem(fakeSyntheticEvent, focusedKey.id);
+      apiRef.current?.focusItem(fakeSyntheticEvent, selectedTreeKey.id);
     }, 100);
 
     return () => clearTimeout(timeout); // Cleanup on unmount
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [focusedKey.id, parentIDs, fileNameState]);
+  }, [selectedTreeKey, parentIDs, fileNameState]);
 
   return (
     <Box sx={{ minWidth: 250, overflowY: "scroll" }}>

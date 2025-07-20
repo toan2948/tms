@@ -1,16 +1,17 @@
+import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
+import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
+import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import {
   filterTranslationKeys,
   findParentIdsToRootByFullKeyPath,
+  findSelectedKey,
   GroupedTranslationValues,
   groupTranslationValues,
 } from "@/utils/languages/processData";
 import { Box, Stack } from "@mui/material";
 import React, { useMemo } from "react";
 import TranslationField from "../TreeView/TranslationField";
-import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
-import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { useFileNameStore } from "@/store/useFileNameStore";
 
 const AllChangesView = ({
   setSeeAllChanges,
@@ -19,7 +20,8 @@ const AllChangesView = ({
 }) => {
   const { filesInfo, DBFilesInfo } = useEditAllFileStore();
 
-  const { setFocusedKey, setParentIDs } = useTreeKeyStore();
+  const { setParentIDs } = useTreeKeyStore();
+  const { setSelectedTreeKey, DBkeys } = useKeyStore();
   const { changeFileName } = useFileNameStore();
   const changedKeys = useMemo(
     () => filterTranslationKeys(filesInfo, DBFilesInfo),
@@ -54,10 +56,9 @@ const AllChangesView = ({
     );
     // console.log(" IDs to root:", IDs);
 
-    setFocusedKey(IDs[0]);
+    setSelectedTreeKey(findSelectedKey(IDs[0], filename, DBkeys));
     const parentIDs = Array.isArray(IDs) ? IDs.slice(1).reverse() : [];
     setParentIDs(parentIDs);
-    // console.log("Parent IDs :", parentIDs);
     setSeeAllChanges(false);
   };
 

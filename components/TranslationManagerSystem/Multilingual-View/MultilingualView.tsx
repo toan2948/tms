@@ -39,7 +39,6 @@ const MultilingualView = () => {
     setSelectedTreeKey(null); // Reset selected key when changing file
 
     change(event.target.value as string);
-    // setFocusedKey(""); // Reset focused key when changing file
   };
 
   const [seeAllChanges, setSeeAllChanges] = React.useState(false);

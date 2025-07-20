@@ -1,5 +1,16 @@
-import * as React from "react";
-
+import { useEditAllFileStore } from "@/store/useEditAllFileStore";
+import { useFileNameStore, useKeyStore } from "@/store/useFileNameStore";
+import { useTreeKeyStore } from "@/store/useTreeKeyStore";
+import {
+  fetchAllTranslationFiles,
+  updateChangedKeys,
+} from "@/utils/languages/dataFunctions";
+import {
+  filterTranslationKeys,
+  findParentIdsToRootByFullKeyPath,
+  findSelectedKey,
+  formatSessionDialogData,
+} from "@/utils/languages/processData";
 import {
   Box,
   Button,
@@ -11,19 +22,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
-import {
-  filterTranslationKeys,
-  findParentIdsToRootByFullKeyPath,
-  formatSessionDialogData,
-} from "@/utils/languages/processData";
-import {
-  fetchAllTranslationFiles,
-  updateChangedKeys,
-} from "@/utils/languages/dataFunctions";
 import { toast } from "react-toastify";
-import { useEditAllFileStore } from "@/store/useEditAllFileStore";
-import { useFileNameStore } from "@/store/useFileNameStore";
-import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 export interface SessionDialogProps {
   open: boolean;
   onClose: Dispatch<SetStateAction<boolean>>;
@@ -38,7 +37,9 @@ export function SessionDialog({
   const { filesInfo, setFilesInfo, DBFilesInfo, setDBFilesInfo } =
     useEditAllFileStore();
 
-  const { setFocusedKey, setParentIDs } = useTreeKeyStore();
+  const { setSelectedTreeKey, DBkeys } = useKeyStore();
+
+  const { setParentIDs } = useTreeKeyStore();
   const { changeFileName } = useFileNameStore();
   const changedKeys = filterTranslationKeys(filesInfo, DBFilesInfo);
   const sessionData = formatSessionDialogData(changedKeys);
@@ -58,9 +59,8 @@ export function SessionDialog({
     toast.success("Saved to DB!");
   };
 
+  // This function can be used to navigate to the specific key in the translation editor
   const handleClick = (fullKeyPath: string, filename: string) => {
-    // This function can be used to navigate to the specific key in the translation editor
-
     changeFileName(filename); //to build a tree corresponding to the filename
     const IDs = findParentIdsToRootByFullKeyPath(
       fullKeyPath,
@@ -68,7 +68,7 @@ export function SessionDialog({
       "en",
       filename
     );
-    setFocusedKey(IDs[0]);
+    setSelectedTreeKey(findSelectedKey(IDs[0], filename, DBkeys));
     const parentIDs = Array.isArray(IDs) ? IDs.slice(1).reverse() : [];
     setParentIDs(parentIDs);
     setSeeAllChanges(false); // Close the session dialog and switch to the tree view
