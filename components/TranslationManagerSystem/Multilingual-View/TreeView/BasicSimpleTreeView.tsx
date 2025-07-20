@@ -67,16 +67,6 @@ export default function BasicSimpleTreeView({ data }: TreeViewProps) {
         onItemClick={(event, itemId) => {
           const theKey = findSelectedKey(itemId, fileNameState, DBkeys);
           setSelectedTreeKey(theKey);
-          // Toggle expanded state if this is a parent node
-          // const isParent = isParentNode(data, itemId);
-          // if (isParent) {
-          //   setExpandedItems(
-          //     (prev) =>
-          //       prev.includes(itemId)
-          //         ? prev.filter((id) => id !== itemId) // collapse
-          //         : [...prev, itemId] // expand
-          //   );
-          // }
         }}
         expandedItems={expandedItems}
         onExpandedItemsChange={(event, newExpandedItems) => {
@@ -87,14 +77,4 @@ export default function BasicSimpleTreeView({ data }: TreeViewProps) {
       </SimpleTreeView>
     </Box>
   );
-}
-function isParentNode(nodes: TranslationTreeKey[], id: string): boolean {
-  for (const node of nodes) {
-    if (node.id === id) return !!node.children?.length;
-    if (node.children?.length) {
-      const found = isParentNode(node.children, id);
-      if (found) return true;
-    }
-  }
-  return false;
 }
