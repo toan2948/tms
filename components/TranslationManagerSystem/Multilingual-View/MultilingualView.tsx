@@ -90,13 +90,15 @@ const MultilingualView = () => {
     }
 
     // Check if keys are already available in the store
-    const treeKeys = DBkeys.find((e) => e.fileName === fileNameState)?.keys;
-    if (treeKeys) {
-      const tree = buildKeyTreeFromFlatList(treeKeys);
+    if (fileNameState) {
+      const treeKeys = DBkeys.find((e) => e.fileName === fileNameState)?.keys;
+      if (treeKeys) {
+        const tree = buildKeyTreeFromFlatList(treeKeys);
 
-      setTreeKeys(tree);
-    } else if (fileNameState) {
-      fetchKeysForBuildingTree();
+        setTreeKeys(tree);
+      } else {
+        fetchKeysForBuildingTree();
+      }
     } else {
       console.warn(`${fileNameState} is empty, skipping key fetch`);
     }
