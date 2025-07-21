@@ -2,86 +2,120 @@ import { Typo1224 } from "@/components/ui/StyledElementPaymentDetail";
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { TranslationTreeKey } from "@/types/translation";
+import { KeyState, TranslationTreeKey } from "@/types/translation";
 import { Box, Button, InputAdornment, Stack, TextField } from "@mui/material";
 import { useState } from "react";
 
 export const AddKeyField = () => {
   const { fileNameState } = useFileNameStore();
-  const { addKEyToFilesInfo } = useEditAllFileStore();
-  const { DBkeys, addKeyToTree } = useTreeKeyStore();
+  const { addKeysToFilesInfo } = useEditAllFileStore();
+  const { DBkeys, addKeysToTree } = useTreeKeyStore();
   const [newKeyState, setNewKeyState] = useState("");
   const [isKeyExisted, setIsKeyExisted] = useState(false);
   const [isNewKeyAdded, setIsNewKeyAdded] = useState(false);
   const [openAddKeyField, setOpenAddKeyField] = useState(false);
 
   const handleAddKey = async () => {
-    //check if newKeyState already exists in DBKeys
-    const trimmedNewKeyState = newKeyState.trim();
-    const keys = DBkeys.find(
-      (e: { fileName: string; keys: TranslationTreeKey[] }) =>
-        e.fileName === fileNameState
-    )?.keys;
-    const isKeyExists = keys?.find(
-      (e) => e.full_key_path === trimmedNewKeyState
-    )?.full_key_path;
-    if (isKeyExists) {
+    const trimmedKey = newKeyState.trim();
+    if (!trimmedKey) return;
+
+    const existingKeys =
+      DBkeys.find((e) => e.fileName === fileNameState)?.keys || [];
+    const keyExists = existingKeys.some((e) => e.full_key_path === trimmedKey);
+
+    if (keyExists) {
       setIsKeyExisted(true);
-      setTimeout(() => {
-        setIsKeyExisted(false);
-      }, 4000);
-      console.log(`Key "${trimmedNewKeyState}" already exists.`);
-    } else {
-      setIsKeyExisted(false);
-      const keySegments = trimmedNewKeyState.split(".");
-      const level = keySegments.length - 1;
-      const keyPathSegment = keySegments[keySegments.length - 1];
-
-      const parentKey = keySegments.slice(0, -1).join(".") || null;
-      const parentID =
-        DBkeys.find((e) => e.fileName === fileNameState)?.keys.find(
-          (e) => e.full_key_path === parentKey
-        )?.id || null;
-
-      const newKey = {
-        id: crypto.randomUUID(),
-        full_key_path: trimmedNewKeyState,
-        has_children: false,
-        file_id: fileNameState,
-        parent_id: parentID,
-        level,
-        key_path_segment: keyPathSegment,
-      };
-      const newKeyForFileInfo = {
-        fullKeyPath: trimmedNewKeyState,
-        id: newKey.id,
-        isChanged: true,
-        value: "",
-        version: 1,
-        last_edited_at: null,
-        has_children: false,
-        parent_id: newKey.parent_id,
-        isNew: true, // Indicates that this key is newly added
-      };
-      addKeyToTree(newKey, fileNameState);
-      addKEyToFilesInfo(newKeyForFileInfo, fileNameState);
-      setIsNewKeyAdded(true);
-      setTimeout(() => {
-        setIsNewKeyAdded(false);
-        setNewKeyState("");
-      }, 4000);
-      // await addKeyToAllFilesWithSameName({
-      //   filename: fileNameState,
-      //   fullKeyPath: newKeyState,
-      // })
-      //   .then(() => {
-      //     console.log(`Key "${newKeyState}" added successfully.`);
-      //   })
-      //   .catch((error) => {
-      //     console.error("Error adding key:", error);
-      //   });
+      setTimeout(() => setIsKeyExisted(false), 4000);
+      return;
     }
+
+    const keysToAdd: TranslationTreeKey[] = [];
+    const fileInfoUpdates: KeyState[] = [];
+
+    const keySegments = trimmedKey.split(".");
+    let parentID: string | null = null;
+
+    // Add missing parent keys (from root down to parent of leaf)
+    for (let i = 0; i < keySegments.length - 1; i++) {
+      const currentPath = keySegments.slice(0, i + 1).join(".");
+      const exists = existingKeys.some((k) => k.full_key_path === currentPath);
+      if (!exists) {
+        const newParent: TranslationTreeKey = {
+          id: crypto.randomUUID(),
+          full_key_path: currentPath,
+          has_children: true,
+          file_id: fileNameState,
+          parent_id: parentID,
+          level: i,
+          key_path_segment: keySegments[i],
+        };
+
+        keysToAdd.push(newParent);
+
+        fileInfoUpdates.push({
+          fullKeyPath: currentPath,
+          id: newParent.id,
+          isChanged: true,
+          value: null,
+          version: 1,
+          last_edited_at: null,
+          has_children: true,
+          parent_id: parentID,
+          isNew: true,
+        });
+
+        parentID = newParent.id;
+      } else {
+        // If it exists, fetch its ID as parent
+        parentID =
+          existingKeys.find((k) => k.full_key_path === currentPath)?.id || null;
+      }
+    }
+
+    // Add final leaf key
+    const newLeaf: TranslationTreeKey = {
+      id: crypto.randomUUID(),
+      full_key_path: trimmedKey,
+      has_children: false,
+      file_id: fileNameState,
+      parent_id: parentID,
+      level: keySegments.length - 1,
+      key_path_segment: keySegments[keySegments.length - 1],
+    };
+
+    keysToAdd.push(newLeaf);
+
+    fileInfoUpdates.push({
+      fullKeyPath: trimmedKey,
+      id: newLeaf.id,
+      isChanged: true,
+      value: null,
+      version: 1,
+      last_edited_at: null,
+      has_children: false,
+      parent_id: parentID,
+      isNew: true,
+    });
+
+    // ✅ Use the batch store actions
+    addKeysToTree(keysToAdd, fileNameState);
+    addKeysToFilesInfo(fileInfoUpdates, fileNameState);
+
+    setNewKeyState("");
+    setIsNewKeyAdded(true);
+    setTimeout(() => setIsNewKeyAdded(false), 4000);
   };
+
+  // await addKeyToAllFilesWithSameName({
+  //   filename: fileNameState,
+  //   fullKeyPath: newKeyState,
+  // })
+  //   .then(() => {
+  //     console.log(`Key "${newKeyState}" added successfully.`);
+  //   })
+  //   .catch((error) => {
+  //     console.error("Error adding key:", error);
+  //   });
 
   return (
     <Stack direction={"column"}>

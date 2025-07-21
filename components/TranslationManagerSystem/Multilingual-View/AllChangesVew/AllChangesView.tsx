@@ -25,19 +25,24 @@ const AllChangesView = ({
   const { setFileName } = useFileNameStore();
   const changedKeys = useMemo(
     () => filterTranslationKeys(filesInfo, DBFilesInfo),
-    [filesInfo]
+    [filesInfo, DBFilesInfo]
   );
+  const newKeys = useMemo(
+    () =>
+      changedKeys.filter(
+        (key) => key.isNew && key.language_code === "en" //reduce the key to english language only
+      ),
+    [changedKeys]
+  );
+
+  console.log("changedKeys", changedKeys);
 
   const groupedKeys = useMemo(
     () => groupTranslationValues(changedKeys),
     [changedKeys]
   );
 
-  // console.log("Grouped Keys:", groupedKeys);
-
-  // useEffect(() => {
-  //   console.log("changedKeys Keys:", changedKeys);
-  // }, [changedKeys]);
+  console.log("groupedKeys", groupedKeys);
 
   const handleGroupClick = (group: GroupedTranslationValues) => {
     //only need a key, no need to care about which language
@@ -63,7 +68,8 @@ const AllChangesView = ({
 
   return (
     <Box>
-      {groupedKeys && groupedKeys.length > 0 ? (
+      {groupedKeys &&
+        groupedKeys.length > 0 &&
         groupedKeys.map((group, index) => (
           <Stack key={index} sx={{ margin: "30px 0" }}>
             <Typo1624
@@ -84,10 +90,22 @@ const AllChangesView = ({
               ))}
             </Box>
           </Stack>
-        ))
-      ) : (
-        <Box>No changes made.</Box>
+        ))}
+
+      {newKeys && (
+        <Stack sx={{ margin: "30px 0" }}>
+          <Typo1624 weight={600} color='green'>
+            New Keys
+          </Typo1624>
+          <Box width={"95%"} alignSelf={"end"}>
+            {newKeys.map((item, index) => (
+              <Typo1624 key={index}>{item.fullKeyPath}</Typo1624>
+            ))}
+          </Box>
+        </Stack>
       )}
+
+      {!groupedKeys && !newKeys && <Box>No changes made.</Box>}
     </Box>
   );
 };
