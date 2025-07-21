@@ -9,7 +9,7 @@ import {
   GroupedTranslationValues,
   groupTranslationValues,
 } from "@/utils/languages/processData";
-import { Box, Stack } from "@mui/material";
+import { Box, Divider, Stack } from "@mui/material";
 import React, { useMemo } from "react";
 import TranslationField from "../TreeView/TranslationField";
 
@@ -68,29 +68,36 @@ const AllChangesView = ({
 
   return (
     <Box>
-      {groupedKeys &&
-        groupedKeys.length > 0 &&
-        groupedKeys.map((group, index) => (
-          <Stack key={index} sx={{ margin: "30px 0" }}>
-            <Typo1624
-              weight={600}
-              color={group.color}
-              sx={{ cursor: "pointer" }}
-              onClick={() => handleGroupClick(group)}
-            >
-              {group.filename}.{group.fullKeyPath}
-            </Typo1624>
-            <Box width={"95%"} alignSelf={"end"}>
-              {group.list.map((item, itemIndex) => (
-                <TranslationField
-                  key={itemIndex}
-                  index={itemIndex}
-                  data={item}
-                />
-              ))}
-            </Box>
-          </Stack>
-        ))}
+      {groupedKeys && groupedKeys.length > 0 && (
+        <>
+          <Typo1624 weight={600} color='green'>
+            Edited Keys:
+          </Typo1624>
+
+          {groupedKeys.map((group, index) => (
+            <Stack key={index} sx={{ margin: "30px 0" }}>
+              <Typo1624
+                weight={600}
+                color={group.color}
+                sx={{ cursor: "pointer" }}
+                onClick={() => handleGroupClick(group)}
+              >
+                {group.filename}.{group.fullKeyPath}
+              </Typo1624>
+              <Box width={"95%"} alignSelf={"end"}>
+                {group.list.map((item, itemIndex) => (
+                  <TranslationField
+                    key={itemIndex}
+                    index={itemIndex}
+                    data={item}
+                  />
+                ))}
+              </Box>
+            </Stack>
+          ))}
+        </>
+      )}
+      <Divider sx={{ margin: "20px 0" }} />
 
       {newKeys && (
         <Stack sx={{ margin: "30px 0" }}>

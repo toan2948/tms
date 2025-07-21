@@ -102,8 +102,12 @@ const MultilingualView = () => {
         fileName: fileNameState,
         keys: [],
       };
-      setDBKeys(entry.keys, fileNameState);
-      setTreeKeys(buildKeyTreeFromFlatList(entry?.keys));
+      if (entry?.keys.length > 0) {
+        setDBKeys(entry.keys, fileNameState);
+        setTreeKeys(buildKeyTreeFromFlatList(entry?.keys));
+      } else {
+        fetchKeysForBuildingTree();
+      }
     } else {
       fetchKeysForBuildingTree();
     }
