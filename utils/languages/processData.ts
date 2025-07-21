@@ -41,7 +41,7 @@ export const filterTranslationKeys = (
   // 1st Step: filter out the changed keys from localStorageFilesInfo and updated version temporarily
   const changedKeys = localStorageFilesInfo.flatMap((file) =>
     file.keys
-      .filter((key) => key.isChanged)
+      .filter((key) => key.isChanged || key.isNew)
       .map((key) => {
         // Find the corresponding key in the localStorageDBValues
         const old_value = findKeyById(DBFilesInfo, key.id);
@@ -111,12 +111,16 @@ const colorPalette = [
 
 export const formatSessionDialogData = (changedKeys: TranslationValue[]) => {
   // 2. Group language codes by "filename: fullKeyPath"
+
+  const editedKeys = changedKeys.filter((e) => !e.isNew);
+
+  console.log("editedKeys", editedKeys);
   const groupedMap = new Map<
     string,
     { filename: string; fullKeyPath: string; languages: Set<string> }
   >();
 
-  changedKeys.forEach((item) => {
+  editedKeys.forEach((item) => {
     const groupKey = `${item.filename}: ${item.fullKeyPath}`;
     if (!groupedMap.has(groupKey)) {
       groupedMap.set(groupKey, {
@@ -249,11 +253,12 @@ export type GroupedTranslationValues = {
 };
 
 export const groupTranslationValues = (
-  values: TranslationValueWithOld[]
+  keys: TranslationValueWithOld[]
 ): GroupedTranslationValues[] => {
   const groupedMap = new Map<string, GroupedTranslationValues>();
 
-  values.forEach((item) => {
+  const editedKeys = keys.filter((e) => !e.isNew);
+  editedKeys.forEach((item) => {
     const key = `${item.filename}:::${item.fullKeyPath}`; // unique composite key
 
     if (!groupedMap.has(key)) {

@@ -42,9 +42,14 @@ export function SessionDialog({
   const { setParentIDs } = useTreeKeyStore();
   const { setFileName } = useFileNameStore();
   const changedKeys = filterTranslationKeys(filesInfo, DBFilesInfo);
-  const sessionData = formatSessionDialogData(changedKeys);
 
-  // console.log("changedKeys sessiondialog", changedKeys);
+  const newKeys = changedKeys.filter(
+    (key) => key.isNew && key.language_code === "en" //reduce the key to english language only
+  );
+
+  const editedKeysSessionFormat = formatSessionDialogData(changedKeys);
+
+  console.log("changedKeys sessiondialog", changedKeys);
   const handleClose = () => {
     onClose(false);
   };
@@ -76,15 +81,15 @@ export function SessionDialog({
 
   return (
     <Dialog onClose={handleClose} open={open}>
-      <DialogTitle textAlign={"center"}>Save Session?</DialogTitle>
+      <DialogTitle textAlign={"center"}>Session Changes</DialogTitle>
 
-      {sessionData && sessionData.length > 0 ? (
+      {editedKeysSessionFormat && editedKeysSessionFormat.length > 0 && (
         <Box
           sx={{
             padding: "10px",
           }}
         >
-          <Typography>Save these changes:</Typography>
+          <Typography>Changes on key values:</Typography>
 
           <Box
             sx={{
@@ -95,7 +100,7 @@ export function SessionDialog({
             }}
           >
             <List sx={{ pt: 0 }}>
-              {sessionData.map((item, index) => (
+              {editedKeysSessionFormat.map((item, index) => (
                 <ListItem
                   key={index}
                   sx={{
@@ -122,11 +127,61 @@ export function SessionDialog({
               Cancel
             </Button>
             <Button variant='contained' onClick={updateDB}>
-              Save
+              Save Changes
             </Button>
           </Stack>
         </Box>
-      ) : (
+      )}
+      {newKeys && newKeys.length > 0 && (
+        <Box
+          sx={{
+            padding: "10px",
+          }}
+        >
+          <Typography>New keys:</Typography>
+
+          <Box
+            sx={{
+              border: "1px solid black",
+              padding: "10px",
+              marginBottom: "10px",
+            }}
+          >
+            <List sx={{ pt: 0 }}>
+              {newKeys.map((item, index) => (
+                <ListItem
+                  key={index}
+                  sx={{
+                    borderRadius: "5px",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    handleClick(item.fullKeyPath, item.filename);
+                  }}
+                >
+                  <Typography> {item.fullKeyPath}</Typography>
+                </ListItem>
+              ))}
+            </List>
+          </Box>
+          <Stack direction={"row"} justifyContent={"flex-end"}>
+            <Button
+              variant='outlined'
+              sx={{
+                marginRight: "10px",
+              }}
+              onClick={handleClose}
+            >
+              Cancel
+            </Button>
+            <Button variant='contained' onClick={() => ""}>
+              Save New Keys
+            </Button>
+          </Stack>
+        </Box>
+      )}
+
+      {!editedKeysSessionFormat && !newKeys && (
         <Box
           sx={{
             padding: "10px",
