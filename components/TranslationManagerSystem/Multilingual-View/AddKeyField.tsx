@@ -59,6 +59,7 @@ export const AddKeyField = () => {
           parent_id: parentID,
           level: i,
           key_path_segment: keySegments[i],
+          notes: null,
         };
 
         keysToAdd.push(newParent);
@@ -72,6 +73,7 @@ export const AddKeyField = () => {
           last_edited_at: null,
           has_children: true,
           parent_id: parentID,
+          notes: null,
           isNew: true,
         });
 
@@ -92,6 +94,7 @@ export const AddKeyField = () => {
       parent_id: parentID,
       level: keySegments.length - 1,
       key_path_segment: keySegments[keySegments.length - 1],
+      notes: null,
     };
 
     keysToAdd.push(newLeaf);
@@ -105,6 +108,7 @@ export const AddKeyField = () => {
       last_edited_at: null,
       has_children: false,
       parent_id: parentID,
+      notes: null,
       isNew: true,
     });
 

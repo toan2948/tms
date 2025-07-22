@@ -6,6 +6,7 @@ interface BaseTranslationKey {
   full_key_path: string;
   level: number;
   has_children: boolean;
+  notes: string | null;
 }
 export interface TranslationKey extends BaseTranslationKey {
   value: string | null;
@@ -33,6 +34,7 @@ export type KeyState = {
   last_edited_at: Date | null;
   has_children: boolean;
   parent_id: string | null;
+  notes: string | null;
   isNew?: boolean; // Indicates if the key is newly added
 };
 export interface LanguageInfo {
@@ -56,6 +58,7 @@ export type TranslationValue = {
   last_edited_at: Date | null;
   has_children: boolean;
   parent_id: string | null;
+  notes: string | null;
   isNew?: boolean; // Indicates if the value is newly added
 };
 export type TranslationValueWithOld = TranslationValue & {

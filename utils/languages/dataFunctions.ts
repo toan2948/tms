@@ -46,7 +46,7 @@ export async function fetchTranslationKeysByFilenameAndLanguage(
   const { data: keys, error: keyError } = await supabase
     .from("translation_keys")
     .select(
-      "id, file_id, parent_id, key_path_segment, full_key_path, level, has_children"
+      "id, file_id, parent_id, key_path_segment, full_key_path, level, has_children, notes"
     )
     .eq("file_id", file.id)
     .order("level", { ascending: true });
@@ -81,7 +81,7 @@ export async function fetchAllTranslationFiles() {
   const { data: keys, error: keysError } = await supabase
     .from("translation_keys")
     .select(
-      "file_id, full_key_path, value, id, version, last_edited_at, has_children, parent_id"
+      "file_id, full_key_path, value, id, version, last_edited_at, has_children, parent_id, notes"
     )
     .in("file_id", fileIds);
 
@@ -102,6 +102,7 @@ export async function fetchAllTranslationFiles() {
         last_edited_at: Date | null;
         has_children: boolean;
         parent_id: string | null;
+        notes: string | null;
       }>
     >
   >((acc, k) => {
@@ -115,6 +116,7 @@ export async function fetchAllTranslationFiles() {
       isChanged: false, // default false for now
       has_children: k.has_children,
       parent_id: k.parent_id,
+      notes: k.notes || null,
     });
     return acc;
   }, {});
