@@ -88,29 +88,32 @@ const MultilingualView = () => {
         console.error("Error fetching data:", error);
       }
     }
-    if (!fileNameState) {
-      console.warn("⚠️ fileNameState is empty, skipping fetch");
-      return;
-    }
+    //always fetch keys when fileNameState changes, or the page is mounted. That will update the key changes (edited, deleted, added)
 
-    const localStorageDBKeys = localStorage.getItem("DBkeys");
+    fetchKeysForBuildingTree();
+    // if (!fileNameState) {
+    //   console.warn("⚠️ fileNameState is empty, skipping fetch");
+    //   return;
+    // }
 
-    if (localStorageDBKeys) {
-      const parsedData: { fileName: string; keys: TranslationTreeKey[] }[] =
-        JSON.parse(localStorageDBKeys);
-      const entry = parsedData.find((e) => e.fileName === fileNameState) || {
-        fileName: fileNameState,
-        keys: [],
-      };
-      if (entry?.keys.length > 0) {
-        setDBKeys(entry.keys, fileNameState);
-        setTreeKeys(buildKeyTreeFromFlatList(entry?.keys));
-      } else {
-        fetchKeysForBuildingTree();
-      }
-    } else {
-      fetchKeysForBuildingTree();
-    }
+    // const localStorageDBKeys = localStorage.getItem("DBkeys");
+
+    // if (localStorageDBKeys) {
+    //   const parsedData: { fileName: string; keys: TranslationTreeKey[] }[] =
+    //     JSON.parse(localStorageDBKeys);
+    //   const entry = parsedData.find((e) => e.fileName === fileNameState) || {
+    //     fileName: fileNameState,
+    //     keys: [],
+    //   };
+    //   if (entry?.keys.length > 0) {
+    //     setDBKeys(entry.keys, fileNameState);
+    //     setTreeKeys(buildKeyTreeFromFlatList(entry?.keys));
+    //   } else {
+    //     fetchKeysForBuildingTree();
+    //   }
+    // } else {
+    //   fetchKeysForBuildingTree();
+    // }
   }, [fileNameState, JSON.stringify(DBkeys)]);
 
   return (
