@@ -44,12 +44,12 @@ export function SessionDialog({
   const changedKeys = filterTranslationKeys(filesInfo, DBFilesInfo);
 
   const newKeys = changedKeys.filter(
-    (key) => key.isNew && key.language_code === "en" //reduce the key to english language only
+    (key) => key.isNew && key.language_code === "en" && !key.has_children //reduce the key to english language only
   );
 
   const editedKeysSessionFormat = formatSessionDialogData(changedKeys);
 
-  console.log("changedKeys sessiondialog", changedKeys);
+  // console.log("changedKeys session dialog", changedKeys);
   const handleClose = () => {
     onClose(false);
   };

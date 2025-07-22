@@ -54,7 +54,7 @@ export const filterTranslationKeys = (
           language_code: file.language_code,
           language_name: file.language_name,
           filename: file.fileName,
-          version: key.version + 1, // Increment version for local changes
+          version: !key.value ? 0 : key.version + 1, // Increment version for local changes
           last_edited_at: key.last_edited_at,
           has_children: key.has_children,
           parent_id: key.parent_id,
@@ -81,11 +81,13 @@ export const filterTranslationKeys = (
       language_code: key.language_code,
       language_name: key.language_name,
       filename: key.filename,
-      version: key.isNew
-        ? 1
-        : isUpdatedEnglishKey
-          ? isUpdatedEnglishKey
-          : englishVersion, // Use the updated version if English key is also changed
+      version: !key.value
+        ? 0
+        : key.isNew
+          ? 1
+          : isUpdatedEnglishKey
+            ? isUpdatedEnglishKey
+            : englishVersion, // Use the updated version if English key is also changed
 
       //todo: case of english and other languages are updated at the same time
       last_edited_at: key.last_edited_at,
@@ -114,7 +116,7 @@ export const formatSessionDialogData = (changedKeys: TranslationValue[]) => {
 
   const editedKeys = changedKeys.filter((e) => !e.isNew);
 
-  console.log("editedKeys", editedKeys);
+  // console.log("editedKeys", editedKeys);
   const groupedMap = new Map<
     string,
     { filename: string; fullKeyPath: string; languages: Set<string> }

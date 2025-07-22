@@ -30,19 +30,19 @@ const AllChangesView = ({
   const newKeys = useMemo(
     () =>
       changedKeys.filter(
-        (key) => key.isNew && key.language_code === "en" //reduce the key to english language only
+        (key) => key.isNew && key.language_code === "en" && !key.has_children //reduce the key to english language only and has no children
       ),
     [changedKeys]
   );
 
-  console.log("changedKeys", changedKeys);
+  // console.log("changedKeys", changedKeys);
 
   const groupedKeys = useMemo(
     () => groupTranslationValues(changedKeys),
     [changedKeys]
   );
 
-  console.log("groupedKeys", groupedKeys);
+  // console.log("groupedKeys", groupedKeys);
 
   const handleGroupClick = (group: GroupedTranslationValues) => {
     //only need a key, no need to care about which language
