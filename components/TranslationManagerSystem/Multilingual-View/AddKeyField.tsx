@@ -14,10 +14,21 @@ export const AddKeyField = () => {
   const [isKeyExisted, setIsKeyExisted] = useState(false);
   const [isNewKeyAdded, setIsNewKeyAdded] = useState(false);
   const [openAddKeyField, setOpenAddKeyField] = useState(false);
-
+  const [error, setError] = useState(false);
+  const [showHelperText, setShowHelperText] = useState(false);
   const handleAddKey = async () => {
     const trimmedKey = newKeyState.trim();
+    const isValid = /^[a-zA-Z0-9._]*$/.test(trimmedKey);
     if (!trimmedKey) return;
+    if (!isValid) {
+      setError(true);
+      setShowHelperText(true);
+      setTimeout(() => {
+        setShowHelperText(false);
+        setError(false);
+      }, 3000);
+      return;
+    }
 
     const existingKeys =
       DBkeys.find((e) => e.fileName === fileNameState)?.keys || [];
@@ -97,6 +108,7 @@ export const AddKeyField = () => {
       isNew: true,
     });
 
+    console.log("Keys to add:", keysToAdd);
     // ✅ Use the batch store actions
     addKeysToTree(keysToAdd, fileNameState);
     addKeysToFilesInfo(fileInfoUpdates, fileNameState);
@@ -132,6 +144,12 @@ export const AddKeyField = () => {
             onChange={(e) => setNewKeyState(e.target.value)}
             variant='outlined'
             value={newKeyState}
+            error={error}
+            helperText={
+              showHelperText
+                ? "Only letters, numbers, dot (.) and underscore (_) allowed"
+                : ""
+            }
             sx={{
               display: openAddKeyField ? "block" : "none", // ✅ hide instead of unmount
               "& .MuiOutlinedInput-root": {
