@@ -124,6 +124,7 @@ export const AddKeyField = () => {
         file_id: file.fileName,
         parent_id: parentID,
         level: keySegments.length - 1,
+
         key_path_segment: keySegments[keySegments.length - 1],
       };
 
@@ -134,13 +135,14 @@ export const AddKeyField = () => {
         id: leafId,
         isChanged: true,
         value: null,
-        version: 1,
+        version: 0,
         last_edited_at: null,
         has_children: false,
         parent_id: parentID,
         isNew: true,
         notes: null,
         old_value: null,
+        old_version: 0,
       });
 
       // Batch add to store

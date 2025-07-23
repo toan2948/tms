@@ -76,10 +76,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   }, [data.value]);
 
   useEffect(() => {
-    if (
-      normalizeEmpty(data.old_value) !== normalizeEmpty(data.value) &&
-      data.isNew !== true
-    ) {
+    if (normalizeEmpty(data.old_value) !== normalizeEmpty(data.value)) {
       //set the reset button at initial render
       setIsResetButtonEnabled(true);
     } else {
