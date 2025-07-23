@@ -62,9 +62,7 @@ const MultilingualView = () => {
 
         if (localStorageFilesInfo !== null && localStorageFilesInfo !== "[]") {
           console.log("Using data from localStorage");
-          const parsedData = populateOldValuesAndOldVersion(
-            JSON.parse(localStorageFilesInfo)
-          );
+          const parsedData = JSON.parse(localStorageFilesInfo);
           setFilesInfo(parsedData);
         } else {
           setFilesInfo(populateOldValuesAndOldVersion(data));
