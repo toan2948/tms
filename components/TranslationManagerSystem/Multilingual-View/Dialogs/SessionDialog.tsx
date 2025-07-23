@@ -10,6 +10,7 @@ import {
   findParentIdsToRootByFullKeyPath,
   findSelectedKey,
   formatSessionDialogData,
+  populateOldValuesAndOldVersion,
 } from "@/utils/languages/processData";
 import {
   Box,
@@ -34,14 +35,13 @@ export function SessionDialog({
   onClose,
   setSeeAllChanges,
 }: SessionDialogProps) {
-  const { filesInfo, setFilesInfo, DBFilesInfo, setDBFilesInfo } =
-    useEditAllFileStore();
+  const { filesInfo, setFilesInfo } = useEditAllFileStore();
 
   const { setSelectedTreeKey, DBkeys } = useTreeKeyStore();
 
   const { setParentIDs } = useTreeKeyStore();
   const { setFileName } = useFileNameStore();
-  const changedKeys = filterTranslationKeys(filesInfo, DBFilesInfo);
+  const changedKeys = filterTranslationKeys(filesInfo);
 
   const newKeys = changedKeys.filter(
     (key) => key.isNew && key.language_code === "en" && !key.has_children //reduce the key to english language only
@@ -57,9 +57,8 @@ export function SessionDialog({
   const updateDB = async () => {
     await updateChangedKeys(changedKeys);
     onClose(false);
-    const data = await fetchAllTranslationFiles();
-    setFilesInfo(data);
-    setDBFilesInfo(data);
+    const data = await fetchAllTranslationFiles(); // Fetch updated data from the DB
+    setFilesInfo(populateOldValuesAndOldVersion(data));
     localStorage.setItem("translationEdits", JSON.stringify(data));
     toast.success("Saved to DB!");
   };
@@ -69,7 +68,7 @@ export function SessionDialog({
     setFileName(filename); //to build a tree corresponding to the filename
     const IDs = findParentIdsToRootByFullKeyPath(
       fullKeyPath,
-      DBFilesInfo,
+      filesInfo,
       "en",
       filename
     );

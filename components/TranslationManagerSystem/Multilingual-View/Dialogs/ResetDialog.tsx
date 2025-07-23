@@ -2,8 +2,7 @@ import * as React from "react";
 
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { TranslationValue, TranslationValueWithOld } from "@/types/translation";
-import { findKeyStateByIdAcrossFiles } from "@/utils/languages/processData";
+import { TranslationValue } from "@/types/translation";
 import {
   Box,
   Button,
@@ -21,7 +20,7 @@ export interface DialogProps {
 
   setIsSaveButtonEnabled: React.Dispatch<React.SetStateAction<boolean>>;
   setIsResetButtonEnabled: React.Dispatch<React.SetStateAction<boolean>>;
-  data: TranslationValue | TranslationValueWithOld;
+  data: TranslationValue;
 }
 
 export function ResetDialog({
@@ -36,12 +35,8 @@ export function ResetDialog({
     onClose(false);
   };
   const { selectedTreeKey } = useTreeKeyStore();
-  const { updateKeyChanged, DBFilesInfo } = useEditAllFileStore();
+  const { updateKeyChanged } = useEditAllFileStore();
 
-  const DBValue = React.useMemo(
-    () => findKeyStateByIdAcrossFiles(DBFilesInfo, data.id),
-    [data.id, DBFilesInfo]
-  );
   const handleReset = () => {
     // console.log("Resetting value to DBValue:", DBValue?.value, value);
     updateKeyChanged({
@@ -50,15 +45,17 @@ export function ResetDialog({
         : "",
       id: data.id,
       isChanged: false,
-      value: DBValue?.value ?? "",
-      version: data.version ? data.version - 1 : 0,
-      last_edited_at: DBValue?.last_edited_at
-        ? new Date(DBValue.last_edited_at)
+      value: data.old_value ?? "",
+      version: data.old_version ?? 0,
+      last_edited_at: data?.last_edited_at //old_edit
+        ? new Date(data.last_edited_at) //old_edit
         : new Date(),
       has_children: data.has_children,
       parent_id: data.parent_id,
+      notes: data.notes,
+      old_value: data.old_value, // Store the old value before resetting
     });
-    setValue(DBValue?.value ?? "");
+    setValue(data.old_value ?? ""); // Reset the value to the old value
     setIsSaveButtonEnabled(false);
     setIsResetButtonEnabled(false);
     onClose(false);

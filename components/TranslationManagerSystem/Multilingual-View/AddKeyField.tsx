@@ -45,7 +45,7 @@ export const AddKeyField = () => {
     const matchingFiles = filesInfo.filter(
       (entry) => entry.fileName === fileNameState
     );
-    console.log("Matching files:", matchingFiles);
+    // console.log("Matching files:", matchingFiles);
 
     let duplicateFound = false;
 
@@ -105,6 +105,7 @@ export const AddKeyField = () => {
             parent_id: parentID,
             isNew: true,
             notes: null,
+            old_value: null,
           });
 
           parentID = newParentId;
@@ -139,6 +140,7 @@ export const AddKeyField = () => {
         parent_id: parentID,
         isNew: true,
         notes: null,
+        old_value: null,
       });
 
       // Batch add to store

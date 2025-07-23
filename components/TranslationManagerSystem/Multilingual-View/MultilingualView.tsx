@@ -20,7 +20,10 @@ import {
   fetchLanguages,
   fetchTranslationKeysByFilenameAndLanguage,
 } from "@/utils/languages/dataFunctions";
-import { buildKeyTreeFromFlatList } from "@/utils/languages/processData";
+import {
+  buildKeyTreeFromFlatList,
+  populateOldValuesAndOldVersion,
+} from "@/utils/languages/processData";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { AddKeyField } from "./AddKeyField";
 import AllChangesView from "./AllChangesVew/AllChangesView";
@@ -48,7 +51,7 @@ const MultilingualView = () => {
 
   const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
   const { DBkeys, setDBKeys, setSelectedTreeKey } = useTreeKeyStore();
-  const { setFilesInfo, setDBFilesInfo, setLanguages } = useEditAllFileStore();
+  const { setFilesInfo, setLanguages } = useEditAllFileStore();
 
   // Fetch file data once on mount
   useEffect(() => {
@@ -59,13 +62,17 @@ const MultilingualView = () => {
 
         if (localStorageFilesInfo !== null && localStorageFilesInfo !== "[]") {
           console.log("Using data from localStorage");
-          const parsedData = JSON.parse(localStorageFilesInfo);
+          const parsedData = populateOldValuesAndOldVersion(
+            JSON.parse(localStorageFilesInfo)
+          );
           setFilesInfo(parsedData);
         } else {
-          setFilesInfo(data);
-          localStorage.setItem("translationEdits", JSON.stringify(data));
+          setFilesInfo(populateOldValuesAndOldVersion(data));
+          localStorage.setItem(
+            "translationEdits",
+            JSON.stringify(populateOldValuesAndOldVersion(data))
+          );
         }
-        setDBFilesInfo(data);
       } catch (error) {
         console.error("Error loading translation data:", error);
       }
@@ -78,7 +85,7 @@ const MultilingualView = () => {
     async function fetchAndSaveLanguages() {
       try {
         const lgs = await fetchLanguages();
-        console.log("Fetched languages:", lgs);
+        // console.log("Fetched languages:", lgs);
         setLanguages(lgs);
       } catch (error) {
         console.error("Error fetching languages:", error);

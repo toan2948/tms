@@ -25,6 +25,11 @@ export interface TranslationKey extends BaseTranslationKey {
 export interface TranslationTreeKey extends BaseTranslationKey {
   children?: TranslationTreeKey[];
 }
+export interface FileState extends LanguageInfo {
+  fileName: string; //or fileID
+  isDirty: boolean;
+  keys: KeyState[];
+}
 export type KeyState = {
   fullKeyPath: string;
   id: string;
@@ -35,21 +40,25 @@ export type KeyState = {
   has_children: boolean;
   parent_id: string | null;
   notes: string | null;
+  old_value: string | null; // Previous value before the change
+  old_version?: number; // Previous version before the change
   isNew?: boolean; // Indicates if the key is newly added
 };
 export interface LanguageInfo {
   language_code: string;
   language_name: string;
 }
+export type KeyStateWithoutOld = Omit<KeyState, "old_value" | "old_version">;
+
+export interface FileStateWithoutOld extends LanguageInfo {
+  fileName: string;
+  isDirty: boolean;
+  keys: KeyStateWithoutOld[];
+}
 
 export interface LanguageType {
   code: string;
   name: string;
-}
-export interface FileState extends LanguageInfo {
-  fileName: string; //or fileID
-  isDirty: boolean;
-  keys: KeyState[];
 }
 
 export type TranslationValue = {
@@ -64,8 +73,7 @@ export type TranslationValue = {
   has_children: boolean;
   parent_id: string | null;
   notes: string | null;
+  old_value: string | null; // Previous value before the change
+  old_version?: number; // Previous version before the change
   isNew?: boolean; // Indicates if the value is newly added
-};
-export type TranslationValueWithOld = TranslationValue & {
-  old_value: string | null;
 };

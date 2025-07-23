@@ -2,8 +2,8 @@
 import { Typo1424, Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { TranslationValue, TranslationValueWithOld } from "@/types/translation";
-import { findKeyStateByIdAcrossFiles } from "@/utils/languages/processData";
+import { TranslationValue } from "@/types/translation";
+import { normalizeEmpty } from "@/utils/languages/processData";
 import {
   Box,
   Button,
@@ -14,11 +14,11 @@ import {
   TextareaAutosize,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { ResetDialog } from "../Dialogs/ResetDialog";
 type TranslationFieldProps = {
   index: number;
-  data: TranslationValue | TranslationValueWithOld;
+  data: TranslationValue;
   bilingual?: boolean;
 };
 const TranslationField = ({ index, data }: TranslationFieldProps) => {
@@ -27,7 +27,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   const [openResetDialog, setOpenResetDialog] = React.useState(false);
 
   const { selectedTreeKey } = useTreeKeyStore();
-  const { updateKeyChanged, DBFilesInfo } = useEditAllFileStore();
+  const { updateKeyChanged } = useEditAllFileStore();
 
   //**notice: localStorage is not defined in server-side rendering
   // const localStorageDBValues = useMemo(() => {
@@ -38,12 +38,6 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
 
   // console.log("TranslationField data:", data);
 
-  const DBValue = useMemo(
-    () => findKeyStateByIdAcrossFiles(DBFilesInfo, data.id),
-    [data.id, DBFilesInfo]
-  );
-
-  // console.log("DBValue:, Local/state Data:", DBValue?.value, "/", data.value);
   const [isResetButtonEnabled, setIsResetButtonEnabled] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -62,6 +56,9 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
       last_edited_at: new Date(),
       has_children: data.has_children,
       parent_id: data.parent_id,
+      notes: data.notes,
+      old_version: data.old_version, // Store the old version before updating
+      old_value: data.value, // Store the old value before updating
     });
     setIsSaveButtonEnabled(false);
     setIsResetButtonEnabled(true);
@@ -69,7 +66,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   };
 
   useEffect(() => {
-    if (value === DBValue?.value) {
+    if (value === data.old_value) {
       setIsSaveButtonEnabled(false);
     }
   }, [value]);
@@ -79,13 +76,16 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   }, [data.value]);
 
   useEffect(() => {
-    if (DBValue?.value !== data.value && data.isNew !== true) {
+    if (
+      normalizeEmpty(data.old_value) !== normalizeEmpty(data.value) &&
+      data.isNew !== true
+    ) {
       //set the reset button at initial render
       setIsResetButtonEnabled(true);
     } else {
       setIsResetButtonEnabled(false);
     }
-  }, [data.value, DBValue?.value]);
+  }, [data]);
 
   return (
     <>
@@ -168,7 +168,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
                 <Typography>Old</Typography>
               </Grid>
               <Grid size={10.5} sx={{ padding: "0px 0px 4px 16px" }}>
-                <Typo1624 color={"red"}>{DBValue?.value}</Typo1624>
+                <Typo1624 color={"red"}>{data.old_value}</Typo1624>
               </Grid>
             </Grid>
           )}

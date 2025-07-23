@@ -18,14 +18,14 @@ const AllChangesView = ({
 }: {
   setSeeAllChanges: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const { filesInfo, DBFilesInfo } = useEditAllFileStore();
+  const { filesInfo } = useEditAllFileStore();
 
   const { setParentIDs } = useTreeKeyStore();
   const { setSelectedTreeKey, DBkeys } = useTreeKeyStore();
   const { setFileName } = useFileNameStore();
   const changedKeys = useMemo(
-    () => filterTranslationKeys(filesInfo, DBFilesInfo),
-    [filesInfo, DBFilesInfo]
+    () => filterTranslationKeys(filesInfo),
+    [filesInfo]
   );
   const newKeys = useMemo(
     () =>
@@ -55,7 +55,7 @@ const AllChangesView = ({
 
     const IDs = findParentIdsToRootByFullKeyPath(
       fullKeyPath,
-      DBFilesInfo,
+      filesInfo,
       "en",
       filename
     );

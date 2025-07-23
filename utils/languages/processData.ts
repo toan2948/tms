@@ -2,19 +2,11 @@
 
 import {
   FileState,
+  FileStateWithoutOld,
   KeyState,
   TranslationTreeKey,
   TranslationValue,
-  TranslationValueWithOld,
 } from "@/types/translation";
-
-function findKeyById(files: FileState[], keyId: string): string | null {
-  for (const file of files) {
-    const found = file.keys.find((key) => key.id === keyId);
-    if (found) return found.value !== null ? found.value : null;
-  }
-  return null;
-}
 
 export function getEnglishKeyVersion(
   fullKeyPath: string,
@@ -27,7 +19,7 @@ export function getEnglishKeyVersion(
   for (const file of englishFiles) {
     const key = file.keys.find((k) => k.fullKeyPath === fullKeyPath);
     if (key) {
-      return key.version;
+      return key.old_version || 0;
     }
   }
 
@@ -35,21 +27,19 @@ export function getEnglishKeyVersion(
 }
 
 export const filterTranslationKeys = (
-  localStorageFilesInfo: FileState[],
-  DBFilesInfo: FileState[]
-): TranslationValueWithOld[] => {
+  localStorageFilesInfo: FileState[]
+): TranslationValue[] => {
   // 1st Step: filter out the changed keys from localStorageFilesInfo and updated version temporarily
   const changedKeys = localStorageFilesInfo.flatMap((file) =>
     file.keys
       .filter((key) => key.isChanged || key.isNew)
       .map((key) => {
         // Find the corresponding key in the localStorageDBValues
-        const old_value = findKeyById(DBFilesInfo, key.id);
 
         return {
           id: key.id,
           value: key.value,
-          old_value: old_value,
+          old_value: key.old_value || null, // Ensure old_value is always present
           fullKeyPath: key.fullKeyPath,
           language_code: file.language_code,
           language_name: file.language_name,
@@ -59,6 +49,7 @@ export const filterTranslationKeys = (
           has_children: key.has_children,
           parent_id: key.parent_id,
           notes: key.notes || null,
+          old_version: key.old_version, // Ensure old_version is always present
           isNew: key.isNew, // Indicates if the key is newly added
         };
       })
@@ -68,7 +59,10 @@ export const filterTranslationKeys = (
 
   const returnedKeys = changedKeys.map((key) => {
     // Find the corresponding key in the localStorageDBValues
-    const englishVersion = getEnglishKeyVersion(key.fullKeyPath, DBFilesInfo);
+    const englishVersion = getEnglishKeyVersion(
+      key.fullKeyPath,
+      localStorageFilesInfo
+    );
 
     const isUpdatedEnglishKey = changedKeys.find(
       (e) => e.fullKeyPath === key.fullKeyPath && e.language_code === "en"
@@ -95,6 +89,7 @@ export const filterTranslationKeys = (
       has_children: key.has_children,
       parent_id: key.parent_id,
       notes: key.notes || null,
+      old_version: key.old_version, // Ensure old_version is always present
       isNew: key.isNew, // Indicates if the key is newly added
     };
   });
@@ -202,6 +197,8 @@ export const getTranslationKeys = (
         parent_id: foundKeys[0].parent_id,
         notes: foundKeys[0].notes || null,
         isNew: foundKeys[0].isNew,
+        old_version: foundKeys[0].old_version, // Ensure old_version is always present
+        old_value: foundKeys[0].old_value || null, // Ensure old_value is always present
       });
     }
   });
@@ -253,12 +250,12 @@ export function findKeyStateByIdAcrossFiles(
 export type GroupedTranslationValues = {
   filename: string;
   fullKeyPath: string;
-  list: TranslationValueWithOld[];
+  list: TranslationValue[];
   color: string; // color for the filename
 };
 
 export const groupTranslationValues = (
-  keys: TranslationValueWithOld[]
+  keys: TranslationValue[]
 ): GroupedTranslationValues[] => {
   const groupedMap = new Map<string, GroupedTranslationValues>();
 
@@ -348,3 +345,18 @@ export const findSelectedKey = (
 
   return currentSelectedKey || null;
 };
+export function populateOldValuesAndOldVersion(
+  files: FileStateWithoutOld[]
+): FileState[] {
+  return files.map((file) => ({
+    ...file,
+    keys: file.keys.map((key) => ({
+      ...key,
+      old_value: key.value, // Ensure old_value is always present
+      old_version: key.version,
+    })),
+  }));
+}
+export function normalizeEmpty(value: string | null | undefined): string {
+  return value ?? "";
+}
