@@ -1,11 +1,17 @@
-import { FileState, KeyState } from "@/types/translation";
+import { FileState, KeyState, LanguageType } from "@/types/translation";
 import { create } from "zustand";
 
 type AllFileState = {
   //these states are to handle the error: localStorage is not defined (in case only localStorage is used)
   filesInfo: FileState[];
   DBFilesInfo: FileState[];
-  addKeysToFilesInfo: (key: KeyState[], fileName: string) => void;
+  languages: LanguageType[];
+  setLanguages: (languages: LanguageType[]) => void;
+  addKeysToFilesInfo: (
+    key: KeyState[],
+    fileName: string,
+    language_code: string
+  ) => void;
   setFilesInfo: (files: FileState[]) => void;
   updateKeyChanged: (editedKey: KeyState) => void;
   setDBFilesInfo: (files: FileState[]) => void;
@@ -15,6 +21,11 @@ type AllFileState = {
 export const useEditAllFileStore = create<AllFileState>((set, get) => ({
   filesInfo: [],
   DBFilesInfo: [],
+  languages: [],
+  setLanguages: (languages) =>
+    set(() => ({
+      languages,
+    })),
   setFilesInfo: (files: FileState[]) =>
     set(() => ({
       filesInfo: files,
@@ -23,10 +34,17 @@ export const useEditAllFileStore = create<AllFileState>((set, get) => ({
     set(() => ({
       DBFilesInfo: files,
     })),
-  addKeysToFilesInfo: (newKeys: KeyState[], fileName: string) => {
+  addKeysToFilesInfo: (
+    newKeys: KeyState[],
+    fileName: string,
+    language_code: string
+  ) => {
     set((state) => {
       const updatedFiles = state.filesInfo.map((file) => {
-        if (file.fileName === fileName) {
+        if (
+          file.fileName === fileName &&
+          file.language_code === language_code
+        ) {
           const updatedKeys = [...file.keys, ...newKeys];
           return {
             ...file,

@@ -41,6 +41,11 @@ export interface LanguageInfo {
   language_code: string;
   language_name: string;
 }
+
+export interface LanguageType {
+  code: string;
+  name: string;
+}
 export interface FileState extends LanguageInfo {
   fileName: string; //or fileID
   isDirty: boolean;

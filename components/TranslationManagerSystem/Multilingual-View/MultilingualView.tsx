@@ -17,6 +17,7 @@ import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { TranslationTreeKey } from "@/types/translation";
 import {
   fetchAllTranslationFiles,
+  fetchLanguages,
   fetchTranslationKeysByFilenameAndLanguage,
 } from "@/utils/languages/dataFunctions";
 import { buildKeyTreeFromFlatList } from "@/utils/languages/processData";
@@ -47,7 +48,7 @@ const MultilingualView = () => {
 
   const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
   const { DBkeys, setDBKeys, setSelectedTreeKey } = useTreeKeyStore();
-  const { setFilesInfo, setDBFilesInfo } = useEditAllFileStore();
+  const { setFilesInfo, setDBFilesInfo, setLanguages } = useEditAllFileStore();
 
   // Fetch file data once on mount
   useEffect(() => {
@@ -73,6 +74,19 @@ const MultilingualView = () => {
     fetchKeysAndSaveToLocal();
   }, [fileNameState]);
 
+  useEffect(() => {
+    async function fetchAndSaveLanguages() {
+      try {
+        const lgs = await fetchLanguages();
+        console.log("Fetched languages:", lgs);
+        setLanguages(lgs);
+      } catch (error) {
+        console.error("Error fetching languages:", error);
+      }
+    }
+    fetchAndSaveLanguages();
+  }, []);
+
   // Fetch keys when file changes
   useEffect(() => {
     async function fetchKeysForBuildingTree() {
@@ -90,30 +104,33 @@ const MultilingualView = () => {
     }
     //always fetch keys when fileNameState changes, or the page is mounted. That will update the key changes (edited, deleted, added)
 
-    fetchKeysForBuildingTree();
-    // if (!fileNameState) {
-    //   console.warn("⚠️ fileNameState is empty, skipping fetch");
-    //   return;
-    // }
+    // fetchKeysForBuildingTree();
 
-    // const localStorageDBKeys = localStorage.getItem("DBkeys");
+    // ---
 
-    // if (localStorageDBKeys) {
-    //   const parsedData: { fileName: string; keys: TranslationTreeKey[] }[] =
-    //     JSON.parse(localStorageDBKeys);
-    //   const entry = parsedData.find((e) => e.fileName === fileNameState) || {
-    //     fileName: fileNameState,
-    //     keys: [],
-    //   };
-    //   if (entry?.keys.length > 0) {
-    //     setDBKeys(entry.keys, fileNameState);
-    //     setTreeKeys(buildKeyTreeFromFlatList(entry?.keys));
-    //   } else {
-    //     fetchKeysForBuildingTree();
-    //   }
-    // } else {
-    //   fetchKeysForBuildingTree();
-    // }
+    if (!fileNameState) {
+      console.warn("⚠️ fileNameState is empty, skipping fetch");
+      return;
+    }
+
+    const localStorageDBKeys = localStorage.getItem("DBkeys");
+
+    if (localStorageDBKeys) {
+      const parsedData: { fileName: string; keys: TranslationTreeKey[] }[] =
+        JSON.parse(localStorageDBKeys);
+      const entry = parsedData.find((e) => e.fileName === fileNameState) || {
+        fileName: fileNameState,
+        keys: [],
+      };
+      if (entry?.keys.length > 0) {
+        setDBKeys(entry.keys, fileNameState);
+        setTreeKeys(buildKeyTreeFromFlatList(entry?.keys));
+      } else {
+        fetchKeysForBuildingTree();
+      }
+    } else {
+      fetchKeysForBuildingTree();
+    }
   }, [fileNameState, JSON.stringify(DBkeys)]);
 
   return (

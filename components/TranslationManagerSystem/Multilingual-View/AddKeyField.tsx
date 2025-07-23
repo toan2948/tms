@@ -8,14 +8,26 @@ import { useState } from "react";
 
 export const AddKeyField = () => {
   const { fileNameState } = useFileNameStore();
-  const { addKeysToFilesInfo } = useEditAllFileStore();
-  const { DBkeys, addKeysToTree } = useTreeKeyStore();
+  const { addKeysToFilesInfo, filesInfo } = useEditAllFileStore();
+  const { addKeysToTree } = useTreeKeyStore();
   const [newKeyState, setNewKeyState] = useState("");
   const [isKeyExisted, setIsKeyExisted] = useState(false);
   const [isNewKeyAdded, setIsNewKeyAdded] = useState(false);
   const [openAddKeyField, setOpenAddKeyField] = useState(false);
   const [error, setError] = useState(false);
   const [showHelperText, setShowHelperText] = useState(false);
+
+  // await addKeyToAllFilesWithSameName({
+  //   filename: fileNameState,
+  //   fullKeyPath: newKeyState,
+  // })
+  //   .then(() => {
+  //     console.log(`Key "${newKeyState}" added successfully.`);
+  //   })
+  //   .catch((error) => {
+  //     console.error("Error adding key:", error);
+  //   });
+
   const handleAddKey = async () => {
     const trimmedKey = newKeyState.trim();
     const isValid = /^[a-zA-Z0-9._]*$/.test(trimmedKey);
@@ -30,108 +42,115 @@ export const AddKeyField = () => {
       return;
     }
 
-    const existingKeys =
-      DBkeys.find((e) => e.fileName === fileNameState)?.keys || [];
-    const keyExists = existingKeys.some((e) => e.full_key_path === trimmedKey);
+    const matchingFiles = filesInfo.filter(
+      (entry) => entry.fileName === fileNameState
+    );
+    console.log("Matching files:", matchingFiles);
 
-    if (keyExists) {
+    let duplicateFound = false;
+
+    // Pre-check: prevent duplicate in any of the files
+    for (const file of matchingFiles) {
+      const exists = file.keys.some((key) => key.fullKeyPath === trimmedKey);
+      if (exists) {
+        duplicateFound = true;
+        break;
+      }
+    }
+
+    if (duplicateFound) {
       setIsKeyExisted(true);
       setTimeout(() => setIsKeyExisted(false), 4000);
       return;
     }
 
-    const keysToAdd: TranslationTreeKey[] = [];
-    const fileInfoUpdates: KeyState[] = [];
-
     const keySegments = trimmedKey.split(".");
-    let parentID: string | null = null;
 
-    // Add missing parent keys (from root down to parent of leaf)
-    for (let i = 0; i < keySegments.length - 1; i++) {
-      const currentPath = keySegments.slice(0, i + 1).join(".");
-      const exists = existingKeys.some((k) => k.full_key_path === currentPath);
-      if (!exists) {
-        const newParent: TranslationTreeKey = {
-          id: crypto.randomUUID(),
-          full_key_path: currentPath,
-          has_children: true,
-          file_id: fileNameState,
-          parent_id: parentID,
-          level: i,
-          key_path_segment: keySegments[i],
-          notes: null,
-        };
+    for (const file of matchingFiles) {
+      const keysToAdd: TranslationTreeKey[] = [];
+      const fileInfoUpdates: KeyState[] = [];
 
-        keysToAdd.push(newParent);
+      let parentID: string | null = null;
+      const existingKeys = file.keys;
 
-        fileInfoUpdates.push({
-          fullKeyPath: currentPath,
-          id: newParent.id,
-          isChanged: true,
-          value: null,
-          version: 1,
-          last_edited_at: null,
-          has_children: true,
-          parent_id: parentID,
-          notes: null,
-          isNew: true,
-        });
+      // Handle missing parent segments
+      for (let i = 0; i < keySegments.length - 1; i++) {
+        const currentPath = keySegments.slice(0, i + 1).join(".");
+        const existingParent = existingKeys.find(
+          (k) => k.fullKeyPath === currentPath
+        );
+        if (!existingParent) {
+          const newParentId = crypto.randomUUID();
+          const newParent: TranslationTreeKey = {
+            id: newParentId,
+            full_key_path: currentPath,
+            has_children: true,
+            file_id: file.fileName, // Use filename, not lang-specific
+            parent_id: parentID,
+            level: i,
+            notes: null,
+            key_path_segment: keySegments[i],
+          };
 
-        parentID = newParent.id;
-      } else {
-        // If it exists, fetch its ID as parent
-        parentID =
-          existingKeys.find((k) => k.full_key_path === currentPath)?.id || null;
+          keysToAdd.push(newParent);
+
+          fileInfoUpdates.push({
+            fullKeyPath: currentPath,
+            id: newParentId,
+            isChanged: true,
+            value: null,
+            version: 1,
+            last_edited_at: null,
+            has_children: true,
+            parent_id: parentID,
+            isNew: true,
+            notes: null,
+          });
+
+          parentID = newParentId;
+        } else {
+          parentID = existingParent.id;
+        }
       }
+
+      // Add final leaf key
+      const leafId = crypto.randomUUID();
+      const newLeaf: TranslationTreeKey = {
+        id: leafId,
+        notes: null,
+        full_key_path: trimmedKey,
+        has_children: false,
+        file_id: file.fileName,
+        parent_id: parentID,
+        level: keySegments.length - 1,
+        key_path_segment: keySegments[keySegments.length - 1],
+      };
+
+      keysToAdd.push(newLeaf);
+
+      fileInfoUpdates.push({
+        fullKeyPath: trimmedKey,
+        id: leafId,
+        isChanged: true,
+        value: null,
+        version: 1,
+        last_edited_at: null,
+        has_children: false,
+        parent_id: parentID,
+        isNew: true,
+        notes: null,
+      });
+
+      // Batch add to store
+      addKeysToTree(keysToAdd, file.fileName, file.language_code);
+      addKeysToFilesInfo(fileInfoUpdates, file.fileName, file.language_code);
     }
 
-    // Add final leaf key
-    const newLeaf: TranslationTreeKey = {
-      id: crypto.randomUUID(),
-      full_key_path: trimmedKey,
-      has_children: false,
-      file_id: fileNameState,
-      parent_id: parentID,
-      level: keySegments.length - 1,
-      key_path_segment: keySegments[keySegments.length - 1],
-      notes: null,
-    };
-
-    keysToAdd.push(newLeaf);
-
-    fileInfoUpdates.push({
-      fullKeyPath: trimmedKey,
-      id: newLeaf.id,
-      isChanged: true,
-      value: null,
-      version: 1,
-      last_edited_at: null,
-      has_children: false,
-      parent_id: parentID,
-      notes: null,
-      isNew: true,
-    });
-
-    console.log("Keys to add:", keysToAdd);
-    // ✅ Use the batch store actions
-    addKeysToTree(keysToAdd, fileNameState);
-    addKeysToFilesInfo(fileInfoUpdates, fileNameState);
-
+    // Reset UI
     setNewKeyState("");
     setIsNewKeyAdded(true);
     setTimeout(() => setIsNewKeyAdded(false), 4000);
   };
-
-  // await addKeyToAllFilesWithSameName({
-  //   filename: fileNameState,
-  //   fullKeyPath: newKeyState,
-  // })
-  //   .then(() => {
-  //     console.log(`Key "${newKeyState}" added successfully.`);
-  //   })
-  //   .catch((error) => {
-  //     console.error("Error adding key:", error);
-  //   });
 
   return (
     <Stack direction={"column"}>

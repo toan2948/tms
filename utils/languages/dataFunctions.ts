@@ -1,4 +1,8 @@
-import { TranslationTreeKey, TranslationValue } from "@/types/translation";
+import {
+  LanguageType,
+  TranslationTreeKey,
+  TranslationValue,
+} from "@/types/translation";
 import { createClient } from "../supabase/client";
 
 export async function TreeData() {
@@ -196,4 +200,19 @@ export async function deleteTranslationKey(
   }
 
   return { success: true, deletedFromFileCount: fileIds.length };
+}
+
+export async function fetchLanguages(): Promise<LanguageType[]> {
+  const supabase = await createClient();
+
+  //just look for keys of files in english
+
+  const { data: language, error: langError } = await supabase
+    .from("languages")
+    .select("code, name")
+    .order("code", { ascending: true });
+  if (langError || !language) {
+    throw new Error(`No Language not found: ${langError?.message}`);
+  }
+  return language;
 }

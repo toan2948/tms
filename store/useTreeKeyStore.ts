@@ -12,7 +12,11 @@ type TreeKeyState = {
 
   setSelectedTreeKey: (key: TranslationTreeKey | null) => void;
   setDBKeys: (keys: TranslationTreeKey[], file_name: string) => void;
-  addKeysToTree: (key: TranslationTreeKey[], file_name: string) => void;
+  addKeysToTree: (
+    key: TranslationTreeKey[],
+    file_name: string,
+    language_code: string
+  ) => void;
   removeKeyFromTree: (keyId: string, file_name: string) => void;
 
   reset: () => void;
@@ -40,7 +44,9 @@ export const useTreeKeyStore = create<TreeKeyState>((set, get) => ({
       localStorage.setItem("DBkeys", JSON.stringify(updatedDBKeys));
     }
   },
-  addKeysToTree: (newKeys: TranslationTreeKey[], fileName: string) => {
+  addKeysToTree: (newKeys, fileName, language_code) => {
+    if (language_code !== "en") return;
+    // Only add keys if the language is English
     const DBkeys = get().DBkeys;
     const fileIndex = DBkeys.findIndex((e) => e.fileName === fileName);
 
