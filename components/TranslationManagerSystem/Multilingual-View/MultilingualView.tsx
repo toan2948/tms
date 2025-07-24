@@ -65,7 +65,7 @@ const MultilingualView = () => {
           const parsedData = JSON.parse(localStorageFilesInfo);
           setFilesInfo(parsedData);
         } else {
-          setFilesInfo(populateOldValuesAndOldVersion(data));
+          setFilesInfo(populateOldValuesAndOldVersion(data)); //populateOldValuesAndOldVersion is to add old values and old version to the data
           localStorage.setItem(
             "translationEdits",
             JSON.stringify(populateOldValuesAndOldVersion(data))

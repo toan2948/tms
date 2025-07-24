@@ -82,103 +82,87 @@ export function SessionDialog({
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle textAlign={"center"}>Session Changes</DialogTitle>
 
-      {editedKeysSessionFormat && editedKeysSessionFormat.length > 0 && (
-        <Box
-          sx={{
-            padding: "10px",
-          }}
-        >
-          <Typography>Changes on key values:</Typography>
+      <Box
+        sx={{
+          padding: "10px",
+        }}
+      >
+        {editedKeysSessionFormat && editedKeysSessionFormat.length > 0 && (
+          <>
+            <Typography>Changes on key values:</Typography>
 
-          <Box
-            sx={{
-              border: "1px solid black",
-
-              padding: "10px",
-              marginBottom: "10px",
-            }}
-          >
-            <List sx={{ pt: 0 }}>
-              {editedKeysSessionFormat.map((item, index) => (
-                <ListItem
-                  key={index}
-                  sx={{
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    handleClick(item.fullKeyPath, item.filename);
-                  }}
-                >
-                  <Typography color={item.color}> {item.label}</Typography>
-                </ListItem>
-              ))}
-            </List>
-          </Box>
-          <Stack direction={"row"} justifyContent={"flex-end"}>
-            <Button
-              variant='outlined'
+            <Box
               sx={{
-                marginRight: "10px",
-              }}
-              onClick={handleClose}
-            >
-              Cancel
-            </Button>
-            <Button variant='contained' onClick={updateDB}>
-              Save Changes
-            </Button>
-          </Stack>
-        </Box>
-      )}
-      {newKeys && newKeys.length > 0 && (
-        <Box
-          sx={{
-            padding: "10px",
-          }}
-        >
-          <Typography>New keys:</Typography>
+                border: "1px solid black",
 
-          <Box
-            sx={{
-              border: "1px solid black",
-              padding: "10px",
-              marginBottom: "10px",
-            }}
-          >
-            <List sx={{ pt: 0 }}>
-              {newKeys.map((item, index) => (
-                <ListItem
-                  key={index}
-                  sx={{
-                    borderRadius: "5px",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => {
-                    handleClick(item.fullKeyPath, item.filename);
-                  }}
-                >
-                  <Typography> {item.fullKeyPath}</Typography>
-                </ListItem>
-              ))}
-            </List>
-          </Box>
-          <Stack direction={"row"} justifyContent={"flex-end"}>
-            <Button
-              variant='outlined'
-              sx={{
-                marginRight: "10px",
+                padding: "10px",
+                marginBottom: "10px",
               }}
-              onClick={handleClose}
             >
-              Cancel
-            </Button>
-            <Button variant='contained' onClick={() => ""}>
-              Save New Keys
-            </Button>
-          </Stack>
-        </Box>
-      )}
+              <List sx={{ pt: 0 }}>
+                {editedKeysSessionFormat.map((item, index) => (
+                  <ListItem
+                    key={index}
+                    sx={{
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      handleClick(item.fullKeyPath, item.filename);
+                    }}
+                  >
+                    <Typography color={item.color}> {item.label}</Typography>
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          </>
+        )}
+        {newKeys && newKeys.length > 0 && (
+          <>
+            <Typography>New keys:</Typography>
+
+            <Box
+              sx={{
+                border: "1px solid black",
+                padding: "10px",
+                marginBottom: "10px",
+              }}
+            >
+              <List sx={{ pt: 0 }}>
+                {newKeys.map((item, index) => (
+                  <ListItem
+                    key={index}
+                    sx={{
+                      borderRadius: "5px",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      handleClick(item.fullKeyPath, item.filename);
+                    }}
+                  >
+                    <Typography> {item.fullKeyPath}</Typography>
+                  </ListItem>
+                ))}
+              </List>
+            </Box>
+          </>
+        )}
+        <Stack direction={"row"} justifyContent={"flex-end"}>
+          <Button
+            variant='outlined'
+            sx={{
+              marginRight: "10px",
+            }}
+            onClick={handleClose}
+          >
+            Cancel
+          </Button>
+          <Button variant='contained' onClick={updateDB}>
+            Save Changes
+          </Button>
+        </Stack>
+      </Box>
 
       {!editedKeysSessionFormat && !newKeys && (
         <Box
