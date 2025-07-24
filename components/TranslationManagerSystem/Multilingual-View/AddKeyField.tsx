@@ -99,13 +99,16 @@ export const AddKeyField = () => {
             id: newParentId,
             isChanged: true,
             value: null,
-            version: 1,
+            version: 0,
             last_edited_at: null,
             has_children: true,
             parent_id: parentID,
             isNew: true,
             notes: null,
             old_value: null,
+            old_version: 0,
+            key_path_segment: keySegments[i],
+            level: i,
           });
 
           parentID = newParentId;
@@ -143,6 +146,8 @@ export const AddKeyField = () => {
         notes: null,
         old_value: null,
         old_version: 0,
+        key_path_segment: keySegments[keySegments.length - 1],
+        level: keySegments.length - 1,
       });
 
       // Batch add to store

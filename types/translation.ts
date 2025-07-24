@@ -1,67 +1,107 @@
-export interface LanguageInfo {
+// -----------------------------------
+// Shared Base Interfaces
+// -----------------------------------
+
+export interface WithLanguage {
   language_code: string;
   language_name: string;
 }
 
-export interface LanguageType {
-  //for the returned data from the table "language"
-  code: string;
-  name: string;
-}
-
-export interface BaseKeyValue {
-  id: string;
-  full_key_path: string;
-  value: string | null;
+export interface WithVersion {
   version: number;
-  last_edited_at: Date | null;
-  has_children: boolean;
-  parent_id: string | null;
-  notes: string | null;
-  old_value: string | null; // Previous value before the change
-  old_version?: number; // Previous version before the change
-  isNew?: boolean; // Indicates if the key is newly added
-}
-export type KeyState = BaseKeyValue & {
-  isChanged: boolean;
-};
-export type KeyStateWithoutOld = Omit<KeyState, "old_value" | "old_version">;
-export type TranslationValue = BaseKeyValue & {
-  language_code: string;
-  language_name: string;
-  filename: string;
-};
-export interface FileState<T extends KeyState | KeyStateWithoutOld>
-  extends LanguageInfo {
-  fileName: string;
-  isDirty: boolean;
-  keys: T[];
+  old_version?: number;
 }
 
-export interface BaseTranslationKey {
-  id: string;
-  file_id: string;
+export interface WithTimestamps {
+  last_edited_at: Date | null;
+  added_at?: Date | null;
+}
+
+export interface WithHierarchy {
   parent_id: string | null;
   key_path_segment: string;
   full_key_path: string;
   level: number;
   has_children: boolean;
+}
+
+export interface WithNotes {
   notes: string | null;
 }
-export interface TranslationKey extends BaseTranslationKey {
+
+// -----------------------------------
+// Language Types
+// -----------------------------------
+
+export interface LanguageType {
+  // For data returned from the "language" table
+  code: string;
+  name: string;
+}
+
+// -----------------------------------
+// Key Value Types
+// -----------------------------------
+
+export interface BaseKeyValue
+  extends WithVersion,
+    WithTimestamps,
+    WithHierarchy,
+    WithNotes {
+  id: string;
+  file_id?: string;
   value: string | null;
-  added_at: Date | null;
-  last_edited_at: Date | null;
-  version: number;
+  old_value: string | null;
+  isNew?: boolean;
+}
+
+export interface KeyState extends BaseKeyValue {
+  isChanged: boolean;
+}
+
+export type KeyStateWithoutOld = Omit<KeyState, "old_value" | "old_version">;
+
+export interface TranslationValue extends BaseKeyValue, WithLanguage {
+  filename: string;
+}
+
+// -----------------------------------
+// File State
+// -----------------------------------
+
+export interface FileState<T extends KeyState | KeyStateWithoutOld>
+  extends WithLanguage {
+  fileName: string;
+  isDirty: boolean;
+  keys: T[];
+}
+
+// -----------------------------------
+// Translation Keys
+// -----------------------------------
+
+export interface BaseTranslationKey extends WithHierarchy, WithNotes {
+  id: string;
+  file_id: string;
+}
+
+export interface TranslationKey
+  extends BaseTranslationKey,
+    WithVersion,
+    WithTimestamps {
+  value: string | null;
   status: "done" | "error" | "missing";
   score: number | null;
-  notes: string | null;
   ticket_number: string | null;
   pr_number: string | null;
 
   // For building UI trees
   children?: TranslationKey[];
 }
+
+// -----------------------------------
+// Tree Type
+// -----------------------------------
 
 export type TreeNode<T> = T & { children?: TreeNode<T>[] };
 export type TranslationTreeKey = TreeNode<BaseTranslationKey>;

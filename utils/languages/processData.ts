@@ -49,6 +49,9 @@ export const filterTranslationKeys = (
           has_children: key.has_children,
           parent_id: key.parent_id,
           notes: key.notes || null,
+          key_path_segment: key.key_path_segment,
+          level: key.level,
+          file_id: key.file_id, // Include file_id for reference
           old_version: key.old_version, // Ensure old_version is always present
           isNew: key.isNew, // Indicates if the key is newly added
         };
@@ -89,6 +92,9 @@ export const filterTranslationKeys = (
       has_children: key.has_children,
       parent_id: key.parent_id,
       notes: key.notes || null,
+      key_path_segment: key.key_path_segment,
+      level: key.level,
+      file_id: key.file_id,
       old_version: key.old_version, // Ensure old_version is always present
       isNew: key.isNew, // Indicates if the key is newly added
     };
@@ -200,6 +206,9 @@ export const getTranslationKeys = (
         parent_id: foundKeys[0].parent_id,
         notes: foundKeys[0].notes || null,
         isNew: foundKeys[0].isNew,
+        key_path_segment: foundKeys[0].key_path_segment,
+        level: foundKeys[0].level,
+        file_id: foundKeys[0].file_id, // Include file_id for reference
         old_version: foundKeys[0].old_version, // Ensure old_version is always present
         old_value: foundKeys[0].old_value || null, // Ensure old_value is always present
       });
