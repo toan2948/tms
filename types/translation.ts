@@ -4,13 +4,14 @@ export interface LanguageInfo {
 }
 
 export interface LanguageType {
+  //for the returned data from the table "language"
   code: string;
   name: string;
 }
 
 export interface BaseKeyValue {
   id: string;
-  fullKeyPath: string;
+  full_key_path: string;
   value: string | null;
   version: number;
   last_edited_at: Date | null;

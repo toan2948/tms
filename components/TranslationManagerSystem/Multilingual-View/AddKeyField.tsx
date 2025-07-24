@@ -51,7 +51,7 @@ export const AddKeyField = () => {
 
     // Pre-check: prevent duplicate in any of the files
     for (const file of matchingFiles) {
-      const exists = file.keys.some((key) => key.fullKeyPath === trimmedKey);
+      const exists = file.keys.some((key) => key.full_key_path === trimmedKey);
       if (exists) {
         duplicateFound = true;
         break;
@@ -77,7 +77,7 @@ export const AddKeyField = () => {
       for (let i = 0; i < keySegments.length - 1; i++) {
         const currentPath = keySegments.slice(0, i + 1).join(".");
         const existingParent = existingKeys.find(
-          (k) => k.fullKeyPath === currentPath
+          (k) => k.full_key_path === currentPath
         );
         if (!existingParent) {
           const newParentId = crypto.randomUUID();
@@ -95,7 +95,7 @@ export const AddKeyField = () => {
           keysToAdd.push(newParent);
 
           fileInfoUpdates.push({
-            fullKeyPath: currentPath,
+            full_key_path: currentPath,
             id: newParentId,
             isChanged: true,
             value: null,
@@ -131,7 +131,7 @@ export const AddKeyField = () => {
       keysToAdd.push(newLeaf);
 
       fileInfoUpdates.push({
-        fullKeyPath: trimmedKey,
+        full_key_path: trimmedKey,
         id: leafId,
         isChanged: true,
         value: null,

@@ -9,7 +9,7 @@ import {
 } from "@/types/translation";
 
 export function getEnglishKeyVersion(
-  fullKeyPath: string,
+  fullKey: string,
   files: FileState<KeyState>[]
 ): number {
   const englishFiles = files.filter(
@@ -17,7 +17,7 @@ export function getEnglishKeyVersion(
   );
 
   for (const file of englishFiles) {
-    const key = file.keys.find((k) => k.fullKeyPath === fullKeyPath);
+    const key = file.keys.find((k) => k.full_key_path === fullKey);
     if (key) {
       return key.old_version || 0;
     }
@@ -40,7 +40,7 @@ export const filterTranslationKeys = (
           id: key.id,
           value: key.value,
           old_value: key.old_value || null, // Ensure old_value is always present
-          fullKeyPath: key.fullKeyPath,
+          full_key_path: key.full_key_path,
           language_code: file.language_code,
           language_name: file.language_name,
           filename: file.fileName,
@@ -60,19 +60,19 @@ export const filterTranslationKeys = (
   const returnedKeys = changedKeys.map((key) => {
     // Find the corresponding key in the localStorageDBValues
     const englishVersion = getEnglishKeyVersion(
-      key.fullKeyPath,
+      key.full_key_path,
       localStorageFilesInfo
     );
 
     const isUpdatedEnglishKey = changedKeys.find(
-      (e) => e.fullKeyPath === key.fullKeyPath && e.language_code === "en"
+      (e) => e.full_key_path === key.full_key_path && e.language_code === "en"
     )?.version;
     // console.log("isEnglishKeyAlsoUpdated", isUpdatedEnglishKey, englishVersion);
     return {
       id: key.id,
       value: key.value,
       old_value: key.old_value,
-      fullKeyPath: key.fullKeyPath,
+      full_key_path: key.full_key_path,
       language_code: key.language_code,
       language_name: key.language_name,
       filename: key.filename,
@@ -112,22 +112,22 @@ export const formatSessionDialogData = (
   keys: TranslationValue[],
   filterFn: (item: TranslationValue) => boolean
 ) => {
-  // 2. Group language codes by "filename: fullKeyPath"
+  //  Group language codes by "filename: fullKey"
 
   const editedKeys = keys.filter(filterFn);
 
   // console.log("editedKeys", editedKeys);
   const groupedMap = new Map<
     string,
-    { filename: string; fullKeyPath: string; languages: Set<string> }
+    { filename: string; fullKey: string; languages: Set<string> }
   >();
 
   editedKeys.forEach((item) => {
-    const groupKey = `${item.filename}: ${item.fullKeyPath}`;
+    const groupKey = `${item.filename}: ${item.full_key_path}`;
     if (!groupedMap.has(groupKey)) {
       groupedMap.set(groupKey, {
         filename: item.filename,
-        fullKeyPath: item.fullKeyPath,
+        fullKey: item.full_key_path,
         languages: new Set(),
       });
     }
@@ -153,16 +153,16 @@ export const formatSessionDialogData = (
     label: string;
     color: string;
     filename: string;
-    fullKeyPath: string;
+    fullKey: string;
   };
 
   const changedKeyStrings: ColoredChangedKey[] = Array.from(
     groupedMap.entries()
-  ).map(([key, { filename, languages, fullKeyPath }]) => ({
+  ).map(([key, { filename, languages, fullKey: fullKeyPath }]) => ({
     label: `${key} -- ${Array.from(languages).join(", ")}`,
     color: filenameToColor.get(filename)!,
     filename: filename,
-    fullKeyPath: fullKeyPath,
+    fullKey: fullKeyPath,
   }));
   return changedKeyStrings;
 };
@@ -185,12 +185,12 @@ export const getTranslationKeys = (
   if (searchedFiles.length === 0) return [];
   const result: TranslationValue[] = [];
   searchedFiles.forEach((element) => {
-    const foundKeys = element.keys.filter((key) => key.fullKeyPath === path);
+    const foundKeys = element.keys.filter((key) => key.full_key_path === path);
     if (foundKeys.length > 0) {
       result.push({
         id: foundKeys[0].id,
         value: foundKeys[0].value,
-        fullKeyPath: foundKeys[0].fullKeyPath,
+        full_key_path: foundKeys[0].full_key_path,
         language_code: element.language_code,
         language_name: element.language_name,
         filename: element.fileName,
@@ -252,7 +252,7 @@ export function findKeyStateByIdAcrossFiles(
 }
 export type GroupedTranslationValues = {
   filename: string;
-  fullKeyPath: string;
+  fullKey: string;
   list: TranslationValue[];
   color: string; // color for the filename
 };
@@ -265,12 +265,12 @@ export const groupTranslationValues = (
 
   const filteredKeys = keys.filter(filterFn);
   filteredKeys.forEach((item) => {
-    const key = `${item.filename}:::${item.fullKeyPath}`; // unique composite key
+    const key = `${item.filename}:::${item.full_key_path}`; // unique composite key
 
     if (!groupedMap.has(key)) {
       groupedMap.set(key, {
         filename: item.filename,
-        fullKeyPath: item.fullKeyPath,
+        fullKey: item.full_key_path,
         list: [item],
         color: "", // to be assigned later
       });
@@ -300,7 +300,7 @@ export const groupTranslationValues = (
 };
 
 export function findParentIdsToRootByFullKeyPath(
-  fullKeyPath: string,
+  fullKey: string,
   files: FileState<KeyState>[],
   language_code = "en", // default to English,
   fileName: string
@@ -314,8 +314,8 @@ export function findParentIdsToRootByFullKeyPath(
   // Map id -> KeyState for fast parent lookup
   const map = new Map<string, KeyState>(file.keys.map((k) => [k.id, k]));
 
-  // Find the key by fullKeyPath
-  const key = file.keys.find((k) => k.fullKeyPath === fullKeyPath);
+  // Find the key by fullKey
+  const key = file.keys.find((k) => k.full_key_path === fullKey);
   if (!key) return [];
   const targetID = key.id;
 

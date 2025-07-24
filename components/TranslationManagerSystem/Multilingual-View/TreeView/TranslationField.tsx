@@ -46,7 +46,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   };
   const handleSave = () => {
     updateKeyChanged({
-      fullKeyPath: selectedTreeKey?.full_key_path
+      full_key_path: selectedTreeKey?.full_key_path
         ? selectedTreeKey.full_key_path
         : "",
       id: data.id,

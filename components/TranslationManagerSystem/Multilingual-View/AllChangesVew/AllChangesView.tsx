@@ -50,7 +50,7 @@ const AllChangesView = ({
 
   const handleGroupClick = (group: GroupedTranslationValues) => {
     //only need a key, no need to care about which language
-    const fullKeyPath = group.list[0].fullKeyPath;
+    const fullKeyPath = group.list[0].full_key_path;
     const filename = group.filename;
 
     setFileName(filename); //to build a tree corresponding to the filename
@@ -86,7 +86,7 @@ const AllChangesView = ({
                 sx={{ cursor: "pointer" }}
                 onClick={() => handleGroupClick(group)}
               >
-                {group.filename}: {group.fullKeyPath}
+                {group.filename}: {group.fullKey}
               </Typo1624>
               <Box width={"95%"} alignSelf={"end"}>
                 {group.list.map((item, itemIndex) => (
@@ -117,7 +117,7 @@ const AllChangesView = ({
                 sx={{ cursor: "pointer" }}
                 onClick={() => handleGroupClick(group)}
               >
-                {group.filename}: {group.fullKeyPath}
+                {group.filename}: {group.fullKey}
               </Typo1624>
               <Box width={"95%"} alignSelf={"end"}>
                 {group.list.map((item, itemIndex) => (

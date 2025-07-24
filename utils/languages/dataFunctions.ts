@@ -98,7 +98,7 @@ export async function fetchAllTranslationFiles() {
     Record<
       string,
       Array<{
-        fullKeyPath: string;
+        full_key_path: string;
         id: string;
         value: string | null;
         isChanged: boolean;
@@ -112,7 +112,7 @@ export async function fetchAllTranslationFiles() {
   >((acc, k) => {
     if (!acc[k.file_id]) acc[k.file_id] = [];
     acc[k.file_id].push({
-      fullKeyPath: k.full_key_path,
+      full_key_path: k.full_key_path,
       value: k.value,
       id: k.id,
       version: k.version,

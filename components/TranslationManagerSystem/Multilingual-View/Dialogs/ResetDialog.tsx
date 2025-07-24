@@ -40,7 +40,7 @@ export function ResetDialog({
   const handleReset = () => {
     // console.log("Resetting value to DBValue:", DBValue?.value, value);
     updateKeyChanged({
-      fullKeyPath: selectedTreeKey?.full_key_path
+      full_key_path: selectedTreeKey?.full_key_path
         ? selectedTreeKey.full_key_path
         : "",
       id: data.id,

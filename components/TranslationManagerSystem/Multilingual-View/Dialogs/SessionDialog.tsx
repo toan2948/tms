@@ -114,7 +114,7 @@ export function SessionDialog({
                       cursor: "pointer",
                     }}
                     onClick={() => {
-                      handleClick(item.fullKeyPath, item.filename);
+                      handleClick(item.fullKey, item.filename);
                     }}
                   >
                     <Typography color={item.color}> {item.label}</Typography>
@@ -144,7 +144,7 @@ export function SessionDialog({
                       cursor: "pointer",
                     }}
                     onClick={() => {
-                      handleClick(item.fullKeyPath, item.filename);
+                      handleClick(item.fullKey, item.filename);
                     }}
                   >
                     <Typography color={item.color}> {item.label}</Typography>
