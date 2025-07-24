@@ -37,12 +37,16 @@ const AllChangesView = ({
 
   // console.log("changedKeys", changedKeys);
 
-  const groupedKeys = useMemo(
-    () => groupTranslationValues(changedKeys),
+  const groupedChangedKeys = useMemo(
+    () => groupTranslationValues(changedKeys, (e) => !e.isNew),
     [changedKeys]
   );
+  const groupedNewKeys = useMemo(
+    () => groupTranslationValues(newKeys, (e) => (e.isNew ? true : false)),
+    [newKeys]
+  );
 
-  // console.log("groupedKeys", groupedKeys);
+  // console.log("groupedNewKeys", newKeys, groupedNewKeys);
 
   const handleGroupClick = (group: GroupedTranslationValues) => {
     //only need a key, no need to care about which language
@@ -68,13 +72,13 @@ const AllChangesView = ({
 
   return (
     <Box>
-      {groupedKeys && groupedKeys.length > 0 && (
+      {groupedChangedKeys && groupedChangedKeys.length > 0 && (
         <>
           <Typo1624 weight={600} color='green'>
             Edited Keys:
           </Typo1624>
 
-          {groupedKeys.map((group, index) => (
+          {groupedChangedKeys.map((group, index) => (
             <Stack key={index} sx={{ margin: "30px 0" }}>
               <Typo1624
                 weight={600}
@@ -82,7 +86,7 @@ const AllChangesView = ({
                 sx={{ cursor: "pointer" }}
                 onClick={() => handleGroupClick(group)}
               >
-                {group.filename}.{group.fullKeyPath}
+                {group.filename}: {group.fullKeyPath}
               </Typo1624>
               <Box width={"95%"} alignSelf={"end"}>
                 {group.list.map((item, itemIndex) => (
@@ -99,20 +103,37 @@ const AllChangesView = ({
       )}
       <Divider sx={{ margin: "20px 0" }} />
 
-      {newKeys && (
-        <Stack sx={{ margin: "30px 0" }}>
-          <Typo1624 weight={600} color='green'>
-            New Keys
+      {groupedNewKeys && groupedNewKeys.length > 0 && (
+        <>
+          <Typo1624 weight={600} color='orange'>
+            New Keys:
           </Typo1624>
-          <Box width={"95%"} alignSelf={"end"}>
-            {newKeys.map((item, index) => (
-              <Typo1624 key={index}>{item.fullKeyPath}</Typo1624>
-            ))}
-          </Box>
-        </Stack>
+
+          {groupedNewKeys.map((group, index) => (
+            <Stack key={index} sx={{ margin: "30px 0" }}>
+              <Typo1624
+                weight={600}
+                color={group.color}
+                sx={{ cursor: "pointer" }}
+                onClick={() => handleGroupClick(group)}
+              >
+                {group.filename}: {group.fullKeyPath}
+              </Typo1624>
+              <Box width={"95%"} alignSelf={"end"}>
+                {group.list.map((item, itemIndex) => (
+                  <TranslationField
+                    key={itemIndex}
+                    index={itemIndex}
+                    data={item}
+                  />
+                ))}
+              </Box>
+            </Stack>
+          ))}
+        </>
       )}
 
-      {!groupedKeys && !newKeys && <Box>No changes made.</Box>}
+      {!groupedChangedKeys && !newKeys && <Box>No changes made.</Box>}
     </Box>
   );
 };

@@ -108,10 +108,13 @@ const colorPalette = [
   "#ffc107",
 ];
 
-export const formatSessionDialogData = (changedKeys: TranslationValue[]) => {
+export const formatSessionDialogData = (
+  keys: TranslationValue[],
+  filterFn: (item: TranslationValue) => boolean
+) => {
   // 2. Group language codes by "filename: fullKeyPath"
 
-  const editedKeys = changedKeys.filter((e) => !e.isNew);
+  const editedKeys = keys.filter(filterFn);
 
   // console.log("editedKeys", editedKeys);
   const groupedMap = new Map<
@@ -255,12 +258,13 @@ export type GroupedTranslationValues = {
 };
 
 export const groupTranslationValues = (
-  keys: TranslationValue[]
+  keys: TranslationValue[],
+  filterFn: (item: TranslationValue) => boolean
 ): GroupedTranslationValues[] => {
   const groupedMap = new Map<string, GroupedTranslationValues>();
 
-  const editedKeys = keys.filter((e) => !e.isNew);
-  editedKeys.forEach((item) => {
+  const filteredKeys = keys.filter(filterFn);
+  filteredKeys.forEach((item) => {
     const key = `${item.filename}:::${item.fullKeyPath}`; // unique composite key
 
     if (!groupedMap.has(key)) {

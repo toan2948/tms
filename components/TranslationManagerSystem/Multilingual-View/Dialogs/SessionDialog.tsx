@@ -47,9 +47,15 @@ export function SessionDialog({
     (key) => key.isNew && key.language_code === "en" && !key.has_children //reduce the key to english language only
   );
 
-  const editedKeysSessionFormat = formatSessionDialogData(changedKeys);
+  const editedKeysSessionFormat = formatSessionDialogData(
+    changedKeys,
+    (e) => !e.isNew
+  );
+  const newKeysSessionFormat = formatSessionDialogData(newKeys, (e) =>
+    e.isNew ? true : false
+  );
 
-  // console.log("changedKeys session dialog", changedKeys);
+  // console.log("newKeysSessionFormat", newKeysSessionFormat);
   const handleClose = () => {
     onClose(false);
   };
@@ -118,7 +124,7 @@ export function SessionDialog({
             </Box>
           </>
         )}
-        {newKeys && newKeys.length > 0 && (
+        {newKeysSessionFormat && newKeysSessionFormat.length > 0 && (
           <>
             <Typography>New keys:</Typography>
 
@@ -130,7 +136,7 @@ export function SessionDialog({
               }}
             >
               <List sx={{ pt: 0 }}>
-                {newKeys.map((item, index) => (
+                {newKeysSessionFormat.map((item, index) => (
                   <ListItem
                     key={index}
                     sx={{
@@ -141,7 +147,7 @@ export function SessionDialog({
                       handleClick(item.fullKeyPath, item.filename);
                     }}
                   >
-                    <Typography> {item.fullKeyPath}</Typography>
+                    <Typography color={item.color}> {item.label}</Typography>
                   </ListItem>
                 ))}
               </List>
