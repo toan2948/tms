@@ -3,7 +3,7 @@ import { create } from "zustand";
 
 type AllFileState = {
   //these states are to handle the error: localStorage is not defined (in case only localStorage is used)
-  filesInfo: FileState[];
+  filesInfo: FileState<KeyState>[];
   languages: LanguageType[];
   setLanguages: (languages: LanguageType[]) => void;
   addKeysToFilesInfo: (
@@ -11,7 +11,7 @@ type AllFileState = {
     fileName: string,
     language_code: string
   ) => void;
-  setFilesInfo: (files: FileState[]) => void;
+  setFilesInfo: (files: FileState<KeyState>[]) => void;
   updateKeyChanged: (editedKey: KeyState) => void;
   reset: () => void;
 };
@@ -23,7 +23,7 @@ export const useEditAllFileStore = create<AllFileState>((set, get) => ({
     set(() => ({
       languages,
     })),
-  setFilesInfo: (files: FileState[]) =>
+  setFilesInfo: (files: FileState<KeyState>[]) =>
     set(() => ({
       filesInfo: files,
     })),

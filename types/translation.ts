@@ -1,4 +1,43 @@
-interface BaseTranslationKey {
+export interface LanguageInfo {
+  language_code: string;
+  language_name: string;
+}
+
+export interface LanguageType {
+  code: string;
+  name: string;
+}
+
+export interface BaseKeyValue {
+  id: string;
+  fullKeyPath: string;
+  value: string | null;
+  version: number;
+  last_edited_at: Date | null;
+  has_children: boolean;
+  parent_id: string | null;
+  notes: string | null;
+  old_value: string | null; // Previous value before the change
+  old_version?: number; // Previous version before the change
+  isNew?: boolean; // Indicates if the key is newly added
+}
+export type KeyState = BaseKeyValue & {
+  isChanged: boolean;
+};
+export type KeyStateWithoutOld = Omit<KeyState, "old_value" | "old_version">;
+export type TranslationValue = BaseKeyValue & {
+  language_code: string;
+  language_name: string;
+  filename: string;
+};
+export interface FileState<T extends KeyState | KeyStateWithoutOld>
+  extends LanguageInfo {
+  fileName: string;
+  isDirty: boolean;
+  keys: T[];
+}
+
+export interface BaseTranslationKey {
   id: string;
   file_id: string;
   parent_id: string | null;
@@ -22,58 +61,6 @@ export interface TranslationKey extends BaseTranslationKey {
   // For building UI trees
   children?: TranslationKey[];
 }
-export interface TranslationTreeKey extends BaseTranslationKey {
-  children?: TranslationTreeKey[];
-}
-export interface FileState extends LanguageInfo {
-  fileName: string; //or fileID
-  isDirty: boolean;
-  keys: KeyState[];
-}
-export type KeyState = {
-  fullKeyPath: string;
-  id: string;
-  isChanged: boolean;
-  value: string | null;
-  version: number;
-  last_edited_at: Date | null;
-  has_children: boolean;
-  parent_id: string | null;
-  notes: string | null;
-  old_value: string | null; // Previous value before the change
-  old_version?: number; // Previous version before the change
-  isNew?: boolean; // Indicates if the key is newly added
-};
-export interface LanguageInfo {
-  language_code: string;
-  language_name: string;
-}
-export type KeyStateWithoutOld = Omit<KeyState, "old_value" | "old_version">;
 
-export interface FileStateWithoutOld extends LanguageInfo {
-  fileName: string;
-  isDirty: boolean;
-  keys: KeyStateWithoutOld[];
-}
-
-export interface LanguageType {
-  code: string;
-  name: string;
-}
-
-export type TranslationValue = {
-  id: string;
-  value: string | null;
-  fullKeyPath: string;
-  language_code: string;
-  language_name: string;
-  filename: string;
-  version: number;
-  last_edited_at: Date | null;
-  has_children: boolean;
-  parent_id: string | null;
-  notes: string | null;
-  old_value: string | null; // Previous value before the change
-  old_version?: number; // Previous version before the change
-  isNew?: boolean; // Indicates if the value is newly added
-};
+export type TreeNode<T> = T & { children?: TreeNode<T>[] };
+export type TranslationTreeKey = TreeNode<BaseTranslationKey>;

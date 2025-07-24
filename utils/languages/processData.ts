@@ -2,15 +2,15 @@
 
 import {
   FileState,
-  FileStateWithoutOld,
   KeyState,
+  KeyStateWithoutOld,
   TranslationTreeKey,
   TranslationValue,
 } from "@/types/translation";
 
 export function getEnglishKeyVersion(
   fullKeyPath: string,
-  files: FileState[]
+  files: FileState<KeyState>[]
 ): number {
   const englishFiles = files.filter(
     (file) => file.language_code.toLowerCase() === "en"
@@ -27,7 +27,7 @@ export function getEnglishKeyVersion(
 }
 
 export const filterTranslationKeys = (
-  localStorageFilesInfo: FileState[]
+  localStorageFilesInfo: FileState<KeyState>[]
 ): TranslationValue[] => {
   // 1st Step: filter out the changed keys from localStorageFilesInfo and updated version temporarily
   const changedKeys = localStorageFilesInfo.flatMap((file) =>
@@ -177,7 +177,7 @@ function moveEnglishToTopImmutable(
 export const getTranslationKeys = (
   fileN: string,
   path: string,
-  files: FileState[],
+  files: FileState<KeyState>[],
   selectedKey: string | null = null
 ): TranslationValue[] => {
   if (!selectedKey) return [];
@@ -239,7 +239,7 @@ export function buildKeyTreeFromFlatList(
 }
 
 export function findKeyStateByIdAcrossFiles(
-  fileStates: FileState[],
+  fileStates: FileState<KeyState>[],
   keyId: string
 ): KeyState | undefined {
   for (const file of fileStates) {
@@ -301,7 +301,7 @@ export const groupTranslationValues = (
 
 export function findParentIdsToRootByFullKeyPath(
   fullKeyPath: string,
-  files: FileState[],
+  files: FileState<KeyState>[],
   language_code = "en", // default to English,
   fileName: string
 ): string[] {
@@ -350,8 +350,8 @@ export const findSelectedKey = (
   return currentSelectedKey || null;
 };
 export function populateOldValuesAndOldVersion(
-  files: FileStateWithoutOld[]
-): FileState[] {
+  files: FileState<KeyStateWithoutOld>[]
+): FileState<KeyState>[] {
   return files.map((file) => ({
     ...file,
     keys: file.keys.map((key) => ({
