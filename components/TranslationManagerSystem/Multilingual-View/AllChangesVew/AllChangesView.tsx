@@ -30,7 +30,7 @@ const AllChangesView = ({
   const newKeys = useMemo(
     () =>
       changedKeys.filter(
-        (key) => key.isNew && key.language_code === "en" && !key.has_children //reduce the key to english language only and has no children
+        (key) => key.isNew && !key.has_children //reduce the key to english language only and has no children
       ),
     [changedKeys]
   );

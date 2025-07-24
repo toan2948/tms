@@ -1,6 +1,7 @@
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
+import { insertNewTranslationKeys } from "@/utils/languages/addNewKey";
 import {
   fetchAllTranslationFiles,
   updateChangedKeys,
@@ -43,16 +44,27 @@ export function SessionDialog({
   const { setFileName } = useFileNameStore();
   const changedKeys = filterTranslationKeys(filesInfo);
 
-  const newKeys = changedKeys.filter(
-    (key) => key.isNew && key.language_code === "en" && !key.has_children //reduce the key to english language only
+  const editedKeys = changedKeys.filter((key) => !key.isNew);
+
+  console.log("editedKeys", editedKeys);
+
+  // console.log("changedKeys", changedKeys);
+
+  const newKeys = changedKeys.filter((key) => key.isNew);
+
+  const newLowestLevelKeys = changedKeys.filter(
+    (key) => key.isNew && !key.has_children //reduce the key to english language only
   );
+
+  console.log("newKeys", newLowestLevelKeys);
 
   const editedKeysSessionFormat = formatSessionDialogData(
     changedKeys,
     (e) => !e.isNew
   );
-  const newKeysSessionFormat = formatSessionDialogData(newKeys, (e) =>
-    e.isNew ? true : false
+  const newKeysSessionFormat = formatSessionDialogData(
+    newLowestLevelKeys,
+    (e) => (e.isNew ? true : false)
   );
 
   // console.log("newKeysSessionFormat", newKeysSessionFormat);
@@ -61,7 +73,8 @@ export function SessionDialog({
   };
 
   const updateDB = async () => {
-    await updateChangedKeys(changedKeys);
+    await updateChangedKeys(editedKeys);
+    await insertNewTranslationKeys(newKeys); // Insert new keys into the DB
     onClose(false);
     const data = await fetchAllTranslationFiles(); // Fetch updated data from the DB
     setFilesInfo(populateOldValuesAndOldVersion(data));
@@ -170,7 +183,7 @@ export function SessionDialog({
         </Stack>
       </Box>
 
-      {!editedKeysSessionFormat && !newKeys && (
+      {!editedKeysSessionFormat && !newLowestLevelKeys && (
         <Box
           sx={{
             padding: "10px",

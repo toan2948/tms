@@ -45,7 +45,7 @@ export const AddKeyField = () => {
     const matchingFiles = filesInfo.filter(
       (entry) => entry.fileName === fileNameState
     );
-    // console.log("Matching files:", matchingFiles);
+    console.log("Matching files:", matchingFiles);
 
     let duplicateFound = false;
 
@@ -85,7 +85,7 @@ export const AddKeyField = () => {
             id: newParentId,
             full_key_path: currentPath,
             has_children: true,
-            file_id: file.fileName, // Use filename, not lang-specific
+            file_id: file.file_id,
             parent_id: parentID,
             level: i,
             notes: null,
@@ -100,7 +100,6 @@ export const AddKeyField = () => {
             isChanged: true,
             value: null,
             version: 0,
-            last_edited_at: null,
             has_children: true,
             parent_id: parentID,
             isNew: true,
@@ -109,6 +108,9 @@ export const AddKeyField = () => {
             old_version: 0,
             key_path_segment: keySegments[i],
             level: i,
+            file_id: file.file_id,
+            language_code: file.language_code,
+            language_name: file.language_name,
           });
 
           parentID = newParentId;
@@ -124,7 +126,7 @@ export const AddKeyField = () => {
         notes: null,
         full_key_path: trimmedKey,
         has_children: false,
-        file_id: file.fileName,
+        file_id: file.file_id,
         parent_id: parentID,
         level: keySegments.length - 1,
 
@@ -139,7 +141,6 @@ export const AddKeyField = () => {
         isChanged: true,
         value: null,
         version: 0,
-        last_edited_at: null,
         has_children: false,
         parent_id: parentID,
         isNew: true,
@@ -148,6 +149,9 @@ export const AddKeyField = () => {
         old_version: 0,
         key_path_segment: keySegments[keySegments.length - 1],
         level: keySegments.length - 1,
+        file_id: file.file_id,
+        language_code: file.language_code,
+        language_name: file.language_name,
       });
 
       // Batch add to store

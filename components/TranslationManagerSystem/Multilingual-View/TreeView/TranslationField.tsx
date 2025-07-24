@@ -2,7 +2,7 @@
 import { Typo1424, Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { TranslationValue } from "@/types/translation";
+import { KeyState } from "@/types/translation";
 import { normalizeEmpty } from "@/utils/languages/processData";
 import {
   Box,
@@ -18,7 +18,7 @@ import React, { useEffect, useState } from "react";
 import { ResetDialog } from "../Dialogs/ResetDialog";
 type TranslationFieldProps = {
   index: number;
-  data: TranslationValue;
+  data: KeyState;
   bilingual?: boolean;
 };
 const TranslationField = ({ index, data }: TranslationFieldProps) => {
@@ -59,6 +59,12 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
       notes: data.notes,
       old_version: data.old_version, // Store the old version before updating
       old_value: data.isNew ? null : data.value, // Store the old value before updating
+      key_path_segment: data.key_path_segment,
+      level: data.level,
+      language_code: data.language_code,
+      language_name: data.language_name,
+      file_id: data.file_id,
+      fileName: data.fileName,
     });
     setIsSaveButtonEnabled(false);
     setIsResetButtonEnabled(true);

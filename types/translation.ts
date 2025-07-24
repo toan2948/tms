@@ -13,7 +13,7 @@ export interface WithVersion {
 }
 
 export interface WithTimestamps {
-  last_edited_at: Date | null;
+  last_edited_at?: Date | null;
   added_at?: Date | null;
 }
 
@@ -47,9 +47,11 @@ export interface BaseKeyValue
   extends WithVersion,
     WithTimestamps,
     WithHierarchy,
+    WithLanguage,
     WithNotes {
   id: string;
   file_id?: string;
+  fileName?: string;
   value: string | null;
   old_value: string | null;
   isNew?: boolean;
@@ -61,16 +63,13 @@ export interface KeyState extends BaseKeyValue {
 
 export type KeyStateWithoutOld = Omit<KeyState, "old_value" | "old_version">;
 
-export interface TranslationValue extends BaseKeyValue, WithLanguage {
-  filename: string;
-}
-
 // -----------------------------------
 // File State
 // -----------------------------------
 
 export interface FileState<T extends KeyState | KeyStateWithoutOld>
   extends WithLanguage {
+  file_id: string;
   fileName: string;
   isDirty: boolean;
   keys: T[];

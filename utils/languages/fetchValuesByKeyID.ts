@@ -2,7 +2,7 @@
 
 import { createClient } from "../supabase/client";
 
-export type TranslationValue = {
+export type TranslationValue_Xoa = {
   value: string;
   full_key_path: string;
   translation_files: {
@@ -16,7 +16,7 @@ export type TranslationValue = {
 export async function fetchTranslationsByPathAndFilename(
   fullKeyPath: string,
   filename: string
-): Promise<TranslationValue[]> {
+): Promise<TranslationValue_Xoa[]> {
   const supabase = createClient();
 
   if (fullKeyPath === "" || filename === "") {

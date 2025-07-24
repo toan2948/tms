@@ -2,7 +2,7 @@
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { TranslationValue } from "@/types/translation";
+import { KeyState } from "@/types/translation";
 import {
   filterTranslationKeys,
   getTranslationKeys,
@@ -15,7 +15,7 @@ const TranslationValueList = () => {
   const { fileNameState } = useFileNameStore();
   const { selectedTreeKey } = useTreeKeyStore();
 
-  const [valuesState, setValuesState] = React.useState<TranslationValue[]>([]);
+  const [valuesState, setValuesState] = React.useState<KeyState[]>([]);
   const [showValueList, setShowValueList] = React.useState(false);
 
   const { filesInfo } = useEditAllFileStore();

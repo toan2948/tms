@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { useEditAllFileStore } from "@/store/useEditAllFileStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { TranslationValue } from "@/types/translation";
+import { KeyState } from "@/types/translation";
 import {
   Box,
   Button,
@@ -20,7 +20,7 @@ export interface DialogProps {
 
   setIsSaveButtonEnabled: React.Dispatch<React.SetStateAction<boolean>>;
   setIsResetButtonEnabled: React.Dispatch<React.SetStateAction<boolean>>;
-  data: TranslationValue;
+  data: KeyState;
 }
 
 export function ResetDialog({
@@ -54,6 +54,11 @@ export function ResetDialog({
       parent_id: data.parent_id,
       notes: data.notes,
       old_value: data.old_value, // Store the old value before resetting
+      key_path_segment: data.key_path_segment,
+      level: data.level,
+      language_code: data.language_code,
+      language_name: data.language_name,
+      file_id: data.file_id,
     });
     setValue(data.old_value ?? ""); // Reset the value to the old value
     setIsSaveButtonEnabled(false);

@@ -1,7 +1,7 @@
 import {
+  KeyState,
   LanguageType,
   TranslationTreeKey,
-  TranslationValue,
 } from "@/types/translation";
 import { createClient } from "../supabase/client";
 
@@ -101,6 +101,7 @@ export async function fetchAllTranslationFiles() {
         full_key_path: string;
         id: string;
         file_id: string;
+        fileName: string;
         value: string | null;
         isChanged: boolean;
         version: number;
@@ -110,6 +111,8 @@ export async function fetchAllTranslationFiles() {
         notes: string | null;
         key_path_segment: string;
         level: number;
+        language_code: string;
+        language_name: string;
       }>
     >
   >((acc, k) => {
@@ -119,6 +122,7 @@ export async function fetchAllTranslationFiles() {
       value: k.value,
       id: k.id,
       file_id: k.file_id,
+      fileName: files.find((f) => f.id === k.file_id)?.filename || "",
       version: k.version,
       last_edited_at: k.last_edited_at,
       isChanged: false, // default false for now
@@ -127,12 +131,15 @@ export async function fetchAllTranslationFiles() {
       notes: k.notes || null,
       key_path_segment: k.key_path_segment,
       level: k.level,
+      language_code: files.find((f) => f.id === k.file_id)?.language_code || "",
+      language_name: files.find((f) => f.id === k.file_id)?.language_name || "",
     });
     return acc;
   }, {});
 
   // Build final structure
   const result = files.map((f) => ({
+    file_id: f.id,
     fileName: f.filename,
     language_code: f.language_code,
     language_name: f.language_name,
@@ -143,7 +150,7 @@ export async function fetchAllTranslationFiles() {
   return result;
 }
 
-export async function updateChangedKeys(values: TranslationValue[]) {
+export async function updateChangedKeys(values: KeyState[]) {
   const supabase = await createClient();
   const now = new Date().toISOString();
 
