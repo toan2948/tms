@@ -18,6 +18,7 @@ export interface WithTimestamps {
 }
 
 export interface WithHierarchy {
+  id: string;
   parent_id: string | null;
   key_path_segment: string;
   full_key_path: string;
@@ -43,21 +44,17 @@ export interface LanguageType {
 // Key Value Types
 // -----------------------------------
 
-export interface BaseKeyValue
+export interface KeyState
   extends WithVersion,
     WithTimestamps,
     WithHierarchy,
     WithLanguage,
     WithNotes {
-  id: string;
   file_id?: string;
   fileName?: string;
   value: string | null;
   old_value: string | null;
   isNew?: boolean;
-}
-
-export interface KeyState extends BaseKeyValue {
   isChanged: boolean;
 }
 
@@ -76,31 +73,8 @@ export interface FileState<T extends KeyState | KeyStateWithoutOld>
 }
 
 // -----------------------------------
-// Translation Keys
-// -----------------------------------
-
-export interface BaseTranslationKey extends WithHierarchy, WithNotes {
-  id: string;
-  file_id: string;
-}
-
-export interface TranslationKey
-  extends BaseTranslationKey,
-    WithVersion,
-    WithTimestamps {
-  value: string | null;
-  status: "done" | "error" | "missing";
-  score: number | null;
-  ticket_number: string | null;
-  pr_number: string | null;
-
-  // For building UI trees
-  children?: TranslationKey[];
-}
-
-// -----------------------------------
 // Tree Type
 // -----------------------------------
 
 export type TreeNode<T> = T & { children?: TreeNode<T>[] };
-export type TranslationTreeKey = TreeNode<BaseTranslationKey>;
+export type TranslationTreeKey = TreeNode<WithHierarchy & WithNotes>;

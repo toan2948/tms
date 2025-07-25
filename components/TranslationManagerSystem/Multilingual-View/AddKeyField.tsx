@@ -85,7 +85,6 @@ export const AddKeyField = () => {
             id: newParentId,
             full_key_path: currentPath,
             has_children: true,
-            file_id: file.file_id,
             parent_id: parentID,
             level: i,
             notes: null,
@@ -126,7 +125,6 @@ export const AddKeyField = () => {
         notes: null,
         full_key_path: trimmedKey,
         has_children: false,
-        file_id: file.file_id,
         parent_id: parentID,
         level: keySegments.length - 1,
 
