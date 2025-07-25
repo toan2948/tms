@@ -42,8 +42,12 @@ export function DeleteKeyDialog({
         selectedTreeKey?.full_key_path ? selectedTreeKey.full_key_path : "",
         fileNameState
       );
+      removeKeyFromTree(
+        selectedTreeKey?.id ? selectedTreeKey?.id : "",
+        fileNameState
+      );
+
       localStorage.removeItem("DBkeys"); // Clear the local storage cache
-      reset();
       localStorage.removeItem("translationEdits");
     }
 
