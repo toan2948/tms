@@ -166,7 +166,7 @@ export const AddKeyField = () => {
       addKeysToFilesInfo(fileInfoUpdates, file.fileName, file.language_code);
     }
 
-    setNewKeyState("");
+    // setNewKeyState("");
     setIsNewKeyAdded(true);
     setTimeout(() => setIsNewKeyAdded(false), 4000);
   };
@@ -187,6 +187,9 @@ export const AddKeyField = () => {
     setParentIDs(
       parentIDs.concat(Array.isArray(IDs) ? IDs.slice(1).reverse() : [])
     );
+    setTimeout(() => {
+      setNewKeyState("");
+    }, 1000); // Clear the input after a short delay
   }, [filesInfo]);
 
   return (
