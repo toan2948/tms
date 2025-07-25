@@ -76,5 +76,9 @@ export interface FileState<T extends KeyState | KeyStateWithoutOld>
 // Tree Type
 // -----------------------------------
 
+export interface KeyNode extends WithHierarchy, WithNotes {
+  isNew?: boolean;
+}
+
 export type TreeNode<T> = T & { children?: TreeNode<T>[] };
-export type TranslationTreeKey = TreeNode<WithHierarchy & WithNotes>;
+export type TranslationTreeKey = TreeNode<KeyNode>;

@@ -28,17 +28,6 @@ export const AddKeyField = () => {
   const [error, setError] = useState(false);
   const [showHelperText, setShowHelperText] = useState(false);
 
-  // await addKeyToAllFilesWithSameName({
-  //   filename: fileNameState,
-  //   fullKeyPath: newKeyState,
-  // })
-  //   .then(() => {
-  //     console.log(`Key "${newKeyState}" added successfully.`);
-  //   })
-  //   .catch((error) => {
-  //     console.error("Error adding key:", error);
-  //   });
-
   const handleAddKey = async () => {
     const trimmedKey = newKeyState.trim();
     const isValid = /^[a-zA-Z0-9._]*$/.test(trimmedKey);
@@ -97,6 +86,7 @@ export const AddKeyField = () => {
             parent_id: parentID,
             level: i,
             notes: null,
+            isNew: true,
             key_path_segment: keySegments[i],
           };
 
@@ -136,7 +126,7 @@ export const AddKeyField = () => {
         has_children: false,
         parent_id: parentID,
         level: keySegments.length - 1,
-
+        isNew: true,
         key_path_segment: keySegments[keySegments.length - 1],
       };
 

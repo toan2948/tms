@@ -9,6 +9,7 @@ import {
 import { Dispatch, SetStateAction } from "react";
 
 import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
+import { useEditAllFileStore } from "@/store/useEditAllFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { deleteTranslationKey } from "@/utils/languages/dataFunctions";
@@ -23,25 +24,35 @@ export function DeleteKeyDialog({
   open,
   setOpenDeleteKeyDialog,
 }: DeleteKeyDialogProps) {
-  const { removeKeyFromTree, selectedTreeKey, setSelectedTreeKey } =
+  const { removeKeyFromTree, selectedTreeKey, setSelectedTreeKey, reset } =
     useTreeKeyStore();
   const { fileNameState } = useFileNameStore();
+  const { removeKeyFromFilesInfo } = useEditAllFileStore();
   const handleClose = () => {
     setOpenDeleteKeyDialog(false);
   };
 
   const handleDelete = async () => {
-    await deleteTranslationKey(
-      selectedTreeKey?.full_key_path ? selectedTreeKey.full_key_path : "",
-      fileNameState
-    );
-    setOpenDeleteKeyDialog(false);
-    if (!selectedTreeKey?.id) {
-      toast.error("Key ID is missing, cannot delete key.");
+    if (selectedTreeKey?.isNew) {
+      removeKeyFromTree(selectedTreeKey.id, fileNameState);
+      localStorage.removeItem("DBkeys"); // Clear the local storage cache
+      removeKeyFromFilesInfo(selectedTreeKey);
     } else {
-      removeKeyFromTree(selectedTreeKey.id, fileNameState); // Remove key from the tree in the store}
+      await deleteTranslationKey(
+        selectedTreeKey?.full_key_path ? selectedTreeKey.full_key_path : "",
+        fileNameState
+      );
+      localStorage.removeItem("DBkeys"); // Clear the local storage cache
+      reset();
+      localStorage.removeItem("translationEdits");
     }
+
+    setOpenDeleteKeyDialog(false);
+    // if (!selectedTreeKey?.id) {
+    //   toast.error("Key ID is missing, cannot delete key.");
+    // }
     setSelectedTreeKey(null); // Reset selected key ID after deletion
+
     toast.success("the key is deleted!");
   };
 

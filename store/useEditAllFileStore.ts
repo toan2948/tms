@@ -1,4 +1,9 @@
-import { FileState, KeyState, LanguageType } from "@/types/translation";
+import {
+  FileState,
+  KeyState,
+  LanguageType,
+  TranslationTreeKey,
+} from "@/types/translation";
 import { create } from "zustand";
 
 type AllFileState = {
@@ -11,6 +16,7 @@ type AllFileState = {
     fileName: string,
     language_code: string
   ) => void;
+  removeKeyFromFilesInfo: (key: TranslationTreeKey) => void;
   setFilesInfo: (files: FileState<KeyState>[]) => void;
   updateKeyChanged: (editedKey: KeyState) => void;
   reset: () => void;
@@ -57,7 +63,20 @@ export const useEditAllFileStore = create<AllFileState>((set, get) => ({
       return { filesInfo: updatedFiles };
     });
   },
+  removeKeyFromFilesInfo: (key) =>
+    set((state) => {
+      const updatedFiles = state.filesInfo.map((file) => {
+        const updatedKeys = file.keys.filter((e) => e.id !== key.id);
+        return {
+          ...file,
+          keys: updatedKeys,
+          isDirty: updatedKeys.some((e) => e.isChanged),
+        };
+      });
 
+      localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
+      return { filesInfo: updatedFiles };
+    }),
   updateKeyChanged: (editedKey: KeyState) => {
     set((state) => ({
       filesInfo: state.filesInfo.map((file) => {
