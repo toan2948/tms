@@ -20,8 +20,7 @@ const AllChangesView = ({
 }) => {
   const { filesInfo } = useEditAllFileStore();
 
-  const { setParentIDs } = useTreeKeyStore();
-  const { setSelectedTreeKey, DBkeys } = useTreeKeyStore();
+  const { setSelectedTreeKey, DBkeys, setParentIDs } = useTreeKeyStore();
   const { setFileName } = useFileNameStore();
   const changedKeys = useMemo(
     () => filterTranslationKeys(filesInfo),
@@ -60,7 +59,6 @@ const AllChangesView = ({
     const IDs = findParentIdsToRootByFullKeyPath(
       fullKeyPath,
       filesInfo,
-      "en",
       filename
     );
     // console.log(" IDs to root:", IDs);

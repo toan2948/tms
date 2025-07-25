@@ -3,13 +3,24 @@ import { useEditAllFileStore } from "@/store/useEditAllFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { KeyState, TranslationTreeKey } from "@/types/translation";
+import {
+  findParentIdsToRootByFullKeyPath,
+  findSelectedKey,
+} from "@/utils/languages/processData";
 import { Box, Button, InputAdornment, Stack, TextField } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export const AddKeyField = () => {
   const { fileNameState } = useFileNameStore();
   const { addKeysToFilesInfo, filesInfo } = useEditAllFileStore();
-  const { addKeysToTree } = useTreeKeyStore();
+  const {
+    addKeysToTree,
+    setSelectedTreeKey,
+    setParentIDs,
+    selectedTreeKey,
+    parentIDs,
+    DBkeys,
+  } = useTreeKeyStore();
   const [newKeyState, setNewKeyState] = useState("");
   const [isKeyExisted, setIsKeyExisted] = useState(false);
   const [isNewKeyAdded, setIsNewKeyAdded] = useState(false);
@@ -45,7 +56,7 @@ export const AddKeyField = () => {
     const matchingFiles = filesInfo.filter(
       (entry) => entry.fileName === fileNameState
     );
-    console.log("Matching files:", matchingFiles);
+    // console.log("Matching files:", matchingFiles);
 
     let duplicateFound = false;
 
@@ -65,11 +76,9 @@ export const AddKeyField = () => {
     }
 
     const keySegments = trimmedKey.split(".");
-
+    const keysToAdd: TranslationTreeKey[] = [];
+    const fileInfoUpdates: KeyState[] = [];
     for (const file of matchingFiles) {
-      const keysToAdd: TranslationTreeKey[] = [];
-      const fileInfoUpdates: KeyState[] = [];
-
       let parentID: string | null = null;
       const existingKeys = file.keys;
 
@@ -157,11 +166,28 @@ export const AddKeyField = () => {
       addKeysToFilesInfo(fileInfoUpdates, file.fileName, file.language_code);
     }
 
-    // Reset UI
     setNewKeyState("");
     setIsNewKeyAdded(true);
     setTimeout(() => setIsNewKeyAdded(false), 4000);
   };
+
+  useEffect(() => {
+    console.log("selectedTreeKey", selectedTreeKey, parentIDs);
+  }, [parentIDs]);
+
+  useEffect(() => {
+    //selectedKeys and parentIds should be set in useEffect, so that the tree can expanded appropriately
+    const IDs = findParentIdsToRootByFullKeyPath(
+      newKeyState.trim(),
+      filesInfo,
+      fileNameState
+    );
+    setSelectedTreeKey(findSelectedKey(IDs[0], fileNameState, DBkeys));
+
+    setParentIDs(
+      parentIDs.concat(Array.isArray(IDs) ? IDs.slice(1).reverse() : [])
+    );
+  }, [filesInfo]);
 
   return (
     <Stack direction={"column"}>

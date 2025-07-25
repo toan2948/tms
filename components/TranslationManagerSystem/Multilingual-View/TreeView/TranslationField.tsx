@@ -57,8 +57,8 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
       has_children: data.has_children,
       parent_id: data.parent_id,
       notes: data.notes,
-      old_version: data.old_version, // Store the old version before updating
-      old_value: data.old_value, // Store the old value before updating
+      old_version: data.old_version, // Store the old version to do comparison
+      old_value: data.old_value, // Store the old value to do comparison
       key_path_segment: data.key_path_segment,
       level: data.level,
       language_code: data.language_code,

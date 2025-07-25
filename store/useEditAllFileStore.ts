@@ -34,12 +34,16 @@ export const useEditAllFileStore = create<AllFileState>((set, get) => ({
     language_code: string
   ) => {
     set((state) => {
+      //filter keys by language_code
+      const newKeysOfLanguageCode = newKeys.filter(
+        (e) => e.language_code === language_code
+      );
       const updatedFiles = state.filesInfo.map((file) => {
         if (
           file.fileName === fileName &&
           file.language_code === language_code
         ) {
-          const updatedKeys = [...file.keys, ...newKeys];
+          const updatedKeys = [...file.keys, ...newKeysOfLanguageCode];
           return {
             ...file,
             keys: updatedKeys,

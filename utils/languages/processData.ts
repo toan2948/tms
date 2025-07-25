@@ -313,21 +313,25 @@ export const groupTranslationValues = (
 export function findParentIdsToRootByFullKeyPath(
   fullKey: string,
   files: FileState<KeyState>[],
-  language_code = "en", // default to English,
   fileName: string
 ): string[] {
   // Find the file for the language_code (English default)
   const file = files.find(
-    (f) => f.language_code === language_code && f.fileName === fileName
+    (f) => f.language_code === "en" && f.fileName === fileName
   );
-  if (!file) return [];
-
+  if (!file) {
+    console.warn("No matching file found.");
+    return [];
+  }
   // Map id -> KeyState for fast parent lookup
   const map = new Map<string, KeyState>(file.keys.map((k) => [k.id, k]));
 
   // Find the key by fullKey
   const key = file.keys.find((k) => k.full_key_path === fullKey);
-  if (!key) return [];
+  if (!key) {
+    console.warn("Key not found:", fullKey);
+    return [];
+  }
   const targetID = key.id;
 
   const parentIds: string[] = [targetID];
@@ -335,6 +339,13 @@ export function findParentIdsToRootByFullKeyPath(
 
   // Traverse up parents by id
   while (current.parent_id) {
+    const next = map.get(current.parent_id);
+    if (!next) {
+      console.warn(
+        `⛔ Missing parent in map for parent_id: ${current.parent_id}`
+      );
+      break;
+    }
     parentIds.push(current.parent_id);
     current = map.get(current.parent_id)!;
     if (!current) break; // safety check in case of missing parent
