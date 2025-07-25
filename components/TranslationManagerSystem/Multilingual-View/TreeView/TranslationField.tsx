@@ -58,7 +58,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
       parent_id: data.parent_id,
       notes: data.notes,
       old_version: data.old_version, // Store the old version before updating
-      old_value: data.isNew ? null : data.value, // Store the old value before updating
+      old_value: data.old_value, // Store the old value before updating
       key_path_segment: data.key_path_segment,
       level: data.level,
       language_code: data.language_code,
