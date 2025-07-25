@@ -24,7 +24,7 @@ export function DeleteKeyDialog({
   open,
   setOpenDeleteKeyDialog,
 }: DeleteKeyDialogProps) {
-  const { removeKeyFromTree, selectedTreeKey, setSelectedTreeKey, reset } =
+  const { removeKeyFromTree, selectedTreeKey, setSelectedTreeKey } =
     useTreeKeyStore();
   const { fileNameState } = useFileNameStore();
   const { removeKeyFromFilesInfo } = useEditAllFileStore();

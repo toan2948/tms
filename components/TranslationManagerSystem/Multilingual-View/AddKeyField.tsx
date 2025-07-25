@@ -13,14 +13,8 @@ import { useEffect, useState } from "react";
 export const AddKeyField = () => {
   const { fileNameState } = useFileNameStore();
   const { addKeysToFilesInfo, filesInfo } = useEditAllFileStore();
-  const {
-    addKeysToTree,
-    setSelectedTreeKey,
-    setParentIDs,
-    selectedTreeKey,
-    parentIDs,
-    DBkeys,
-  } = useTreeKeyStore();
+  const { addKeysToTree, setSelectedTreeKey, setParentIDs, parentIDs, DBkeys } =
+    useTreeKeyStore();
   const [newKeyState, setNewKeyState] = useState("");
   const [isKeyExisted, setIsKeyExisted] = useState(false);
   const [isNewKeyAdded, setIsNewKeyAdded] = useState(false);
@@ -161,9 +155,9 @@ export const AddKeyField = () => {
     setTimeout(() => setIsNewKeyAdded(false), 4000);
   };
 
-  useEffect(() => {
-    console.log("selectedTreeKey", selectedTreeKey, parentIDs);
-  }, [parentIDs]);
+  // useEffect(() => {
+  //   console.log("selectedTreeKey", selectedTreeKey, parentIDs);
+  // }, [parentIDs]);
 
   useEffect(() => {
     //selectedKeys and parentIds should be set in useEffect, so that the tree can expanded appropriately

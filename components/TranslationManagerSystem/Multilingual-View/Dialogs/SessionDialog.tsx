@@ -23,7 +23,7 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useMemo } from "react";
 import { toast } from "react-toastify";
 export interface SessionDialogProps {
   open: boolean;
@@ -42,13 +42,22 @@ export function SessionDialog({
 
   const { setParentIDs } = useTreeKeyStore();
   const { setFileName } = useFileNameStore();
-  const changedKeys = filterTranslationKeys(filesInfo);
+  const changedKeys = useMemo(
+    () => filterTranslationKeys(filesInfo),
+    [filesInfo]
+  );
 
-  const editedKeys = changedKeys.filter((key) => !key.isNew);
+  const editedKeys = useMemo(
+    () => changedKeys.filter((key) => !key.isNew),
+    [changedKeys]
+  );
 
   // console.log("changedKeys", changedKeys);
 
-  const newKeys = changedKeys.filter((key) => key.isNew);
+  const newKeys = useMemo(
+    () => changedKeys.filter((key) => key.isNew),
+    [changedKeys]
+  );
 
   const newLowestLevelKeys = changedKeys.filter(
     (key) => key.isNew && !key.has_children //reduce the key to english language only
@@ -84,7 +93,6 @@ export function SessionDialog({
     const IDs = findParentIdsToRootByFullKeyPath(
       fullKeyPath,
       filesInfo,
-      "en",
       filename
     );
     setSelectedTreeKey(findSelectedKey(IDs[0], filename, DBkeys));
@@ -163,31 +171,32 @@ export function SessionDialog({
             </Box>
           </>
         )}
-        <Stack direction={"row"} justifyContent={"flex-end"}>
-          <Button
-            variant='outlined'
+        {editedKeysSessionFormat.length > 0 ||
+        newKeysSessionFormat.length > 0 ? (
+          <Stack direction={"row"} justifyContent={"flex-end"}>
+            <Button
+              variant='outlined'
+              sx={{
+                marginRight: "10px",
+              }}
+              onClick={handleClose}
+            >
+              Cancel
+            </Button>
+            <Button variant='contained' onClick={updateDB}>
+              Save Changes
+            </Button>
+          </Stack>
+        ) : (
+          <Box
             sx={{
-              marginRight: "10px",
+              padding: "10px",
             }}
-            onClick={handleClose}
           >
-            Cancel
-          </Button>
-          <Button variant='contained' onClick={updateDB}>
-            Save Changes
-          </Button>
-        </Stack>
+            No changes
+          </Box>
+        )}
       </Box>
-
-      {!editedKeysSessionFormat && !newLowestLevelKeys && (
-        <Box
-          sx={{
-            padding: "10px",
-          }}
-        >
-          No changes
-        </Box>
-      )}
     </Dialog>
   );
 }

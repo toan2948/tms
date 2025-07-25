@@ -22,7 +22,7 @@ type TranslationFieldProps = {
   bilingual?: boolean;
 };
 const TranslationField = ({ index, data }: TranslationFieldProps) => {
-  const [isSaveButtonEnabled, setIsSaveButtonEnabled] = useState(false);
+  const [enableSaveButton, setEnableSaveButton] = useState(false);
   const [value, setValue] = useState(data.value);
   const [openResetDialog, setOpenResetDialog] = React.useState(false);
 
@@ -42,7 +42,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setValue(e.target.value);
-    setIsSaveButtonEnabled(true);
+    setEnableSaveButton(true);
   };
   const handleSave = () => {
     updateKeyChanged({
@@ -66,14 +66,14 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
       file_id: data.file_id,
       fileName: data.fileName,
     });
-    setIsSaveButtonEnabled(false);
+    setEnableSaveButton(false);
     setIsResetButtonEnabled(true);
     //value state is temporally not set here
   };
 
   useEffect(() => {
     if (value === data.old_value) {
-      setIsSaveButtonEnabled(false);
+      setEnableSaveButton(false);
     }
   }, [value]);
   useEffect(() => {
@@ -97,7 +97,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
         open={openResetDialog}
         onClose={setOpenResetDialog}
         setValue={setValue}
-        setIsSaveButtonEnabled={setIsSaveButtonEnabled}
+        setIsSaveButtonEnabled={setEnableSaveButton}
         setIsResetButtonEnabled={setIsResetButtonEnabled}
       />
 
@@ -188,7 +188,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
             <Box width={"90px"}>
               <Button
                 variant='outlined'
-                disabled={!isSaveButtonEnabled}
+                disabled={!enableSaveButton}
                 onClick={() => handleSave()}
                 fullWidth
               >

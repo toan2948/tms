@@ -66,7 +66,9 @@ export const useEditAllFileStore = create<AllFileState>((set, get) => ({
   removeKeyFromFilesInfo: (key) =>
     set((state) => {
       const updatedFiles = state.filesInfo.map((file) => {
-        const updatedKeys = file.keys.filter((e) => e.id !== key.id);
+        const updatedKeys = file.keys.filter(
+          (e) => e.full_key_path !== key.full_key_path
+        ); // use full_key_path, instead of id, to remove all keys of same full_key_path
         return {
           ...file,
           keys: updatedKeys,
