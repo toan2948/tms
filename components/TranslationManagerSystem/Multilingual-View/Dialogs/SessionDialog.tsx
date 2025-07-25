@@ -46,8 +46,6 @@ export function SessionDialog({
 
   const editedKeys = changedKeys.filter((key) => !key.isNew);
 
-  console.log("editedKeys", editedKeys);
-
   // console.log("changedKeys", changedKeys);
 
   const newKeys = changedKeys.filter((key) => key.isNew);
@@ -56,10 +54,8 @@ export function SessionDialog({
     (key) => key.isNew && !key.has_children //reduce the key to english language only
   );
 
-  console.log("newKeys", newLowestLevelKeys);
-
   const editedKeysSessionFormat = formatSessionDialogData(
-    changedKeys,
+    editedKeys,
     (e) => !e.isNew
   );
   const newKeysSessionFormat = formatSessionDialogData(
