@@ -166,11 +166,14 @@ export const AddKeyField = () => {
       filesInfo,
       fileNameState
     );
-    setSelectedTreeKey(findSelectedKey(IDs[0], fileNameState, DBkeys));
+    if (newKeyState.trim()) {
+      //prevent filesInfo changes in another component, which make this comp re-render and selectedKey will be null, because IDs is null
+      setSelectedTreeKey(findSelectedKey(IDs[0], fileNameState, DBkeys));
 
-    setParentIDs(
-      parentIDs.concat(Array.isArray(IDs) ? IDs.slice(1).reverse() : [])
-    );
+      setParentIDs(
+        parentIDs.concat(Array.isArray(IDs) ? IDs.slice(1).reverse() : [])
+      );
+    }
     setTimeout(() => {
       setNewKeyState("");
     }, 1000); // Clear the input after a short delay
