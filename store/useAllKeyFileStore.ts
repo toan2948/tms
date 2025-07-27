@@ -5,6 +5,7 @@ import {
   TranslationTreeKey,
 } from "@/types/translation";
 import { create } from "zustand";
+import { useTreeKeyStore } from "./useTreeKeyStore";
 
 type AllFileState = {
   //these states are to handle the error: localStorage is not defined (in case only localStorage is used)
@@ -19,6 +20,10 @@ type AllFileState = {
   removeKeyFromFilesInfo: (key: TranslationTreeKey) => void;
   setFilesInfo: (files: FileState<KeyState>[]) => void;
   updateKeyChanged: (editedKey: KeyState) => void;
+  updateKeyPathSegmentInFiles: (
+    oldFullKeyPath: string,
+    newSegment: string
+  ) => void;
   reset: () => void;
 };
 
@@ -98,6 +103,50 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
     }));
     const updatedFiles = get().filesInfo;
     localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
+  },
+  updateKeyPathSegmentInFiles: (oldFullKeyPath, newSegment) => {
+    const setSelectedTreeKey = useTreeKeyStore.getState().setSelectedTreeKey;
+    set((state) => {
+      const updatedFiles = state.filesInfo.map((file) => {
+        let fileChanged = false;
+
+        const updatedKeys = file.keys.map((key) => {
+          if (key.full_key_path === oldFullKeyPath) {
+            const segments = oldFullKeyPath.split(".");
+            segments[segments.length - 1] = newSegment;
+            const newFullKeyPath = segments.join(".");
+
+            console.log("Updating newFullKeyPath:", newFullKeyPath);
+
+            fileChanged = true;
+
+            //update full_key_path of selectedTreeKey
+            setSelectedTreeKey({
+              ...key,
+              full_key_path: newFullKeyPath,
+              key_path_segment: newSegment,
+            });
+
+            return {
+              ...key,
+              key_path_segment: newSegment,
+              full_key_path: newFullKeyPath,
+              isChanged: true,
+            };
+          }
+          return key;
+        });
+
+        return {
+          ...file,
+          keys: updatedKeys,
+          isDirty: fileChanged || updatedKeys.some((k) => k.isChanged),
+        };
+      });
+
+      localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
+      return { filesInfo: updatedFiles };
+    });
   },
 
   reset: () =>

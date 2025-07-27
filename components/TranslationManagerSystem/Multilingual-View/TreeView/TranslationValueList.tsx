@@ -5,24 +5,77 @@ import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { KeyState } from "@/types/translation";
 import {
+  checkDuplicateKeyName,
   filterTranslationKeys,
   getTranslationKeys,
 } from "@/utils/languages/processData";
-import { Box, Button, List, Stack } from "@mui/material";
+import {
+  Box,
+  Button,
+  InputAdornment,
+  List,
+  Stack,
+  TextField,
+} from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
 import { DeleteKeyDialog } from "../Dialogs/DeleteKeyDialog";
 import TranslationField from "./TranslationField";
 
 const TranslationValueList = () => {
+  const { selectedTreeKey, DBkeys, updateKeyPathSegment } = useTreeKeyStore();
+  const [error, setError] = useState(false);
+  const [showHelperText, setShowHelperText] = useState(false);
   const [openDeleteKeyDialog, setOpenDeleteKeyDialog] = useState(false);
+  const [NameIsDuplicated, setNameIsDuplicated] = useState(false);
 
+  const [openEditKeyField, setOpenEditKeyField] = useState(false);
   const { fileNameState } = useFileNameStore();
-  const { selectedTreeKey } = useTreeKeyStore();
 
   const [valuesState, setValuesState] = React.useState<KeyState[]>([]);
   const [showValueList, setShowValueList] = React.useState(false);
 
-  const { filesInfo } = useAllKeyFileStore();
+  const { filesInfo, updateKeyPathSegmentInFiles } = useAllKeyFileStore();
+  const [newKeyName, setNewKeyName] = useState(
+    selectedTreeKey?.key_path_segment || ""
+  );
+
+  const handleEditKeyName = () => {
+    if (selectedTreeKey === null) return;
+    const trimmedKey = newKeyName.trim();
+    const isValid = /^[a-zA-Z0-9_]*$/.test(trimmedKey);
+    if (!trimmedKey) return;
+    if (!isValid) {
+      setError(true);
+      setShowHelperText(true);
+      setTimeout(() => {
+        setShowHelperText(false);
+        setError(false);
+      }, 3000);
+      return;
+    }
+    // Check if the key already exists in the current file
+    const isDuplicatedName = checkDuplicateKeyName(
+      trimmedKey,
+      selectedTreeKey,
+      DBkeys,
+      fileNameState
+    );
+
+    console.log(isDuplicatedName);
+    if (isDuplicatedName) {
+      setError(true);
+      setNameIsDuplicated(true);
+      setShowHelperText(true);
+      setTimeout(() => {
+        setShowHelperText(false);
+        setError(false);
+      }, 3000);
+      return;
+    }
+    updateKeyPathSegment(selectedTreeKey.id, trimmedKey, fileNameState);
+    updateKeyPathSegmentInFiles(selectedTreeKey.full_key_path, trimmedKey);
+    // setSelectedTreeKey({ ...selectedTreeKey, key_path_segment: trimmedKey });
+  };
 
   //this changedKeys is used as a dependent factor in useEffect to update valuesState when the state FilesInfo is changed
   //filesInfo can not be used directly in useEffect because it will cause a bug as filesInfo is a dynamic state that can change the size of dependencies array of the useEffect
@@ -33,24 +86,19 @@ const TranslationValueList = () => {
 
   useEffect(() => {
     setValuesState(
-      getTranslationKeys(
-        fileNameState,
-        selectedTreeKey?.full_key_path ? selectedTreeKey.full_key_path : "",
-        filesInfo,
-        selectedTreeKey?.key_path_segment
-      )
+      getTranslationKeys(fileNameState, selectedTreeKey, filesInfo)
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [fileNameState, selectedTreeKey, changedKeys]); //valuesState in this condition will cause infinite loop
 
   useEffect(() => {
-    // console.log("valuesState", valuesState);
+    console.log("valuesState", valuesState);
     if (valuesState.find((e) => e.has_children === true)) {
       setShowValueList(false);
     } else {
       setShowValueList(true);
     }
-  }, [valuesState]);
+  }, [valuesState, selectedTreeKey?.key_path_segment]);
 
   if (showValueList) {
     return (
@@ -77,7 +125,7 @@ const TranslationValueList = () => {
             </Typo1424>
           </Box>
 
-          <Box>
+          <Stack direction={"row"}>
             <Button
               variant={"outlined"}
               sx={{
@@ -94,8 +142,83 @@ const TranslationValueList = () => {
             >
               Delete
             </Button>
-            <Button variant={"outlined"}>Edit</Button>
-          </Box>
+            <Stack
+              direction={"row"}
+              justifyContent={"center"}
+              alignItems={"center"}
+            >
+              {!openEditKeyField && (
+                <Button
+                  sx={{ marginRight: "10px" }}
+                  variant={"outlined"}
+                  onClick={() => setOpenEditKeyField(true)}
+                >
+                  Edit Key Name
+                </Button>
+              )}
+              <TextField
+                onChange={(e) => setNewKeyName(e.target.value)}
+                variant='outlined'
+                value={newKeyName}
+                error={error}
+                helperText={
+                  showHelperText
+                    ? NameIsDuplicated
+                      ? "Key name already exists in this parent"
+                      : "Only letters, numbers, and underscore (_) allowed"
+                    : ""
+                }
+                sx={{
+                  display: openEditKeyField ? "block" : "none", // ✅ hide instead of unmount
+                  "& .MuiOutlinedInput-root": {
+                    padding: "0px 0px 0px 5px",
+                    height: 40,
+                  },
+                  "& .MuiOutlinedInput-input": {
+                    padding: "0 8px",
+                    height: "100%",
+                    display: "flex",
+                    alignItems: "center", // ensures text vertically aligns
+                  },
+                }}
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position='end' sx={{ p: 0 }}>
+                        <Button
+                          onClick={handleEditKeyName}
+                          disableElevation
+                          sx={{
+                            borderLeft: "1px solid rgba(0, 0, 0, 0.23)",
+                            borderRadius: 0,
+                            minWidth: 50,
+                            height: 40,
+                            m: 0,
+                            p: 0,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                        >
+                          Save
+                        </Button>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+              <Button
+                variant='contained'
+                onClick={() => setOpenEditKeyField(false)}
+                sx={{
+                  marginLeft: "10px",
+                  display: openEditKeyField ? "block" : "none", // ✅ hide instead of unmount
+                }}
+              >
+                Cancel
+              </Button>
+            </Stack>
+          </Stack>
         </Stack>
         <Stack direction={"row"} width={"100%"} sx={{ overflowY: "scroll" }}>
           <List sx={{ width: "100%" }}>

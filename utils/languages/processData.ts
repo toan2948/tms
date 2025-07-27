@@ -183,16 +183,17 @@ function moveEnglishToTopImmutable(values: KeyState[]): KeyState[] {
 }
 export const getTranslationKeys = (
   fileN: string,
-  path: string,
-  files: FileState<KeyState>[],
-  selectedKey: string | null = null
+  selectedKey: TranslationTreeKey | null,
+  files: FileState<KeyState>[]
 ): KeyState[] => {
   if (!selectedKey) return [];
   const searchedFiles = files.filter((e) => e.fileName === fileN);
   if (searchedFiles.length === 0) return [];
   const result: KeyState[] = [];
   searchedFiles.forEach((element) => {
-    const foundKeys = element.keys.filter((key) => key.full_key_path === path);
+    const foundKeys = element.keys.filter(
+      (key) => key.full_key_path === selectedKey.full_key_path
+    );
     if (foundKeys.length > 0) {
       result.push({
         id: foundKeys[0].id,
@@ -386,3 +387,21 @@ export function populateOldValuesAndOldVersion(
 export function normalizeEmpty(value: string | null | undefined): string {
   return value ?? "";
 }
+export const checkDuplicateKeyName = (
+  newName: string,
+  old_key: TranslationTreeKey,
+  DBkeys: { fileName: string; keys: TranslationTreeKey[] }[],
+  fileNameState: string
+) => {
+  const { parent_id, level } = old_key;
+  const a = DBkeys.find((e) => e.fileName === fileNameState)?.keys || [];
+  const siblingExists = a.some(
+    (k) =>
+      k.id !== old_key.id &&
+      k.parent_id === parent_id &&
+      k.level === level &&
+      k.key_path_segment === newName
+  );
+  if (siblingExists) return true;
+  return false;
+};
