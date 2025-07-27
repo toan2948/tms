@@ -89,11 +89,16 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
     set((state) => ({
       filesInfo: state.filesInfo.map((file) => {
         const updatedKeys = file.keys.map((key) => {
-          if (key.value === editedKey.value) {
-            return { ...key, isChanged: false };
-          } else
-            return key.id === editedKey.id ? { ...key, ...editedKey } : key;
+          if (key.id === editedKey.id) {
+            if (key.value === editedKey.value) {
+              return { ...key, isChanged: false };
+            }
+            return { ...editedKey };
+          }
+          return key;
         });
+
+        // Check if any key is changed to set isDirty
         const isDirty = updatedKeys.some((key) => key.isChanged);
         return {
           ...file,
