@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
 
-import { useEditAllFileStore } from "@/store/useEditAllFileStore";
+import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { TranslationTreeKey } from "@/types/translation";
@@ -51,7 +51,7 @@ const MultilingualView = () => {
 
   const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
   const { DBkeys, setDBKeys, setSelectedTreeKey } = useTreeKeyStore();
-  const { setFilesInfo, setLanguages } = useEditAllFileStore();
+  const { setFilesInfo, setLanguages } = useAllKeyFileStore();
 
   // Fetch file data once on mount
   useEffect(() => {

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { useEditAllFileStore } from "@/store/useEditAllFileStore";
+import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { KeyState } from "@/types/translation";
 import {
@@ -35,7 +35,7 @@ export function ResetDialog({
     onClose(false);
   };
   const { selectedTreeKey } = useTreeKeyStore();
-  const { updateKeyChanged } = useEditAllFileStore();
+  const { updateKeyChanged } = useAllKeyFileStore();
 
   const handleReset = () => {
     // console.log("Resetting value to DBValue:", DBValue?.value, value);

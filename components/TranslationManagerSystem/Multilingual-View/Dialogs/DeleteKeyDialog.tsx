@@ -9,7 +9,7 @@ import {
 import { Dispatch, SetStateAction } from "react";
 
 import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
-import { useEditAllFileStore } from "@/store/useEditAllFileStore";
+import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { deleteTranslationKey } from "@/utils/languages/dataFunctions";
@@ -27,7 +27,7 @@ export function DeleteKeyDialog({
   const { removeKeyFromTree, selectedTreeKey, setSelectedTreeKey } =
     useTreeKeyStore();
   const { fileNameState } = useFileNameStore();
-  const { removeKeyFromFilesInfo } = useEditAllFileStore();
+  const { removeKeyFromFilesInfo } = useAllKeyFileStore();
   const handleClose = () => {
     setOpenDeleteKeyDialog(false);
   };

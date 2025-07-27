@@ -1,5 +1,5 @@
 "use client";
-import { useEditAllFileStore } from "@/store/useEditAllFileStore";
+import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { KeyState } from "@/types/translation";
@@ -18,7 +18,7 @@ const TranslationValueList = () => {
   const [valuesState, setValuesState] = React.useState<KeyState[]>([]);
   const [showValueList, setShowValueList] = React.useState(false);
 
-  const { filesInfo } = useEditAllFileStore();
+  const { filesInfo } = useAllKeyFileStore();
 
   //this changedKeys is used as a dependent factor in useEffect to update valuesState when the state FilesInfo is changed
   //filesInfo can not be used directly in useEffect because it will cause a bug as filesInfo is a dynamic state that can change the size of dependencies array of the useEffect

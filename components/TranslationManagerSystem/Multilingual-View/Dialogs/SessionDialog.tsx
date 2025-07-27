@@ -1,4 +1,4 @@
-import { useEditAllFileStore } from "@/store/useEditAllFileStore";
+import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { insertNewTranslationKeys } from "@/utils/languages/addNewKey";
@@ -36,7 +36,7 @@ export function SessionDialog({
   onClose,
   setSeeAllChanges,
 }: SessionDialogProps) {
-  const { filesInfo, setFilesInfo } = useEditAllFileStore();
+  const { filesInfo, setFilesInfo } = useAllKeyFileStore();
 
   const { setSelectedTreeKey, DBkeys } = useTreeKeyStore();
 

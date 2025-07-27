@@ -1,5 +1,5 @@
 import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
-import { useEditAllFileStore } from "@/store/useEditAllFileStore";
+import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import {
@@ -18,7 +18,7 @@ const AllChangesView = ({
 }: {
   setSeeAllChanges: React.Dispatch<React.SetStateAction<boolean>>;
 }) => {
-  const { filesInfo } = useEditAllFileStore();
+  const { filesInfo } = useAllKeyFileStore();
 
   const { setSelectedTreeKey, DBkeys, setParentIDs } = useTreeKeyStore();
   const { setFileName } = useFileNameStore();

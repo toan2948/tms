@@ -22,7 +22,7 @@ type AllFileState = {
   reset: () => void;
 };
 
-export const useEditAllFileStore = create<AllFileState>((set, get) => ({
+export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
   filesInfo: [],
   languages: [],
   setLanguages: (languages) =>

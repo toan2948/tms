@@ -1,5 +1,5 @@
 import { Typo1224 } from "@/components/ui/StyledElementPaymentDetail";
-import { useEditAllFileStore } from "@/store/useEditAllFileStore";
+import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { KeyState, TranslationTreeKey } from "@/types/translation";
@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 
 export const AddKeyField = () => {
   const { fileNameState } = useFileNameStore();
-  const { addKeysToFilesInfo, filesInfo } = useEditAllFileStore();
+  const { addKeysToFilesInfo, filesInfo } = useAllKeyFileStore();
   const { addKeysToTree, setSelectedTreeKey, setParentIDs, parentIDs, DBkeys } =
     useTreeKeyStore();
   const [newKeyState, setNewKeyState] = useState("");
