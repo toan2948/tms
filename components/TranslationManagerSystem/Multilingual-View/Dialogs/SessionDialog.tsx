@@ -11,7 +11,6 @@ import {
   findParentIdsToRootByFullKeyPath,
   findSelectedKey,
   formatSessionDialogData,
-  populateOldValuesAndOldVersion,
 } from "@/utils/languages/processData";
 import {
   Box,
@@ -82,7 +81,7 @@ export function SessionDialog({
     await insertNewTranslationKeys(newKeys); // Insert new keys into the DB
     onClose(false);
     const data = await fetchAllTranslationFiles(); // Fetch updated data from the DB
-    setFilesInfo(populateOldValuesAndOldVersion(data));
+    setFilesInfo(data);
     localStorage.setItem("translationEdits", JSON.stringify(data));
     toast.success("Saved to DB!");
   };

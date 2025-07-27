@@ -17,13 +17,9 @@ import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { TranslationTreeKey } from "@/types/translation";
 import {
   fetchAllTranslationFiles,
-  fetchLanguages,
   fetchTranslationKeysByFilenameAndLanguage,
 } from "@/utils/languages/dataFunctions";
-import {
-  buildKeyTreeFromFlatList,
-  populateOldValuesAndOldVersion,
-} from "@/utils/languages/processData";
+import { buildKeyTreeFromFlatList } from "@/utils/languages/processData";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { AddKeyField } from "./AddKeyField";
 import AllChangesView from "./AllChangesVew/AllChangesView";
@@ -65,11 +61,8 @@ const MultilingualView = () => {
           const parsedData = JSON.parse(localStorageFilesInfo);
           setFilesInfo(parsedData);
         } else {
-          setFilesInfo(populateOldValuesAndOldVersion(data)); //populateOldValuesAndOldVersion is to add old values and old version to the data
-          localStorage.setItem(
-            "translationEdits",
-            JSON.stringify(populateOldValuesAndOldVersion(data))
-          );
+          setFilesInfo(data);
+          localStorage.setItem("translationEdits", JSON.stringify(data));
         }
       } catch (error) {
         console.error("Error loading translation data:", error);
@@ -79,18 +72,6 @@ const MultilingualView = () => {
     fetchKeysAndSaveToLocal();
   }, [fileNameState]);
 
-  useEffect(() => {
-    async function fetchAndSaveLanguages() {
-      try {
-        const lgs = await fetchLanguages();
-        // console.log("Fetched languages:", lgs);
-        setLanguages(lgs);
-      } catch (error) {
-        console.error("Error fetching languages:", error);
-      }
-    }
-    fetchAndSaveLanguages();
-  }, []);
 
   // Fetch keys when file changes
   useEffect(() => {

@@ -94,48 +94,34 @@ export async function fetchAllTranslationFiles() {
   }
 
   // Group keys by file_id
-  const keysByFileId = keys.reduce<
-    Record<
-      string,
-      Array<{
-        full_key_path: string;
-        id: string;
-        file_id: string;
-        fileName: string;
-        value: string | null;
-        isChanged: boolean;
-        version: number;
-        last_edited_at: Date | null;
-        has_children: boolean;
-        parent_id: string | null;
-        notes: string | null;
-        key_path_segment: string;
-        level: number;
-        language_code: string;
-        language_name: string;
-      }>
-    >
-  >((acc, k) => {
-    if (!acc[k.file_id]) acc[k.file_id] = [];
-    acc[k.file_id].push({
-      full_key_path: k.full_key_path,
-      value: k.value,
-      id: k.id,
-      file_id: k.file_id,
-      fileName: files.find((f) => f.id === k.file_id)?.filename || "",
-      version: k.version,
-      last_edited_at: k.last_edited_at,
-      isChanged: false, // default false for now
-      has_children: k.has_children,
-      parent_id: k.parent_id,
-      notes: k.notes || null,
-      key_path_segment: k.key_path_segment,
-      level: k.level,
-      language_code: files.find((f) => f.id === k.file_id)?.language_code || "",
-      language_name: files.find((f) => f.id === k.file_id)?.language_name || "",
-    });
-    return acc;
-  }, {});
+  const keysByFileId = keys.reduce<Record<string, Array<KeyState>>>(
+    (acc, k) => {
+      if (!acc[k.file_id]) acc[k.file_id] = [];
+      acc[k.file_id].push({
+        full_key_path: k.full_key_path,
+        value: k.value,
+        id: k.id,
+        file_id: k.file_id,
+        fileName: files.find((f) => f.id === k.file_id)?.filename || "",
+        version: k.version,
+        last_edited_at: k.last_edited_at,
+        isChanged: false, // default false for now
+        has_children: k.has_children,
+        parent_id: k.parent_id,
+        notes: k.notes || null,
+        key_path_segment: k.key_path_segment,
+        level: k.level,
+        language_code:
+          files.find((f) => f.id === k.file_id)?.language_code || "",
+        language_name:
+          files.find((f) => f.id === k.file_id)?.language_name || "",
+        old_value: k.value || null,
+        old_version: k.version || 0,
+      });
+      return acc;
+    },
+    {}
+  );
 
   // Build final structure
   const result = files.map((f) => ({
@@ -155,15 +141,18 @@ export async function updateChangedKeys(values: KeyState[]) {
   const now = new Date().toISOString();
 
   // Batch update each row one-by-one (async parallel)
-  const promises = values.map(({ id, value, version }) =>
-    supabase
-      .from("translation_keys")
-      .update({
-        value,
-        last_edited_at: now,
-        version: version,
-      })
-      .eq("id", id)
+  const promises = values.map(
+    ({ id, value, version, full_key_path, key_path_segment }) =>
+      supabase
+        .from("translation_keys")
+        .update({
+          value,
+          last_edited_at: now,
+          version: version,
+          full_key_path,
+          key_path_segment,
+        })
+        .eq("id", id)
   );
 
   // Wait for all updates
