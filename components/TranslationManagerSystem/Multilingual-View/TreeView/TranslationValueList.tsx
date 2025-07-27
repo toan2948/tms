@@ -1,4 +1,5 @@
 "use client";
+import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
@@ -7,11 +8,14 @@ import {
   filterTranslationKeys,
   getTranslationKeys,
 } from "@/utils/languages/processData";
-import { List, Stack } from "@mui/material";
-import React, { useEffect, useMemo } from "react";
+import { Box, Button, List, Stack } from "@mui/material";
+import React, { useEffect, useMemo, useState } from "react";
+import { DeleteKeyDialog } from "../Dialogs/DeleteKeyDialog";
 import TranslationField from "./TranslationField";
 
 const TranslationValueList = () => {
+  const [openDeleteKeyDialog, setOpenDeleteKeyDialog] = useState(false);
+
   const { fileNameState } = useFileNameStore();
   const { selectedTreeKey } = useTreeKeyStore();
 
@@ -50,15 +54,59 @@ const TranslationValueList = () => {
 
   if (showValueList) {
     return (
-      <Stack direction={"row"} width={"100%"} sx={{ overflowY: "scroll" }}>
-        <List sx={{ width: "100%" }}>
-          {/* //todo: note- if key= e.key, there will be an absurd rendering */}
+      <>
+        <DeleteKeyDialog
+          open={openDeleteKeyDialog}
+          setOpenDeleteKeyDialog={setOpenDeleteKeyDialog}
+        />
+        <Stack
+          width={"100%"}
+          direction={"row"}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+          sx={{
+            padding: "10px 10px 0 10px",
+          }}
+        >
+          <Box>
+            <Typo1424 weight={600}>
+              Key to translate: {selectedTreeKey?.key_path_segment}
+            </Typo1424>
+            <Typo1424 weight={500}>
+              {selectedTreeKey?.notes || "No notes available"}
+            </Typo1424>
+          </Box>
 
-          {valuesState.map((e, index) => (
-            <TranslationField index={index} key={index} data={e} />
-          ))}
-        </List>
-      </Stack>
+          <Box>
+            <Button
+              variant={"outlined"}
+              sx={{
+                marginRight: "10px",
+                marginLeft: "10px",
+                color: "red",
+                borderColor: "red", // <-- this is key for the outline
+                "&:hover": {
+                  backgroundColor: "rgba(255, 0, 0, 0.04)", // subtle red on hover
+                  borderColor: "red",
+                },
+              }}
+              onClick={() => setOpenDeleteKeyDialog(true)}
+            >
+              Delete
+            </Button>
+            <Button variant={"outlined"}>Edit</Button>
+          </Box>
+        </Stack>
+        <Stack direction={"row"} width={"100%"} sx={{ overflowY: "scroll" }}>
+          <List sx={{ width: "100%" }}>
+            {/* //todo: note- if key= e.key, there will be an absurd rendering */}
+
+            {valuesState.map((e, index) => (
+              <TranslationField index={index} key={index} data={e} />
+            ))}
+          </List>
+        </Stack>
+      </>
     );
   } else return null;
 };
