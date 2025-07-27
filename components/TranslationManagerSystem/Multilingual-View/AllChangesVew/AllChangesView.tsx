@@ -34,8 +34,6 @@ const AllChangesView = ({
     [changedKeys]
   );
 
-  // console.log("changedKeys", changedKeys);
-
   const groupedChangedKeys = useMemo(
     () => groupTranslationValues(changedKeys, (e) => !e.isNew),
     [changedKeys]
@@ -44,8 +42,6 @@ const AllChangesView = ({
     () => groupTranslationValues(newKeys, (e) => (e.isNew ? true : false)),
     [newKeys]
   );
-
-  // console.log("groupedNewKeys", newKeys, groupedNewKeys);
 
   const handleGroupClick = (group: GroupedTranslationValues) => {
     //only need a key, no need to care about which language
@@ -61,7 +57,6 @@ const AllChangesView = ({
       filesInfo,
       filename
     );
-    // console.log(" IDs to root:", IDs);
 
     setSelectedTreeKey(findSelectedKey(IDs[0], filename, DBkeys));
     setParentIDs(Array.isArray(IDs) ? IDs.slice(1).reverse() : []);

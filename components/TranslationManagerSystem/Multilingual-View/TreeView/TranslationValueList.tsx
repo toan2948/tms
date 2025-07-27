@@ -61,7 +61,6 @@ const TranslationValueList = () => {
       fileNameState
     );
 
-    console.log(isDuplicatedName);
     if (isDuplicatedName) {
       setError(true);
       setNameIsDuplicated(true);
@@ -92,7 +91,6 @@ const TranslationValueList = () => {
   }, [fileNameState, selectedTreeKey, changedKeys]); //valuesState in this condition will cause infinite loop
 
   useEffect(() => {
-    console.log("valuesState", valuesState);
     if (valuesState.find((e) => e.has_children === true)) {
       setShowValueList(false);
     } else {

@@ -8,7 +8,7 @@ import {
   findSelectedKey,
 } from "@/utils/languages/processData";
 import { Box, Button, InputAdornment, Stack, TextField } from "@mui/material";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export const AddKeyField = () => {
   const { fileNameState } = useFileNameStore();
@@ -22,7 +22,7 @@ export const AddKeyField = () => {
   const [error, setError] = useState(false);
   const [showHelperText, setShowHelperText] = useState(false);
 
-  const handleAddKey = async () => {
+  const handleAddKey = useCallback(async () => {
     const trimmedKey = newKeyState.trim();
     const isValid = /^[a-zA-Z0-9._]*$/.test(trimmedKey);
     if (!trimmedKey) return;
@@ -39,7 +39,6 @@ export const AddKeyField = () => {
     const matchingFiles = filesInfo.filter(
       (entry) => entry.fileName === fileNameState
     );
-    // console.log("Matching files:", matchingFiles);
 
     let duplicateFound = false;
 
@@ -82,6 +81,8 @@ export const AddKeyField = () => {
             notes: null,
             isNew: true,
             key_path_segment: keySegments[i],
+            language_code: file.language_code,
+            language_name: file.language_name,
           };
 
           keysToAdd.push(newParent);
@@ -122,6 +123,8 @@ export const AddKeyField = () => {
         level: keySegments.length - 1,
         isNew: true,
         key_path_segment: keySegments[keySegments.length - 1],
+        language_code: file.language_code,
+        language_name: file.language_name,
       };
 
       keysToAdd.push(newLeaf);
@@ -146,14 +149,15 @@ export const AddKeyField = () => {
       });
 
       // Batch add to store
-      addKeysToTree(keysToAdd, file.fileName, file.language_code);
+      addKeysToTree(keysToAdd, file.fileName);
+
       addKeysToFilesInfo(fileInfoUpdates, file.fileName, file.language_code);
     }
 
     // setNewKeyState("");
     setIsNewKeyAdded(true);
     setTimeout(() => setIsNewKeyAdded(false), 4000);
-  };
+  }, [newKeyState, filesInfo, fileNameState]);
 
   // useEffect(() => {
   //   console.log("selectedTreeKey", selectedTreeKey, parentIDs);

@@ -71,7 +71,6 @@ export const filterTranslationKeys = (
     const isUpdatedEnglishKey = changedKeys.find(
       (e) => e.full_key_path === key.full_key_path && e.language_code === "en"
     )?.version;
-    // console.log("isEnglishKeyAlsoUpdated", isUpdatedEnglishKey, englishVersion);
     return {
       id: key.id,
       value: key.value,
@@ -125,7 +124,6 @@ export const formatSessionDialogData = (
 
   const editedKeys = keys.filter(filterFn);
 
-  // console.log("editedKeys", editedKeys);
   const groupedMap = new Map<
     string,
     { filename: string; fullKey: string; languages: Set<string> }

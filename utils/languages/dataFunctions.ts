@@ -59,7 +59,14 @@ export async function fetchTranslationKeysByFilenameAndLanguage(
     throw new Error(`Error fetching keys: ${keyError.message}`);
   }
 
-  return keys ?? [];
+  //add language_code and language_name to each key //to overcome the typescript
+  const keysWithLanguage = keys.map((key) => ({
+    ...key,
+    language_code: "en", // Assuming English as default
+    language_name: "English", // Assuming English as default
+  }));
+
+  return keysWithLanguage ?? [];
 }
 export async function fetchAllTranslationFiles() {
   const supabase = await createClient();

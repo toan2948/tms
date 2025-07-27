@@ -12,11 +12,7 @@ type TreeKeyState = {
 
   setSelectedTreeKey: (key: TranslationTreeKey | null) => void;
   setDBKeys: (keys: TranslationTreeKey[], file_name: string) => void;
-  addKeysToTree: (
-    key: TranslationTreeKey[],
-    file_name: string,
-    language_code: string
-  ) => void;
+  addKeysToTree: (key: TranslationTreeKey[], file_name: string) => void;
   removeKeyFromTree: (keyId: string, file_name: string) => void;
   updateKeyPathSegment: (
     keyId: string,
@@ -49,15 +45,27 @@ export const useTreeKeyStore = create<TreeKeyState>((set, get) => ({
       localStorage.setItem("DBkeys", JSON.stringify(updatedDBKeys));
     }
   },
-  addKeysToTree: (newKeys, fileName, language_code) => {
-    if (language_code !== "en") return;
+  addKeysToTree: (newKeys, fileName) => {
     // Only add keys if the language is English
     const DBkeys = get().DBkeys;
     const fileIndex = DBkeys.findIndex((e) => e.fileName === fileName);
 
+    //take only english keys
+    const englishKeys = newKeys.filter((e) => e.language_code === "en");
+
+    //check if the key ID is already exist
+    const existingKey = DBkeys[fileIndex]?.keys.some((e) => {
+      return englishKeys.some((newKey) => newKey.id === e.id);
+    });
+
+    if (existingKey) {
+      console.warn("Key already exists, skipping addition.");
+      return;
+    }
+
     if (fileIndex !== -1) {
       const existingKeys = DBkeys[fileIndex].keys;
-      const updatedKeys = [...existingKeys, ...newKeys];
+      const updatedKeys = [...existingKeys, ...englishKeys];
 
       const updatedFile = {
         ...DBkeys[fileIndex],

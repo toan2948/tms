@@ -51,8 +51,6 @@ export function SessionDialog({
     [changedKeys]
   );
 
-  // console.log("changedKeys", changedKeys);
-
   const newKeys = useMemo(
     () => changedKeys.filter((key) => key.isNew),
     [changedKeys]
@@ -71,7 +69,6 @@ export function SessionDialog({
     (e) => (e.isNew ? true : false)
   );
 
-  // console.log("newKeysSessionFormat", newKeysSessionFormat);
   const handleClose = () => {
     onClose(false);
   };
