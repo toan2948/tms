@@ -46,8 +46,8 @@ const MultilingualView = () => {
   const [openDialog, setOpenDialog] = React.useState(false);
 
   const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
-  const { DBkeys, setDBKeys, setSelectedTreeKey } = useTreeKeyStore();
-  const { setFilesInfo, setLanguages } = useAllKeyFileStore();
+  const { setDBKeys, setSelectedTreeKey, DBkeys } = useTreeKeyStore();
+  const { setFilesInfo, filesInfo } = useAllKeyFileStore();
 
   // Fetch file data once on mount
   useEffect(() => {
@@ -70,8 +70,7 @@ const MultilingualView = () => {
     }
 
     fetchKeysAndSaveToLocal();
-  }, [fileNameState]);
-
+  }, [fileNameState, JSON.stringify(DBkeys)]); //DBkeys is used to trigger the effect when keys are updated
 
   // Fetch keys when file changes
   useEffect(() => {
@@ -88,11 +87,6 @@ const MultilingualView = () => {
         console.error("Error fetching data:", error);
       }
     }
-    //always fetch keys when fileNameState changes, or the page is mounted. That will update the key changes (edited, deleted, added)
-
-    // fetchKeysForBuildingTree();
-
-    // ---
 
     if (!fileNameState) {
       console.warn("⚠️ fileNameState is empty, skipping fetch");
@@ -117,7 +111,7 @@ const MultilingualView = () => {
     } else {
       fetchKeysForBuildingTree();
     }
-  }, [fileNameState, JSON.stringify(DBkeys)]);
+  }, [fileNameState, JSON.stringify(filesInfo)]); //filesInfo is used to trigger the effect when files are updated
 
   return (
     <>

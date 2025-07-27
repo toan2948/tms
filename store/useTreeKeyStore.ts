@@ -86,6 +86,7 @@ export const useTreeKeyStore = create<TreeKeyState>((set, get) => ({
       const newDBkeys = [...DBkeys];
       newDBkeys[fileIndex] = updatedFile;
       set(() => ({ DBkeys: newDBkeys }));
+      localStorage.setItem("DBkeys", JSON.stringify(newDBkeys));
     } else {
       console.error(`File with name ${file_name} not found in DBkeys.`);
     }

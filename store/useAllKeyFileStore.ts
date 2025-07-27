@@ -68,7 +68,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
       return { filesInfo: updatedFiles };
     });
   },
-  removeKeyFromFilesInfo: (key) =>
+  removeKeyFromFilesInfo: (key) => {
     set((state) => {
       const updatedFiles = state.filesInfo.map((file) => {
         const updatedKeys = file.keys.filter(
@@ -81,9 +81,10 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
         };
       });
 
-      localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
       return { filesInfo: updatedFiles };
-    }),
+    });
+    localStorage.setItem("translationEdits", JSON.stringify(get().filesInfo));
+  },
   updateKeyChanged: (editedKey: KeyState) => {
     set((state) => ({
       filesInfo: state.filesInfo.map((file) => {

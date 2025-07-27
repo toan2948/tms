@@ -35,7 +35,6 @@ export function DeleteKeyDialog({
   const handleDelete = async () => {
     if (selectedTreeKey?.isNew) {
       removeKeyFromTree(selectedTreeKey.id, fileNameState);
-      localStorage.removeItem("DBkeys"); // Clear the local storage cache
       removeKeyFromFilesInfo(selectedTreeKey);
     } else {
       await deleteTranslationKey(
@@ -47,8 +46,9 @@ export function DeleteKeyDialog({
         fileNameState
       );
 
-      localStorage.removeItem("DBkeys"); // Clear the local storage cache
-      localStorage.removeItem("translationEdits");
+      if (selectedTreeKey) {
+        removeKeyFromFilesInfo(selectedTreeKey);
+      }
     }
 
     setOpenDeleteKeyDialog(false);
