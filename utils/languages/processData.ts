@@ -245,6 +245,33 @@ export function buildKeyTreeFromFlatList(
     }
   });
 
+  //sort the nodes in the tree
+  const customSort = (a: TranslationTreeKey, b: TranslationTreeKey) => {
+    const aNum = Number(a.key_path_segment);
+    const bNum = Number(b.key_path_segment);
+    const aIsNum = !isNaN(aNum);
+    const bIsNum = !isNaN(bNum);
+
+    if (aIsNum && bIsNum) return aNum - bNum; // number vs number
+    if (aIsNum) return -1; // number before string
+    if (bIsNum) return 1; // number before string
+    return a.key_path_segment.localeCompare(b.key_path_segment, undefined, {
+      sensitivity: "base",
+    }); // string vs string
+  };
+
+  // Recursive sort
+  const sortNodes = (nodes: TranslationTreeKey[]) => {
+    nodes.sort(customSort);
+    nodes.forEach((node) => {
+      if (node.children && node.children.length > 0) {
+        sortNodes(node.children);
+      }
+    });
+  };
+
+  sortNodes(tree);
+
   return tree;
 }
 
