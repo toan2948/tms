@@ -5,14 +5,6 @@ import {
 } from "@/types/translation";
 import { createClient } from "../supabase/client";
 
-export async function TreeData() {
-  const supabase = await createClient();
-
-  const { data } = await supabase.from("EN_kv").select("*");
-
-  return JSON.stringify(data ?? {}, null, 2);
-}
-
 export async function fetchTranslationKeysByFilenameAndLanguage(
   filename: string,
   languageCode: string
