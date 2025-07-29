@@ -85,6 +85,10 @@ const TranslationValueList = () => {
   );
 
   useEffect(() => {
+    setNewKeyName(selectedTreeKey?.key_path_segment || ""); //set the initial value for the edit field
+  }, [selectedTreeKey]);
+
+  useEffect(() => {
     const allValueStates = getTranslationKeys(
       fileNameState,
       selectedTreeKey,
