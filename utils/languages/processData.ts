@@ -25,6 +25,27 @@ export function getEnglishKeyVersion(
   return 1;
 }
 
+const sortKeysInFieldList = (result: KeyState[]) => {
+  // Custom sorting logic
+  result.sort((a, b) => {
+    const priority = (code: string): number => {
+      if (code === "en") return 0;
+      if (code === "cn") return 1;
+      return 2;
+    };
+
+    const prioA = priority(a.language_code);
+    const prioB = priority(b.language_code);
+
+    if (prioA !== prioB) {
+      return prioA - prioB;
+    }
+
+    return a.language_name.localeCompare(b.language_name);
+  });
+  return result;
+};
+
 export const filterTranslationKeys = (
   localStorageFilesInfo: FileState<KeyState>[]
 ): KeyState[] => {
@@ -102,7 +123,7 @@ export const filterTranslationKeys = (
     };
   });
 
-  return returnedKeys;
+  return sortKeysInFieldList(returnedKeys);
 };
 const colorPalette = [
   "#2196f3",
@@ -174,11 +195,6 @@ export const formatSessionDialogData = (
   return changedKeyStrings;
 };
 
-function moveEnglishToTopImmutable(values: KeyState[]): KeyState[] {
-  const english = values.find((v) => v.language_code === "en");
-  const others = values.filter((v) => v.language_code !== "en");
-  return english ? [english, ...others] : values;
-}
 export const getTranslationKeys = (
   fileN: string,
   selectedKey: TranslationTreeKey | null,
@@ -216,8 +232,7 @@ export const getTranslationKeys = (
     }
   });
 
-  const sortedResult = moveEnglishToTopImmutable(result);
-  return sortedResult;
+  return sortKeysInFieldList(result);
 };
 
 export function buildKeyTreeFromFlatList(
