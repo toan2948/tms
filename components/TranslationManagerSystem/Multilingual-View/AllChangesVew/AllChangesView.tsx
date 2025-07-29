@@ -11,7 +11,7 @@ import {
 } from "@/utils/languages/processData";
 import { Box, Divider, Stack } from "@mui/material";
 import React, { useMemo } from "react";
-import TranslationField from "../TreeView/TranslationField";
+import TranslationField from "../TreeView/FieldList/TranslationField";
 
 const AllChangesView = ({
   setSeeAllChanges,
@@ -33,7 +33,6 @@ const AllChangesView = ({
       ),
     [changedKeys]
   );
-
 
   const groupedEditedValueKeys = useMemo(
     () => groupTranslationValues(changedKeys, (e) => !e.isNew),

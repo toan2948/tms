@@ -12,7 +12,7 @@ import { Stack } from "@mui/material";
 import { useEffect, useState } from "react";
 import { HeaderBox } from "../MultilingualView";
 import BasicSimpleTreeView from "./BasicSimpleTreeView";
-import TranslationValueList from "./TranslationValueList";
+import TranslationValueList from "./FieldList/TranslationValueList";
 type TreeVewProps = {
   test?: boolean;
 };

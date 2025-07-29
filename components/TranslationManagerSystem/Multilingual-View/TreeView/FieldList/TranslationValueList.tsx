@@ -19,7 +19,7 @@ import {
   TextField,
 } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
-import { DeleteKeyDialog } from "../Dialogs/DeleteKeyDialog";
+import { DeleteKeyDialog } from "../../Dialogs/DeleteKeyDialog";
 import TranslationField from "./TranslationField";
 
 const TranslationValueList = () => {

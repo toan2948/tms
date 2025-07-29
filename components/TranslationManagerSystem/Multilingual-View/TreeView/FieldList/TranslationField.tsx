@@ -15,7 +15,7 @@ import {
   Typography,
 } from "@mui/material";
 import React, { useEffect, useState } from "react";
-import { ResetDialog } from "../Dialogs/ResetDialog";
+import { ResetDialog } from "../../Dialogs/ResetDialog";
 type TranslationFieldProps = {
   index: number;
   data: KeyState;
