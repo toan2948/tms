@@ -1,8 +1,4 @@
-import {
-  KeyState,
-  LanguageType,
-  TranslationTreeKey,
-} from "@/types/translation";
+import { KeyState, LanguageType, TranslationTreeKey } from "@/types/keyType";
 import { createClient } from "../supabase/client";
 
 export async function fetchTranslationKeysByFilenameAndLanguage(
@@ -109,6 +105,7 @@ export async function fetchAllTranslationFiles() {
         parent_id: k.parent_id,
         notes: k.notes || null,
         key_path_segment: k.key_path_segment,
+        old_segment: k.key_path_segment, // Assuming this is the same as key_path_segment
         level: k.level,
         language_code:
           files.find((f) => f.id === k.file_id)?.language_code || "",

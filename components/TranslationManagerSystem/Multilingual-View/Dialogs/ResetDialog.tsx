@@ -2,7 +2,7 @@ import * as React from "react";
 
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { KeyState } from "@/types/translation";
+import { KeyState } from "@/types/keyType";
 import {
   Box,
   Button,

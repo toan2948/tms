@@ -2,7 +2,7 @@
 import { Typo1424, Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { KeyState } from "@/types/translation";
+import { KeyState } from "@/types/keyType";
 import { normalizeEmpty } from "@/utils/languages/processData";
 import {
   Box,

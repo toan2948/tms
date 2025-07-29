@@ -1,6 +1,6 @@
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { TranslationTreeKey } from "@/types/translation";
+import { TranslationTreeKey } from "@/types/keyType";
 import { findSelectedKey } from "@/utils/languages/processData";
 import Box from "@mui/material/Box";
 import { SimpleTreeView } from "@mui/x-tree-view/SimpleTreeView";

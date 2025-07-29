@@ -1,4 +1,4 @@
-import { TranslationTreeKey } from "@/types/translation";
+import { TranslationTreeKey } from "@/types/keyType";
 import { create } from "zustand";
 
 type TreeKeyState = {

@@ -2,7 +2,7 @@ import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { TranslationTreeKey } from "@/types/translation";
+import { TranslationTreeKey } from "@/types/keyType";
 import {
   fetchAllTranslationFiles,
   fetchTranslationKeysByFilenameAndLanguage,

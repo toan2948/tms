@@ -4,7 +4,7 @@ import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { useViewStore } from "@/store/useViewStore";
-import { KeyState } from "@/types/translation";
+import { KeyState } from "@/types/keyType";
 import {
   checkDuplicateKeyName,
   filterTranslationKeys,
@@ -89,6 +89,7 @@ const TranslationValueList = () => {
   }, [selectedTreeKey]);
 
   useEffect(() => {
+    console.log(fileNameState, selectedTreeKey?.full_key_path);
     const allValueStates = getTranslationKeys(
       fileNameState,
       selectedTreeKey,

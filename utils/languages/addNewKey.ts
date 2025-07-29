@@ -1,4 +1,4 @@
-import { KeyState } from "@/types/translation";
+import { KeyState } from "@/types/keyType";
 import { createClient } from "../supabase/client";
 
 export async function insertNewTranslationKeys(keys: KeyState[]) {

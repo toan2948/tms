@@ -21,6 +21,7 @@ export interface WithHierarchy {
   id: string;
   parent_id: string | null;
   key_path_segment: string;
+  old_segment?: string | null;
   full_key_path: string;
   level: number;
   has_children: boolean;

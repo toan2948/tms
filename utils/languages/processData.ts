@@ -5,7 +5,7 @@ import {
   KeyState,
   KeyStateWithoutOld,
   TranslationTreeKey,
-} from "@/types/translation";
+} from "@/types/keyType";
 
 export function getEnglishKeyVersion(
   fullKey: string,

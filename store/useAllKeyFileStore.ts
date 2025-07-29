@@ -3,7 +3,7 @@ import {
   KeyState,
   LanguageType,
   TranslationTreeKey,
-} from "@/types/translation";
+} from "@/types/keyType";
 import { create } from "zustand";
 import { useTreeKeyStore } from "./useTreeKeyStore";
 

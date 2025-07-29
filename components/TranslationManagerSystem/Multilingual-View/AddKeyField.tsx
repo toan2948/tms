@@ -2,7 +2,7 @@ import { Typo1224 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { KeyState, TranslationTreeKey } from "@/types/translation";
+import { KeyState, TranslationTreeKey } from "@/types/keyType";
 import {
   findParentIdsToRootByFullKeyPath,
   findSelectedKey,
