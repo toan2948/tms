@@ -86,18 +86,49 @@ export const useTreeKeyStore = create<TreeKeyState>((set, get) => ({
     const DBkeys = get().DBkeys;
     const fileIndex = DBkeys.findIndex((e) => e.fileName === file_name);
 
-    if (fileIndex !== -1) {
-      const updatedKeys = DBkeys[fileIndex].keys.filter(
-        (key) => key.id !== keyId
-      );
-      const updatedFile = { ...DBkeys[fileIndex], keys: updatedKeys };
-      const newDBkeys = [...DBkeys];
-      newDBkeys[fileIndex] = updatedFile;
-      set(() => ({ DBkeys: newDBkeys }));
-      localStorage.setItem("DBkeys", JSON.stringify(newDBkeys));
-    } else {
+    if (fileIndex === -1) {
       console.error(`File with name ${file_name} not found in DBkeys.`);
+      return;
     }
+
+    const allKeys = DBkeys[fileIndex].keys;
+
+    // Find all descendants using BFS
+    const idsToRemove = new Set<string>();
+
+    // Step 1: Collect descendants (BFS)
+    const queue = [keyId];
+
+    while (queue.length > 0) {
+      const currentId = queue.shift()!;
+      idsToRemove.add(currentId);
+
+      const children = allKeys.filter((key) => key.parent_id === currentId);
+      for (const child of children) {
+        queue.push(child.id);
+      }
+    }
+
+    // Step 2: Traverse upward if the key isNew === true
+    let currentKey = allKeys.find((k) => k.id === keyId);
+    while (currentKey && currentKey.isNew === true && currentKey.parent_id) {
+      const parentKey = allKeys.find((k) => k.id === currentKey!.parent_id);
+      if (parentKey?.isNew === true) {
+        idsToRemove.add(parentKey.id);
+        currentKey = parentKey;
+      } else {
+        break;
+      }
+    }
+
+    // Step 3: Remove from list
+    const updatedKeys = allKeys.filter((key) => !idsToRemove.has(key.id));
+    const updatedFile = { ...DBkeys[fileIndex], keys: updatedKeys };
+    const newDBkeys = [...DBkeys];
+    newDBkeys[fileIndex] = updatedFile;
+
+    set(() => ({ DBkeys: newDBkeys }));
+    localStorage.setItem("DBkeys", JSON.stringify(newDBkeys));
   },
   updateKeyPathSegment: (keyId, newSegment, fileName) => {
     const { DBkeys } = get();

@@ -3,7 +3,10 @@ import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { TranslationTreeKey } from "@/types/translation";
-import { fetchTranslationKeysByFilenameAndLanguage } from "@/utils/languages/dataFunctions";
+import {
+  fetchAllTranslationFiles,
+  fetchTranslationKeysByFilenameAndLanguage,
+} from "@/utils/languages/dataFunctions";
 import { buildKeyTreeFromFlatList } from "@/utils/languages/processData";
 import { Stack } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -18,8 +21,32 @@ const TreeView = ({}: TreeVewProps) => {
   const { fileNameState } = useFileNameStore();
 
   const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
-  const { setDBKeys } = useTreeKeyStore();
-  const { filesInfo } = useAllKeyFileStore();
+  const { filesInfo, setFilesInfo } = useAllKeyFileStore();
+  const { DBkeys, setDBKeys } = useTreeKeyStore();
+
+  // Fetch file data once on mount
+  useEffect(() => {
+    async function fetchKeysAndSaveToLocal() {
+      try {
+        const data = await fetchAllTranslationFiles();
+        const localStorageFilesInfo = localStorage.getItem("translationEdits");
+
+        if (localStorageFilesInfo !== null && localStorageFilesInfo !== "[]") {
+          console.log("Using data from localStorage");
+          const parsedData = JSON.parse(localStorageFilesInfo);
+          setFilesInfo(parsedData);
+        } else {
+          setFilesInfo(data);
+          localStorage.setItem("translationEdits", JSON.stringify(data));
+        }
+      } catch (error) {
+        console.error("Error loading translation data:", error);
+      }
+    }
+
+    fetchKeysAndSaveToLocal();
+  }, [fileNameState, JSON.stringify(DBkeys)]); //DBkeys is used to trigger the effect when keys are updated
+
   // Fetch keys when file changes
   useEffect(() => {
     async function fetchKeysForBuildingTree() {

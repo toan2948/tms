@@ -17,7 +17,7 @@ type AllFileState = {
     fileName: string,
     language_code: string
   ) => void;
-  removeKeyFromFilesInfo: (key: TranslationTreeKey) => void;
+  removeKeyFromFilesInfo: (key: TranslationTreeKey, fileName: string) => void;
   setFilesInfo: (files: FileState<KeyState>[]) => void;
   updateKeyChanged: (editedKey: KeyState) => void;
   updateKeyPathSegmentInFiles: (
@@ -68,22 +68,96 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
       return { filesInfo: updatedFiles };
     });
   },
-  removeKeyFromFilesInfo: (key) => {
+  removeKeyFromFilesInfo: (treeKey: TranslationTreeKey, fileName: string) => {
     set((state) => {
-      const updatedFiles = state.filesInfo.map((file) => {
-        const updatedKeys = file.keys.filter(
-          (e) => e.full_key_path !== key.full_key_path
-        ); // use full_key_path, instead of id, to remove all keys of same full_key_path
+      const { filesInfo } = state;
+
+      // All files for the same file name (across all languages)
+      const filesOfTargetFile = filesInfo.filter(
+        (file) => file.fileName === fileName
+      );
+
+      // Flatten all keys of that file across languages
+      const allKeys = filesOfTargetFile.flatMap((file) => file.keys);
+
+      // Get all keys that match the target full_key_path
+      const initialKeysToRemove = allKeys.filter(
+        (k) => k.full_key_path === treeKey.full_key_path
+      );
+
+      if (initialKeysToRemove.length === 0) {
+        console.warn(
+          `No keys found with full_key_path "${treeKey.full_key_path}" in file "${fileName}".`
+        );
+        return { filesInfo };
+      }
+
+      // Collect descendant keys (by parent_id) for all matching keys
+      const collectDescendantsByParentId = (
+        startIds: string[],
+        all: KeyState[]
+      ) => {
+        const toRemove = new Set(startIds);
+        const queue = [...startIds];
+
+        while (queue.length > 0) {
+          const currentId = queue.shift()!;
+          const children = all.filter((k) => k.parent_id === currentId);
+          for (const child of children) {
+            if (!toRemove.has(child.id)) {
+              toRemove.add(child.id);
+              queue.push(child.id);
+            }
+          }
+        }
+
+        return toRemove;
+      };
+
+      // Collect isNew === true parents upward by full_key_path
+      const collectIsNewParents = (startKeys: KeyState[], all: KeyState[]) => {
+        const toRemove = new Set<string>();
+
+        for (const key of startKeys) {
+          let current = key;
+          while (current.parent_id) {
+            const parent = all.find((k) => k.id === current.parent_id);
+            if (parent?.isNew === true) {
+              toRemove.add(parent.id);
+              current = parent;
+            } else {
+              break;
+            }
+          }
+        }
+
+        return toRemove;
+      };
+
+      const initialIds = initialKeysToRemove.map((k) => k.id);
+      const descendantIds = collectDescendantsByParentId(initialIds, allKeys);
+      const parentIds = initialKeysToRemove.some((k) => k.isNew === true)
+        ? collectIsNewParents(initialKeysToRemove, allKeys)
+        : new Set<string>();
+
+      const idsToRemove = new Set([...descendantIds, ...parentIds]);
+
+      // Remove from all language versions of the file
+      const updatedFiles = filesInfo.map((file) => {
+        if (file.fileName !== fileName) return file;
+
+        const updatedKeys = file.keys.filter((k) => !idsToRemove.has(k.id));
+
         return {
           ...file,
           keys: updatedKeys,
-          isDirty: updatedKeys.some((e) => e.isChanged),
+          isDirty: updatedKeys.some((k) => k.isChanged),
         };
       });
 
+      localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
       return { filesInfo: updatedFiles };
     });
-    localStorage.setItem("translationEdits", JSON.stringify(get().filesInfo));
   },
   updateKeyChanged: (editedKey: KeyState) => {
     set((state) => ({

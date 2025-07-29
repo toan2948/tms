@@ -168,6 +168,90 @@ export async function updateChangedKeys(values: KeyState[]) {
   return results.map((r) => r.data).flat();
 }
 
+/**
+ * Deletes all keys with the given full_key_path and their descendants across all translation files with the same filename.
+ * @param fullKeyPath The full dotted key path (e.g. 'home.movie.title')
+ * @param fileName The shared filename (e.g. 'common.json')
+ */
+export async function deleteKeyByFullPathAndFileName(
+  fullKeyPath: string,
+  fileName: string
+) {
+  const supabase = await createClient();
+
+  // 1. Get all file_ids that match the given filename
+  const { data: files, error: fileError } = await supabase
+    .from("translation_files")
+    .select("id")
+    .eq("filename", fileName);
+
+  if (fileError || !files?.length) {
+    console.error("Error finding translation files:", fileError);
+    throw new Error("No translation files found for the given filename.");
+  }
+
+  const fileIds = files.map((f) => f.id);
+
+  // 2. Find root keys with the given full_key_path in those files
+  const { data: rootKeys, error: rootError } = await supabase
+    .from("translation_keys")
+    .select("id")
+    .in("file_id", fileIds)
+    .eq("full_key_path", fullKeyPath);
+
+  if (rootError) {
+    console.error("Error finding root keys:", rootError);
+    throw rootError;
+  }
+
+  const allToDelete = new Set<string>();
+  const queue = [...(rootKeys ?? [])].map((k) => k.id);
+
+  for (const id of queue) allToDelete.add(id);
+
+  // 3. Recursively collect all descendants for each root key
+  while (queue.length > 0) {
+    const currentId = queue.shift()!;
+
+    const { data: children, error: childError } = await supabase
+      .from("translation_keys")
+      .select("id")
+      .eq("parent_id", currentId);
+
+    if (childError) {
+      console.error("Error fetching children:", childError);
+      throw childError;
+    }
+
+    for (const child of children ?? []) {
+      if (!allToDelete.has(child.id)) {
+        allToDelete.add(child.id);
+        queue.push(child.id);
+      }
+    }
+  }
+
+  // 4. Delete all collected keys
+  const idsToDelete = Array.from(allToDelete);
+
+  if (idsToDelete.length === 0) {
+    console.warn("No keys found to delete.");
+    return { deletedCount: 0 };
+  }
+
+  const { error: deleteError } = await supabase
+    .from("translation_keys")
+    .delete()
+    .in("id", idsToDelete);
+
+  if (deleteError) {
+    console.error("Error deleting keys:", deleteError);
+    throw deleteError;
+  }
+
+  return { deletedCount: idsToDelete.length };
+}
+
 export async function deleteTranslationKey(
   fullKeyPath: string,
   filename: string

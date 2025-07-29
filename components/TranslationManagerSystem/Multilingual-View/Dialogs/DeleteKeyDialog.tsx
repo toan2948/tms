@@ -12,7 +12,7 @@ import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { deleteTranslationKey } from "@/utils/languages/dataFunctions";
+import { deleteKeyByFullPathAndFileName } from "@/utils/languages/dataFunctions";
 import { toast } from "react-toastify";
 
 export interface DeleteKeyDialogProps {
@@ -35,9 +35,9 @@ export function DeleteKeyDialog({
   const handleDelete = async () => {
     if (selectedTreeKey?.isNew) {
       removeKeyFromTree(selectedTreeKey.id, fileNameState);
-      removeKeyFromFilesInfo(selectedTreeKey);
+      removeKeyFromFilesInfo(selectedTreeKey, fileNameState);
     } else {
-      await deleteTranslationKey(
+      await deleteKeyByFullPathAndFileName(
         selectedTreeKey?.full_key_path ? selectedTreeKey.full_key_path : "",
         fileNameState
       );
@@ -47,7 +47,7 @@ export function DeleteKeyDialog({
       );
 
       if (selectedTreeKey) {
-        removeKeyFromFilesInfo(selectedTreeKey);
+        removeKeyFromFilesInfo(selectedTreeKey, fileNameState);
       }
     }
 

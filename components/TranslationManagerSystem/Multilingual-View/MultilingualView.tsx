@@ -9,12 +9,10 @@ import {
   Stack,
   styled,
 } from "@mui/material";
-import React, { useEffect } from "react";
+import React from "react";
 
-import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { fetchAllTranslationFiles } from "@/utils/languages/dataFunctions";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { AddKeyField } from "./AddKeyField";
 import AllChangesView from "./AllChangesVew/AllChangesView";
@@ -41,31 +39,7 @@ const MultilingualView = () => {
   const [openDialog, setOpenDialog] = React.useState(false);
 
   // const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
-  const { setSelectedTreeKey, DBkeys } = useTreeKeyStore();
-  const { setFilesInfo } = useAllKeyFileStore();
-
-  // Fetch file data once on mount
-  useEffect(() => {
-    async function fetchKeysAndSaveToLocal() {
-      try {
-        const data = await fetchAllTranslationFiles();
-        const localStorageFilesInfo = localStorage.getItem("translationEdits");
-
-        if (localStorageFilesInfo !== null && localStorageFilesInfo !== "[]") {
-          console.log("Using data from localStorage");
-          const parsedData = JSON.parse(localStorageFilesInfo);
-          setFilesInfo(parsedData);
-        } else {
-          setFilesInfo(data);
-          localStorage.setItem("translationEdits", JSON.stringify(data));
-        }
-      } catch (error) {
-        console.error("Error loading translation data:", error);
-      }
-    }
-
-    fetchKeysAndSaveToLocal();
-  }, [fileNameState, JSON.stringify(DBkeys)]); //DBkeys is used to trigger the effect when keys are updated
+  const { setSelectedTreeKey } = useTreeKeyStore();
 
   return (
     <>
