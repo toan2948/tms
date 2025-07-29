@@ -52,6 +52,8 @@ export async function fetchTranslationKeysByFilenameAndLanguage(
     ...key,
     language_code: "en", // Assuming English as default
     language_name: "English", // Assuming English as default
+    old_full_key_path: key.full_key_path, // Assuming this is the same as full_key_path at the beginning
+    old_segment: key.key_path_segment, // Assuming this is the same as key_path_segment at the beginning
   }));
 
   return keysWithLanguage ?? [];
@@ -94,6 +96,7 @@ export async function fetchAllTranslationFiles() {
       if (!acc[k.file_id]) acc[k.file_id] = [];
       acc[k.file_id].push({
         full_key_path: k.full_key_path,
+        old_full_key_path: k.full_key_path, //it is the same as full_key_path at the beginning
         value: k.value,
         id: k.id,
         file_id: k.file_id,

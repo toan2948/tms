@@ -78,6 +78,7 @@ const TranslationValueList = () => {
       trimmedKey,
       fileNameState
     );
+    setOpenEditKeyField(false); // Close the edit field after saving
     // setSelectedTreeKey({ ...selectedTreeKey, key_path_segment: trimmedKey });
   };
 
@@ -141,9 +142,22 @@ const TranslationValueList = () => {
           }}
         >
           <Box>
-            <Typo1424 weight={600}>
-              Key to translate: {selectedTreeKey?.key_path_segment}
-            </Typo1424>
+            <Stack direction={"column"}>
+              <Box>
+                <Typo1424 weight={600}>
+                  Key to translate: {selectedTreeKey?.key_path_segment}
+                </Typo1424>
+              </Box>
+              {selectedTreeKey.old_full_key_path !==
+                selectedTreeKey.full_key_path && (
+                <Box>
+                  <Typo1424 color='red'>
+                    Old key name: {selectedTreeKey?.old_full_key_path}
+                  </Typo1424>
+                </Box>
+              )}
+            </Stack>
+
             <Typo1424 weight={500}>
               {selectedTreeKey?.notes || "No notes available"}
             </Typo1424>

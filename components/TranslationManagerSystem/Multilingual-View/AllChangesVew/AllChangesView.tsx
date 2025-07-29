@@ -73,14 +73,22 @@ const AllChangesView = ({
 
           {groupedEditedValueKeys.map((group, index) => (
             <Stack key={index} sx={{ margin: "30px 0" }}>
-              <Typo1624
-                weight={600}
-                color={group.color}
-                sx={{ cursor: "pointer" }}
-                onClick={() => handleGroupClick(group)}
-              >
-                {group.filename}: {group.fullKey}
-              </Typo1624>
+              <Stack direction={"row"} gap={"10px"}>
+                <Typo1624
+                  weight={600}
+                  color={group.color}
+                  sx={{ cursor: "pointer" }}
+                  onClick={() => handleGroupClick(group)}
+                >
+                  {group.filename}: {group.fullKey}
+                </Typo1624>
+                {group.isKeyNameChanged && (
+                  <Typo1624 color='red'>
+                    (Old key name: {group.oldFullKey})
+                  </Typo1624>
+                )}
+              </Stack>
+
               <Box width={"95%"} alignSelf={"end"}>
                 {group.list.map((item, itemIndex) => (
                   <TranslationField
@@ -112,6 +120,7 @@ const AllChangesView = ({
               >
                 {group.filename}: {group.fullKey}
               </Typo1624>
+
               <Box width={"95%"} alignSelf={"end"}>
                 {group.list.map((item, itemIndex) => (
                   <TranslationField

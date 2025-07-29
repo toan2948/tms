@@ -23,6 +23,7 @@ export interface WithHierarchy {
   key_path_segment: string;
   old_segment?: string | null;
   full_key_path: string;
+  old_full_key_path?: string | null;
   level: number;
   has_children: boolean;
 }

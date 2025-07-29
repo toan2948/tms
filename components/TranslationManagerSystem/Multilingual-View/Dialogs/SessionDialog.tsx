@@ -133,6 +133,12 @@ export function SessionDialog({
                     }}
                   >
                     <Typography color={item.color}> {item.label}</Typography>
+                    {item.isKeyNameChanged && (
+                      <Typography color={"red"}>
+                        (Old key name:
+                        {item.oldFullKey})
+                      </Typography>
+                    )}
                   </ListItem>
                 ))}
               </List>

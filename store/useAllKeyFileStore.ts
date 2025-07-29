@@ -247,7 +247,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
               ...key,
               key_path_segment: newSegment,
               full_key_path: newFullKeyPath,
-              isChanged: true,
+              isChanged: newSegment === key.old_segment ? false : true, //isChanged is false if the key name is changed back to the old before submitting to DB
             };
             updatedKeys.push(updated);
 
@@ -257,7 +257,8 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
             updatedKeys.push({
               ...key,
               full_key_path: idMap.get(key.id)!,
-              isChanged: true,
+              isChanged:
+                idMap.get(key.id)! === key.old_full_key_path ? false : true, //isChanged is false if the key name is changed back to the old before submitting to DB
             });
           } else {
             updatedKeys.push(key);

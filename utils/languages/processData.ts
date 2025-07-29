@@ -73,6 +73,7 @@ export const filterTranslationKeys = (
 
           key_path_segment: key.key_path_segment,
           old_segment: key.old_segment,
+          old_full_key_path: key.old_full_key_path,
           level: key.level,
           file_id: key.file_id, // Include file_id for reference
           old_version: key.old_version, // Ensure old_version is always present
@@ -116,6 +117,7 @@ export const filterTranslationKeys = (
       notes: key.notes || null,
       key_path_segment: key.key_path_segment,
       old_segment: key.old_segment,
+      old_full_key_path: key.old_full_key_path,
       level: key.level,
       file_id: key.file_id,
       isChanged: key.isChanged, // Indicates if the key has been changed
@@ -149,7 +151,13 @@ export const formatSessionDialogData = (
 
   const groupedMap = new Map<
     string,
-    { filename: string; fullKey: string; languages: Set<string> }
+    {
+      filename: string;
+      fullKey: string;
+      isKeyNameChanged: boolean;
+      oldFullKey: string;
+      languages: Set<string>;
+    }
   >();
 
   editedKeys.forEach((item) => {
@@ -158,6 +166,8 @@ export const formatSessionDialogData = (
       groupedMap.set(groupKey, {
         filename: item.fileName ? item.fileName : "Unknown File",
         fullKey: item.full_key_path,
+        isKeyNameChanged: item.full_key_path !== item.old_full_key_path,
+        oldFullKey: item.old_full_key_path || "",
         languages: new Set(),
       });
     }
@@ -184,16 +194,31 @@ export const formatSessionDialogData = (
     color: string;
     filename: string;
     fullKey: string;
+    isKeyNameChanged: boolean;
+    oldFullKey: string;
   };
 
   const changedKeyStrings: ColoredChangedKey[] = Array.from(
     groupedMap.entries()
-  ).map(([key, { filename, languages, fullKey: fullKeyPath }]) => ({
-    label: `${key} -- ${Array.from(languages).join(", ")}`,
-    color: filenameToColor.get(filename)!,
-    filename: filename,
-    fullKey: fullKeyPath,
-  }));
+  ).map(
+    ([
+      key,
+      {
+        filename,
+        languages,
+        fullKey: fullKeyPath,
+        isKeyNameChanged,
+        oldFullKey,
+      },
+    ]) => ({
+      label: `${key} -- ${Array.from(languages).join(", ")}`,
+      color: filenameToColor.get(filename)!,
+      filename: filename,
+      isKeyNameChanged,
+      oldFullKey,
+      fullKey: fullKeyPath,
+    })
+  );
   return changedKeyStrings;
 };
 
@@ -226,6 +251,7 @@ export const getTranslationKeys = (
         isNew: foundKeys[0].isNew,
         key_path_segment: foundKeys[0].key_path_segment,
         old_segment: foundKeys[0].old_segment || null,
+        old_full_key_path: foundKeys[0].old_full_key_path || null,
         level: foundKeys[0].level,
         isChanged: foundKeys[0].isChanged,
         file_id: foundKeys[0].file_id, // Include file_id for reference
@@ -308,6 +334,8 @@ export function findKeyStateByIdAcrossFiles(
 export type GroupedTranslationValues = {
   filename: string;
   fullKey: string;
+  isKeyNameChanged: boolean; // old full key path
+  oldFullKey: string;
   list: KeyState[];
   color: string; // color for the filename
 };
@@ -326,6 +354,8 @@ export const groupTranslationValues = (
       groupedMap.set(key, {
         filename: item.fileName ? item.fileName : "Unknown File",
         fullKey: item.full_key_path,
+        isKeyNameChanged: item.full_key_path !== item.old_full_key_path,
+        oldFullKey: item.old_full_key_path || "",
         list: [item],
         color: "", // to be assigned later
       });
@@ -335,6 +365,7 @@ export const groupTranslationValues = (
   });
 
   const groups = Array.from(groupedMap.values());
+  console.log("Grouped Translation Values:", groups);
   const filenameColorMap = new Map<string, string>();
   let colorIndex = 0;
 
