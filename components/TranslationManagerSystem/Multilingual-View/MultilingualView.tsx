@@ -9,17 +9,12 @@ import {
   Stack,
   styled,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { TranslationTreeKey } from "@/types/translation";
-import {
-  fetchAllTranslationFiles,
-  fetchTranslationKeysByFilenameAndLanguage,
-} from "@/utils/languages/dataFunctions";
-import { buildKeyTreeFromFlatList } from "@/utils/languages/processData";
+import { fetchAllTranslationFiles } from "@/utils/languages/dataFunctions";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { AddKeyField } from "./AddKeyField";
 import AllChangesView from "./AllChangesVew/AllChangesView";
@@ -45,9 +40,9 @@ const MultilingualView = () => {
 
   const [openDialog, setOpenDialog] = React.useState(false);
 
-  const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
-  const { setDBKeys, setSelectedTreeKey, DBkeys } = useTreeKeyStore();
-  const { setFilesInfo, filesInfo } = useAllKeyFileStore();
+  // const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
+  const { setSelectedTreeKey, DBkeys } = useTreeKeyStore();
+  const { setFilesInfo } = useAllKeyFileStore();
 
   // Fetch file data once on mount
   useEffect(() => {
@@ -71,47 +66,6 @@ const MultilingualView = () => {
 
     fetchKeysAndSaveToLocal();
   }, [fileNameState, JSON.stringify(DBkeys)]); //DBkeys is used to trigger the effect when keys are updated
-
-  // Fetch keys when file changes
-  useEffect(() => {
-    async function fetchKeysForBuildingTree() {
-      try {
-        const keys = await fetchTranslationKeysByFilenameAndLanguage(
-          fileNameState,
-          "en" //it does not matter which language we use here, as we are fetching all keys
-        );
-        setDBKeys(keys, fileNameState);
-        const tree = buildKeyTreeFromFlatList(keys);
-        setTreeKeys(tree);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-
-    if (!fileNameState) {
-      console.warn("⚠️ fileNameState is empty, skipping fetch");
-      return;
-    }
-
-    const localStorageDBKeys = localStorage.getItem("DBkeys");
-
-    if (localStorageDBKeys) {
-      const parsedData: { fileName: string; keys: TranslationTreeKey[] }[] =
-        JSON.parse(localStorageDBKeys);
-      const entry = parsedData.find((e) => e.fileName === fileNameState) || {
-        fileName: fileNameState,
-        keys: [],
-      };
-      if (entry?.keys.length > 0) {
-        setDBKeys(entry.keys, fileNameState);
-        setTreeKeys(buildKeyTreeFromFlatList(entry?.keys));
-      } else {
-        fetchKeysForBuildingTree();
-      }
-    } else {
-      fetchKeysForBuildingTree();
-    }
-  }, [fileNameState, JSON.stringify(filesInfo)]); //filesInfo is used to trigger the effect when files are updated
 
   return (
     <>
@@ -164,7 +118,7 @@ const MultilingualView = () => {
       {seeAllChanges ? (
         <AllChangesView setSeeAllChanges={setSeeAllChanges} />
       ) : (
-        <TreeView treeKeys={treeKeys} />
+        <TreeView />
       )}
     </>
   );

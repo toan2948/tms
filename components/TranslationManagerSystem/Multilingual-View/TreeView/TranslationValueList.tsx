@@ -3,6 +3,7 @@ import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
+import { useViewStore } from "@/store/useViewStore";
 import { KeyState } from "@/types/translation";
 import {
   checkDuplicateKeyName,
@@ -32,12 +33,12 @@ const TranslationValueList = () => {
   const { fileNameState } = useFileNameStore();
 
   const [valuesState, setValuesState] = React.useState<KeyState[]>([]);
-  const [showValueList, setShowValueList] = React.useState(false);
 
   const { filesInfo, updateKeyPathSegmentInFiles } = useAllKeyFileStore();
   const [newKeyName, setNewKeyName] = useState(
     selectedTreeKey?.key_path_segment || ""
   );
+  const { sourceLanguage, targetLanguage, multiViewState } = useViewStore();
 
   const handleEditKeyName = () => {
     if (selectedTreeKey === null) return;
@@ -84,27 +85,43 @@ const TranslationValueList = () => {
   );
 
   useEffect(() => {
-    setValuesState(
-      getTranslationKeys(fileNameState, selectedTreeKey, filesInfo)
+    const allValueStates = getTranslationKeys(
+      fileNameState,
+      selectedTreeKey,
+      filesInfo
     );
+    if (sourceLanguage && targetLanguage && !multiViewState) {
+      setValuesState(
+        allValueStates.filter(
+          (e) =>
+            e.language_name.toLowerCase() === sourceLanguage.toLowerCase() ||
+            e.language_name.toLowerCase() === targetLanguage.toLowerCase()
+        )
+      );
+    } else {
+      setValuesState(allValueStates);
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fileNameState, selectedTreeKey, changedKeys]); //valuesState in this condition will cause infinite loop
+  }, [
+    fileNameState,
+    selectedTreeKey,
+    changedKeys,
+    sourceLanguage,
+    targetLanguage,
+    multiViewState,
+  ]); //valuesState in this condition will cause infinite loop
 
   useEffect(() => {
-    if (valuesState.find((e) => e.has_children === true)) {
-      setShowValueList(false);
-    } else {
-      setShowValueList(true);
-    }
-  }, [valuesState, selectedTreeKey?.key_path_segment]);
-
-  if (showValueList) {
-    return (
-      <>
-        <DeleteKeyDialog
-          open={openDeleteKeyDialog}
-          setOpenDeleteKeyDialog={setOpenDeleteKeyDialog}
-        />
+    console.log("valueState changed", valuesState);
+  }, [valuesState, selectedTreeKey]);
+  return (
+    <>
+      <DeleteKeyDialog
+        open={openDeleteKeyDialog}
+        setOpenDeleteKeyDialog={setOpenDeleteKeyDialog}
+      />
+      {selectedTreeKey && (
         <Stack
           width={"100%"}
           direction={"row"}
@@ -218,6 +235,8 @@ const TranslationValueList = () => {
             </Stack>
           </Stack>
         </Stack>
+      )}
+      {!selectedTreeKey?.has_children && (
         <Stack direction={"row"} width={"100%"} sx={{ overflowY: "scroll" }}>
           <List sx={{ width: "100%" }}>
             {/* //todo: note- if key= e.key, there will be an absurd rendering */}
@@ -227,9 +246,9 @@ const TranslationValueList = () => {
             ))}
           </List>
         </Stack>
-      </>
-    );
-  } else return null;
+      )}
+    </>
+  );
 };
 
 export default TranslationValueList;
