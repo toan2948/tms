@@ -142,13 +142,33 @@ export const useTreeKeyStore = create<TreeKeyState>((set, get) => ({
     const file = DBkeys[fileIndex];
     const keys = file.keys;
     const targetKey = keys.find((k) => k.id === keyId);
+    console.log("targetKey updateKeyPathSegment:", targetKey);
 
     if (!targetKey) {
       console.error(`Key with ID "${keyId}" not found in file "${fileName}".`);
       return false;
     }
+
+    const segments = targetKey.full_key_path.split(".");
+    const oldSegmentIndex = segments.indexOf(targetKey.key_path_segment);
+    if (oldSegmentIndex === -1) {
+      console.log(
+        `Segment "${targetKey.key_path_segment}" not found in key "${targetKey.full_key_path}".`
+      );
+      return false;
+    }
+    // Update the segment in the full key path
+    segments[oldSegmentIndex] = newSegment;
+    const newFullKeyPath = segments.join(".");
+
     // Update the key's segment
-    const updatedKey = { ...targetKey, key_path_segment: newSegment };
+    const updatedKey = {
+      ...targetKey,
+      key_path_segment: newSegment,
+      full_key_path: newFullKeyPath,
+    };
+
+    console.log("updatedKey:", updatedKey);
 
     // Replace the key in the array
     const updatedKeys = keys.map((k) => (k.id === keyId ? updatedKey : k));
