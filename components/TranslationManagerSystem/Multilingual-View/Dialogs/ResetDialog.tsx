@@ -59,6 +59,7 @@ export function ResetDialog({
       language_code: data.language_code,
       language_name: data.language_name,
       file_id: data.file_id,
+      isNew: data.isNew,
     });
     setValue(data.old_value ?? ""); // Reset the value to the old value
     setIsSaveButtonEnabled(false);

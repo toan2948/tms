@@ -90,7 +90,7 @@ export const AddKeyField = () => {
           fileInfoUpdates.push({
             full_key_path: currentPath,
             id: newParentId,
-            isChanged: true,
+            isChanged: false,
             value: null,
             version: 0,
             has_children: true,
@@ -132,7 +132,7 @@ export const AddKeyField = () => {
       fileInfoUpdates.push({
         full_key_path: trimmedKey,
         id: leafId,
-        isChanged: true,
+        isChanged: false,
         value: null,
         version: 0,
         has_children: false,

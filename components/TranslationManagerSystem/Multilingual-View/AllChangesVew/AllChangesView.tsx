@@ -34,12 +34,13 @@ const AllChangesView = ({
     [changedKeys]
   );
 
-  const groupedChangedKeys = useMemo(
+
+  const groupedEditedValueKeys = useMemo(
     () => groupTranslationValues(changedKeys, (e) => !e.isNew),
     [changedKeys]
   );
   const groupedNewKeys = useMemo(
-    () => groupTranslationValues(newKeys, (e) => (e.isNew ? true : false)),
+    () => groupTranslationValues(newKeys, (e) => e.isNew === true),
     [newKeys]
   );
 
@@ -65,13 +66,13 @@ const AllChangesView = ({
 
   return (
     <Box>
-      {groupedChangedKeys && groupedChangedKeys.length > 0 && (
+      {groupedEditedValueKeys && groupedEditedValueKeys.length > 0 && (
         <>
           <Typo1624 weight={600} color='green'>
             Edited Keys:
           </Typo1624>
 
-          {groupedChangedKeys.map((group, index) => (
+          {groupedEditedValueKeys.map((group, index) => (
             <Stack key={index} sx={{ margin: "30px 0" }}>
               <Typo1624
                 weight={600}
@@ -126,7 +127,7 @@ const AllChangesView = ({
         </>
       )}
 
-      {!groupedChangedKeys && !newKeys && <Box>No changes made.</Box>}
+      {!groupedEditedValueKeys && !newKeys && <Box>No changes made.</Box>}
     </Box>
   );
 };
