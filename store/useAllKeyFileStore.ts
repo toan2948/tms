@@ -22,7 +22,8 @@ type AllFileState = {
   updateKeyChanged: (editedKey: KeyState) => void;
   updateKeyPathSegmentInFiles: (
     oldFullKeyPath: string,
-    newSegment: string
+    newSegment: string,
+    fileName: string
   ) => void;
   reset: () => void;
 };
@@ -184,38 +185,84 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
     const updatedFiles = get().filesInfo;
     localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
   },
-  updateKeyPathSegmentInFiles: (oldFullKeyPath, newSegment) => {
+  updateKeyPathSegmentInFiles: (oldFullKeyPath, newSegment, fileName) => {
     const setSelectedTreeKey = useTreeKeyStore.getState().setSelectedTreeKey;
+
     set((state) => {
       const updatedFiles = state.filesInfo.map((file) => {
+        if (file.fileName !== fileName) return file;
+
         let fileChanged = false;
+        const idMap = new Map<string, string>(); // Maps old full path to new
 
-        const updatedKeys = file.keys.map((key) => {
-          if (key.full_key_path === oldFullKeyPath) {
-            const segments = oldFullKeyPath.split(".");
-            segments[segments.length - 1] = newSegment;
-            const newFullKeyPath = segments.join(".");
+        // Step 1: Find the target key (by full_key_path)
+        const targetKey = file.keys.find(
+          (key) => key.full_key_path === oldFullKeyPath
+        );
+        if (!targetKey) return file;
 
-            console.log("Updating newFullKeyPath:", newFullKeyPath);
+        // Step 2: Rename the segment
+        const segments = oldFullKeyPath.split(".");
+        const oldSegmentIndex = segments.indexOf(targetKey.key_path_segment);
 
+        if (oldSegmentIndex === -1) {
+          console.warn(
+            `Segment "${targetKey.key_path_segment}" not found in "${oldFullKeyPath}".`
+          );
+          return file;
+        }
+
+        segments[oldSegmentIndex] = newSegment;
+        const newFullKeyPath = segments.join(".");
+        setSelectedTreeKey({
+          ...targetKey,
+          key_path_segment: newSegment,
+          full_key_path: newFullKeyPath,
+        });
+
+        idMap.set(targetKey.id, newFullKeyPath); // mark the update
+
+        const updatedKeys: KeyState[] = [];
+
+        const updateDescendants = (
+          parentId: string,
+          parentFullPath: string
+        ) => {
+          for (const child of file.keys) {
+            if (child.parent_id === parentId) {
+              const newChildFullPath =
+                parentFullPath + "." + child.key_path_segment;
+              idMap.set(child.id, newChildFullPath);
+              updateDescendants(child.id, newChildFullPath);
+            }
+          }
+        };
+
+        updateDescendants(targetKey.id, newFullKeyPath);
+
+        for (const key of file.keys) {
+          if (key.id === targetKey.id) {
             fileChanged = true;
-
-            //update full_key_path of selectedTreeKey
-            setSelectedTreeKey({
-              ...key,
-              full_key_path: newFullKeyPath,
-              key_path_segment: newSegment,
-            });
-
-            return {
+            const updated = {
               ...key,
               key_path_segment: newSegment,
               full_key_path: newFullKeyPath,
               isChanged: true,
             };
+            updatedKeys.push(updated);
+
+            // Also update selectedTreeKey if relevant
+          } else if (idMap.has(key.id)) {
+            fileChanged = true;
+            updatedKeys.push({
+              ...key,
+              full_key_path: idMap.get(key.id)!,
+              isChanged: true,
+            });
+          } else {
+            updatedKeys.push(key);
           }
-          return key;
-        });
+        }
 
         return {
           ...file,

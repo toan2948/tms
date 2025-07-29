@@ -72,6 +72,7 @@ export const filterTranslationKeys = (
           notes: key.notes || null,
 
           key_path_segment: key.key_path_segment,
+          old_segment: key.old_segment,
           level: key.level,
           file_id: key.file_id, // Include file_id for reference
           old_version: key.old_version, // Ensure old_version is always present
@@ -114,6 +115,7 @@ export const filterTranslationKeys = (
       parent_id: key.parent_id,
       notes: key.notes || null,
       key_path_segment: key.key_path_segment,
+      old_segment: key.old_segment,
       level: key.level,
       file_id: key.file_id,
       isChanged: key.isChanged, // Indicates if the key has been changed
@@ -223,6 +225,7 @@ export const getTranslationKeys = (
         notes: foundKeys[0].notes || null,
         isNew: foundKeys[0].isNew,
         key_path_segment: foundKeys[0].key_path_segment,
+        old_segment: foundKeys[0].old_segment || null,
         level: foundKeys[0].level,
         isChanged: foundKeys[0].isChanged,
         file_id: foundKeys[0].file_id, // Include file_id for reference

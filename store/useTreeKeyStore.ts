@@ -141,44 +141,67 @@ export const useTreeKeyStore = create<TreeKeyState>((set, get) => ({
 
     const file = DBkeys[fileIndex];
     const keys = file.keys;
-    const targetKey = keys.find((k) => k.id === keyId);
-    console.log("targetKey updateKeyPathSegment:", targetKey);
+    const keyMap = new Map(keys.map((k) => [k.id, k]));
 
+    const targetKey = keyMap.get(keyId);
     if (!targetKey) {
       console.error(`Key with ID "${keyId}" not found in file "${fileName}".`);
       return false;
     }
 
+    // Step 1: Update the target key's full_key_path
     const segments = targetKey.full_key_path.split(".");
     const oldSegmentIndex = segments.indexOf(targetKey.key_path_segment);
+
     if (oldSegmentIndex === -1) {
-      console.log(
-        `Segment "${targetKey.key_path_segment}" not found in key "${targetKey.full_key_path}".`
+      console.error(
+        `Segment "${targetKey.key_path_segment}" not found in "${targetKey.full_key_path}".`
       );
       return false;
     }
-    // Update the segment in the full key path
+
     segments[oldSegmentIndex] = newSegment;
     const newFullKeyPath = segments.join(".");
 
-    // Update the key's segment
-    const updatedKey = {
+    const updatedKeyMap = new Map<string, TranslationTreeKey>();
+
+    // Update target key
+    const updatedTarget = {
       ...targetKey,
       key_path_segment: newSegment,
       full_key_path: newFullKeyPath,
     };
+    updatedKeyMap.set(updatedTarget.id, updatedTarget);
 
-    console.log("updatedKey:", updatedKey);
+    // Step 2: Recursively update all descendants
+    const updateDescendants = (parentId: string, parentFullPath: string) => {
+      for (const key of keys) {
+        if (key.parent_id === parentId) {
+          const updatedFullPath = parentFullPath + "." + key.key_path_segment;
+          const updatedChild = {
+            ...key,
+            full_key_path: updatedFullPath,
+          };
+          updatedKeyMap.set(key.id, updatedChild);
+          updateDescendants(key.id, updatedFullPath);
+        }
+      }
+    };
 
-    // Replace the key in the array
-    const updatedKeys = keys.map((k) => (k.id === keyId ? updatedKey : k));
-    // Update state
+    updateDescendants(targetKey.id, newFullKeyPath);
+
+    // Step 3: Apply updates to keys array
+    const updatedKeys = keys.map((key) =>
+      updatedKeyMap.has(key.id) ? updatedKeyMap.get(key.id)! : key
+    );
+
     const updatedFile = { ...file, keys: updatedKeys };
     const updatedDBkeys = [...DBkeys];
     updatedDBkeys[fileIndex] = updatedFile;
 
     set(() => ({ DBkeys: updatedDBkeys }));
     localStorage.setItem("DBkeys", JSON.stringify(updatedDBkeys));
+
     return true;
   },
 

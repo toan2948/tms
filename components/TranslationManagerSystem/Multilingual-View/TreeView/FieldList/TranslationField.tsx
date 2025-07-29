@@ -50,7 +50,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
         ? selectedTreeKey.full_key_path
         : "",
       id: data.id,
-      isChanged: true,
+      isChanged: data.isNew ? false : true, //make sure the new added keys will not be listed in the edited key list
       value: value,
       version: data.version,
       last_edited_at: new Date(),
