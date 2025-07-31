@@ -1,13 +1,10 @@
-import { TranslationTreeKey } from "@/types/keyType";
+import { DBkeys, TranslationTreeKey } from "@/types/keyType";
 import { create } from "zustand";
 
 type TreeKeyState = {
   selectedTreeKey: TranslationTreeKey | null;
   parentIDs: string[];
-  DBkeys: {
-    fileName: string;
-    keys: TranslationTreeKey[];
-  }[];
+  DBkeys: DBkeys[];
   setParentIDs: (ids: string[]) => void;
 
   setSelectedTreeKey: (key: TranslationTreeKey | null) => void;
@@ -19,6 +16,8 @@ type TreeKeyState = {
     newSegment: string,
     fileName: string
   ) => void;
+
+  setDBKeysFromOtherStore: (keys: DBkeys[]) => void;
 
   reset: () => void;
 };
@@ -44,6 +43,12 @@ export const useTreeKeyStore = create<TreeKeyState>((set, get) => ({
       }));
       localStorage.setItem("DBkeys", JSON.stringify(updatedDBKeys));
     }
+  },
+  setDBKeysFromOtherStore: (newDBkeys: DBkeys[]) => {
+    set(() => ({
+      DBkeys: newDBkeys,
+    }));
+    localStorage.setItem("DBkeys", JSON.stringify(newDBkeys));
   },
   addKeysToTree: (newKeys, fileName) => {
     // Only add keys if the language is English

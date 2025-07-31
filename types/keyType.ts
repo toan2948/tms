@@ -74,6 +74,11 @@ export interface FileState<T extends KeyState | KeyStateWithoutOld>
   keys: T[];
 }
 
+export interface DBkeys {
+  fileName: string;
+  keys: TranslationTreeKey[];
+}
+
 // -----------------------------------
 // Tree Type
 // -----------------------------------

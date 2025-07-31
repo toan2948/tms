@@ -4,6 +4,7 @@ import {
   LanguageType,
   TranslationTreeKey,
 } from "@/types/keyType";
+import { setTreeKeys } from "@/utils/languages/processData";
 import { create } from "zustand";
 import { useTreeKeyStore } from "./useTreeKeyStore";
 
@@ -23,6 +24,11 @@ type AllFileState = {
   updateKeyPathSegmentInFiles: (
     oldFullKeyPath: string,
     newSegment: string,
+    fileName: string
+  ) => void;
+  updateKeyNoteInFilesInfo: (
+    fullPath: string,
+    note: string | null,
     fileName: string
   ) => void;
   reset: () => void;
@@ -276,7 +282,38 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
       return { filesInfo: updatedFiles };
     });
   },
+  updateKeyNoteInFilesInfo: (fullPath, note, fileName) => {
+    set((state) => {
+      const updatedFiles = state.filesInfo.map((file) => {
+        if (file.fileName !== fileName) return file;
 
+        const updatedKeys = file.keys.map((key) => {
+          if (key.full_key_path === fullPath) {
+            return {
+              ...key,
+              notes: note,
+            };
+          }
+          return key;
+        });
+
+        return {
+          ...file,
+          keys: updatedKeys,
+        };
+      });
+
+      localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
+      const newTreeKeys = setTreeKeys(updatedFiles);
+
+      const setDBKeysFromOtherStore =
+        useTreeKeyStore.getState().setDBKeysFromOtherStore;
+
+      setDBKeysFromOtherStore(newTreeKeys);
+
+      return { filesInfo: updatedFiles };
+    });
+  },
   reset: () =>
     set(() => ({
       filesInfo: [],

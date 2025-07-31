@@ -1,4 +1,6 @@
 "use client";
+import EditableTextFieldWithSave from "@/components/ui/EditTextField";
+import RedOutlineButton from "@/components/ui/RedOutlineButton";
 import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
@@ -10,28 +12,19 @@ import {
   filterTranslationKeys,
   getTranslationKeys,
 } from "@/utils/languages/processData";
-import {
-  Box,
-  Button,
-  InputAdornment,
-  List,
-  Stack,
-  TextField,
-} from "@mui/material";
+import { Box, Button, List, Stack } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
 import { DeleteKeyDialog } from "../../Dialogs/DeleteKeyDialog";
+import Note from "./Note";
 import TranslationField from "./TranslationField";
-
 const TranslationValueList = () => {
   const { selectedTreeKey, DBkeys, updateKeyPathSegment } = useTreeKeyStore();
   const [error, setError] = useState(false);
   const [showHelperText, setShowHelperText] = useState(false);
   const [openDeleteKeyDialog, setOpenDeleteKeyDialog] = useState(false);
   const [NameIsDuplicated, setNameIsDuplicated] = useState(false);
-
   const [openEditKeyField, setOpenEditKeyField] = useState(false);
   const { fileNameState } = useFileNameStore();
-
   const [valuesState, setValuesState] = React.useState<KeyState[]>([]);
 
   const { filesInfo, updateKeyPathSegmentInFiles } = useAllKeyFileStore();
@@ -91,10 +84,11 @@ const TranslationValueList = () => {
 
   useEffect(() => {
     setNewKeyName(selectedTreeKey?.key_path_segment || ""); //set the initial value for the edit field
+    console.log("selectedTreeKey changed", selectedTreeKey);
   }, [selectedTreeKey]);
 
   useEffect(() => {
-    console.log(fileNameState, selectedTreeKey?.full_key_path);
+    // console.log(fileNameState, selectedTreeKey?.full_key_path);
     const allValueStates = getTranslationKeys(
       fileNameState,
       selectedTreeKey,
@@ -157,29 +151,13 @@ const TranslationValueList = () => {
                 </Box>
               )}
             </Stack>
-
-            <Typo1424 weight={500}>
-              {selectedTreeKey?.notes || "No notes available"}
-            </Typo1424>
           </Box>
+          <Note />
 
           <Stack direction={"row"}>
-            <Button
-              variant={"outlined"}
-              sx={{
-                marginRight: "10px",
-                marginLeft: "10px",
-                color: "red",
-                borderColor: "red", // <-- this is key for the outline
-                "&:hover": {
-                  backgroundColor: "rgba(255, 0, 0, 0.04)", // subtle red on hover
-                  borderColor: "red",
-                },
-              }}
-              onClick={() => setOpenDeleteKeyDialog(true)}
-            >
-              Delete
-            </Button>
+            <RedOutlineButton onClick={() => setOpenDeleteKeyDialog(true)}>
+              Delete Key
+            </RedOutlineButton>
             <Stack
               direction={"row"}
               justifyContent={"center"}
@@ -194,10 +172,11 @@ const TranslationValueList = () => {
                   Edit Key Name
                 </Button>
               )}
-              <TextField
-                onChange={(e) => setNewKeyName(e.target.value)}
-                variant='outlined'
+              <EditableTextFieldWithSave
                 value={newKeyName}
+                onChange={setNewKeyName}
+                onSave={handleEditKeyName}
+                show={openEditKeyField}
                 error={error}
                 helperText={
                   showHelperText
@@ -206,45 +185,8 @@ const TranslationValueList = () => {
                       : "Only letters, numbers, and underscore (_) allowed"
                     : ""
                 }
-                sx={{
-                  display: openEditKeyField ? "block" : "none", // ✅ hide instead of unmount
-                  "& .MuiOutlinedInput-root": {
-                    padding: "0px 0px 0px 5px",
-                    height: 40,
-                  },
-                  "& .MuiOutlinedInput-input": {
-                    padding: "0 8px",
-                    height: "100%",
-                    display: "flex",
-                    alignItems: "center", // ensures text vertically aligns
-                  },
-                }}
-                slotProps={{
-                  input: {
-                    endAdornment: (
-                      <InputAdornment position='end' sx={{ p: 0 }}>
-                        <Button
-                          onClick={handleEditKeyName}
-                          disableElevation
-                          sx={{
-                            borderLeft: "1px solid rgba(0, 0, 0, 0.23)",
-                            borderRadius: 0,
-                            minWidth: 50,
-                            height: 40,
-                            m: 0,
-                            p: 0,
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                        >
-                          Save
-                        </Button>
-                      </InputAdornment>
-                    ),
-                  },
-                }}
               />
+
               <Button
                 variant='contained'
                 onClick={() => setOpenEditKeyField(false)}

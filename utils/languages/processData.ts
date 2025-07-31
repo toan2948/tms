@@ -1,7 +1,9 @@
 // lib/translations/group.ts
 
 import {
+  DBkeys,
   FileState,
+  KeyNode,
   KeyState,
   KeyStateWithoutOld,
   TranslationTreeKey,
@@ -365,7 +367,7 @@ export const groupTranslationValues = (
   });
 
   const groups = Array.from(groupedMap.values());
-  console.log("Grouped Translation Values:", groups);
+  // console.log("Grouped Translation Values:", groups);
   const filenameColorMap = new Map<string, string>();
   let colorIndex = 0;
 
@@ -479,3 +481,47 @@ export const checkDuplicateKeyName = (
   if (siblingExists) return true;
   return false;
 };
+
+export function setTreeKeys(filesInfo: FileState<KeyState>[]): DBkeys[] {
+  return filesInfo
+    .filter((file) => file.language_code === "en") // Only English
+    .map((file) => ({
+      fileName: file.fileName,
+      keys: file.keys.map((key) => {
+        const {
+          id,
+          parent_id,
+          key_path_segment,
+          old_segment,
+          full_key_path,
+          old_full_key_path,
+          level,
+          has_children,
+          notes,
+          language_code,
+          language_name,
+          isNew,
+        } = key;
+
+        const keyNode: KeyNode = {
+          id,
+          parent_id,
+          key_path_segment,
+          old_segment,
+          full_key_path,
+          old_full_key_path,
+          level,
+          has_children,
+          notes,
+          language_code,
+          language_name,
+          isNew,
+        };
+
+        return {
+          ...keyNode,
+          children: [], // Optional: build actual tree here
+        } as TranslationTreeKey;
+      }),
+    }));
+}
