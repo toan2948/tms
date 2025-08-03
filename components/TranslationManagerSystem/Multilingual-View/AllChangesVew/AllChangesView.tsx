@@ -1,5 +1,5 @@
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
-import { useFileNameStore } from "@/store/useFileNameStore";
+import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import {
   filterChangedKeys,
@@ -21,7 +21,7 @@ const AllChangesView = ({
   const { filesInfo } = useAllKeyFileStore();
 
   const { setSelectedTreeKey, DBkeys, setParentIDs } = useTreeKeyStore();
-  const { setFileName } = useFileNameStore();
+  const { setFileName } = useOtherStateStore();
   const changedKeys = useMemo(() => filterChangedKeys(filesInfo), [filesInfo]);
 
   //the lowest level new keys
@@ -124,32 +124,3 @@ const AllChangesView = ({
 };
 
 export default AllChangesView;
-{
-  /* <Box>
-      {groupedEmptyKeys && groupedEmptyKeys.length > 0 && (
-        <KeySection
-          formattedKeyList={groupedEmptyKeys}
-          keyStatus='Missing Translation Keys'
-          handleGroupClick={handleGroupClick}
-        />
-      )}
-      {groupedEditedValueKeys && groupedEditedValueKeys.length > 0 && (
-        <KeySection
-          formattedKeyList={groupedEditedValueKeys}
-          keyStatus=' Edited Keys'
-          handleGroupClick={handleGroupClick}
-        />
-      )}
-      <Divider sx={{ margin: "20px 0" }} />
-
-      {groupedNewKeys && groupedNewKeys.length > 0 && (
-        <KeySection
-          formattedKeyList={groupedNewKeys}
-          keyStatus=' New Keys'
-          handleGroupClick={handleGroupClick}
-        />
-      )}
-
-      {!groupedEditedValueKeys && !newKeys && <Box>No changes made.</Box>}
-    </Box> */
-}

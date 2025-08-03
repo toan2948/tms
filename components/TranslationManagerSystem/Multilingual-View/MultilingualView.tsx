@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import React from "react";
 
-import { useFileNameStore } from "@/store/useFileNameStore";
+import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { AddKeyField } from "./AddKeyField";
@@ -27,7 +27,9 @@ export const HeaderBox = styled(Stack)(({}) => ({
   justifyContent: "center",
 }));
 const MultilingualView = () => {
-  const { fileNameState, setFileName } = useFileNameStore();
+  const { fileNameState, setFileName } = useOtherStateStore();
+  const { setSelectedTreeKey } = useTreeKeyStore();
+
   const handleChange = (event: SelectChangeEvent) => {
     setSelectedTreeKey(null); // Reset selected key when changing file
 
@@ -39,7 +41,6 @@ const MultilingualView = () => {
   const [openDialog, setOpenDialog] = React.useState(false);
 
   // const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
-  const { setSelectedTreeKey } = useTreeKeyStore();
 
   return (
     <>

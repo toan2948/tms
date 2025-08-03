@@ -1,6 +1,6 @@
 import { Typo1224 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
-import { useFileNameStore } from "@/store/useFileNameStore";
+import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { KeyState, TranslationTreeKey } from "@/types/keyType";
 import {
@@ -11,7 +11,7 @@ import { Box, Button, InputAdornment, Stack, TextField } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 
 export const AddKeyField = () => {
-  const { fileNameState } = useFileNameStore();
+  const { fileNameState } = useOtherStateStore();
   const { addKeysToFilesInfo, filesInfo } = useAllKeyFileStore();
   const { addKeysToTree, setSelectedTreeKey, setParentIDs, parentIDs, DBkeys } =
     useTreeKeyStore();

@@ -1,6 +1,6 @@
 import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
-import { useFileNameStore } from "@/store/useFileNameStore";
+import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { TranslationTreeKey } from "@/types/keyType";
 import {
@@ -18,7 +18,7 @@ type TreeVewProps = {
 };
 
 const TreeView = ({}: TreeVewProps) => {
-  const { fileNameState } = useFileNameStore();
+  const { fileNameState } = useOtherStateStore();
 
   const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
   const { filesInfo, setFilesInfo } = useAllKeyFileStore();

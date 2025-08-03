@@ -1,5 +1,5 @@
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
-import { useFileNameStore } from "@/store/useFileNameStore";
+import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { insertNewTranslationKeys } from "@/utils/languages/addNewKey";
 import {
@@ -39,7 +39,7 @@ export function SessionDialog({
   const { setSelectedTreeKey, DBkeys } = useTreeKeyStore();
 
   const { setParentIDs } = useTreeKeyStore();
-  const { setFileName } = useFileNameStore();
+  const { setFileName } = useOtherStateStore();
   const changedKeys = useMemo(() => filterChangedKeys(filesInfo), [filesInfo]);
 
   console.log("changedKeys", changedKeys);

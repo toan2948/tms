@@ -10,7 +10,7 @@ import { Dispatch, SetStateAction } from "react";
 
 import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
-import { useFileNameStore } from "@/store/useFileNameStore";
+import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { deleteKeyByFullPathAndFileName } from "@/utils/languages/dataFunctions";
 import { toast } from "react-toastify";
@@ -26,7 +26,7 @@ export function DeleteKeyDialog({
 }: DeleteKeyDialogProps) {
   const { removeKeyFromTree, selectedTreeKey, setSelectedTreeKey } =
     useTreeKeyStore();
-  const { fileNameState } = useFileNameStore();
+  const { fileNameState } = useOtherStateStore();
   const { removeKeyFromFilesInfo } = useAllKeyFileStore();
   const handleClose = () => {
     setOpenDeleteKeyDialog(false);

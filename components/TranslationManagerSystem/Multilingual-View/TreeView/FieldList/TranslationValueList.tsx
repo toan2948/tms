@@ -3,7 +3,7 @@ import EditableTextFieldWithSave from "@/components/ui/EditTextField";
 import RedOutlineButton from "@/components/ui/RedOutlineButton";
 import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
-import { useFileNameStore } from "@/store/useFileNameStore";
+import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { useViewStore } from "@/store/useViewStore";
 import { KeyState } from "@/types/keyType";
@@ -24,7 +24,7 @@ const TranslationValueList = () => {
   const [openDeleteKeyDialog, setOpenDeleteKeyDialog] = useState(false);
   const [NameIsDuplicated, setNameIsDuplicated] = useState(false);
   const [openEditKeyField, setOpenEditKeyField] = useState(false);
-  const { fileNameState } = useFileNameStore();
+  const { fileNameState } = useOtherStateStore();
   const [valuesState, setValuesState] = React.useState<KeyState[]>([]);
 
   const { filesInfo, updateKeyPathSegmentInFiles } = useAllKeyFileStore();
