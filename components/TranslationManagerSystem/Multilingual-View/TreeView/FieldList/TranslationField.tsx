@@ -1,7 +1,6 @@
 "use client";
 import { Typo1424, Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
-import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { KeyState } from "@/types/keyType";
 import { normalizeEmpty } from "@/utils/languages/processData";
 import {
@@ -26,7 +25,6 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   const [value, setValue] = useState(data.value);
   const [openResetDialog, setOpenResetDialog] = React.useState(false);
 
-  const { selectedTreeKey } = useTreeKeyStore();
   const { updateKeyChanged } = useAllKeyFileStore();
 
   //**notice: localStorage is not defined in server-side rendering
@@ -46,9 +44,7 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   };
   const handleSave = () => {
     updateKeyChanged({
-      full_key_path: selectedTreeKey?.full_key_path
-        ? selectedTreeKey.full_key_path
-        : "",
+      full_key_path: data?.full_key_path ? data.full_key_path : "",
       id: data.id,
       isChanged: data.isNew ? false : true, //make sure the new added keys will not be listed in the edited key list
       value: value,
