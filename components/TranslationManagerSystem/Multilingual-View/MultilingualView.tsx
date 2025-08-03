@@ -1,19 +1,8 @@
 "use client";
-import {
-  Box,
-  Button,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  Stack,
-  styled,
-} from "@mui/material";
+import { Box, Button, Stack, styled } from "@mui/material";
 import React from "react";
 
-import { useOtherStateStore } from "@/store/useOtherStateStore";
-import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { SelectChangeEvent } from "@mui/material/Select";
+import FileSelection from "../InteractComp/FileSelection";
 import { AddKeyField } from "./AddKeyField";
 import AllChangesView from "./AllChangesVew/AllChangesView";
 import { SessionDialog } from "./Dialogs/Session/SessionDialog";
@@ -27,15 +16,6 @@ export const HeaderBox = styled(Stack)(({}) => ({
   justifyContent: "center",
 }));
 const MultilingualView = () => {
-  const { fileNameState, setFileName } = useOtherStateStore();
-  const { setSelectedTreeKey } = useTreeKeyStore();
-
-  const handleChange = (event: SelectChangeEvent) => {
-    setSelectedTreeKey(null); // Reset selected key when changing file
-
-    setFileName(event.target.value as string);
-  };
-
   const [seeAllChanges, setSeeAllChanges] = React.useState(false);
 
   const [openDialog, setOpenDialog] = React.useState(false);
@@ -49,26 +29,12 @@ const MultilingualView = () => {
         onClose={setOpenDialog}
         setSeeAllChanges={setSeeAllChanges}
       />
-      <Stack direction={"row"} justifyContent={"space-between"}>
-        <FormControl
-          sx={{
-            width: "20%",
-            marginBottom: "20px",
-            visibility: !seeAllChanges ? "visible" : "hidden",
-          }}
-        >
-          <InputLabel id='demo-simple-select-label'>filename</InputLabel>
-          <Select
-            labelId='demo-simple-select-label'
-            id='demo-simple-select'
-            value={fileNameState}
-            label='filename'
-            onChange={handleChange}
-          >
-            <MenuItem value={"common"}>Common</MenuItem>
-            <MenuItem value={"movie"}>Movie</MenuItem>
-          </Select>
-        </FormControl>
+      <Stack
+        direction={"row"}
+        justifyContent={"space-between"}
+        alignItems={"center"}
+      >
+        <FileSelection />
 
         <AddKeyField />
 

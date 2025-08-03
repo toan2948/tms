@@ -81,7 +81,7 @@ const TranslationValueList = () => {
 
   useEffect(() => {
     setNewKeyName(selectedTreeKey?.key_path_segment || ""); //set the initial value for the edit field
-    console.log("selectedTreeKey changed", selectedTreeKey);
+    // console.log("selectedTreeKey changed", selectedTreeKey);
   }, [selectedTreeKey]);
 
   useEffect(() => {
@@ -114,7 +114,7 @@ const TranslationValueList = () => {
   ]); //valuesState in this condition will cause infinite loop
 
   useEffect(() => {
-    console.log("valueState changed", valuesState);
+    // console.log("valueState changed", valuesState);
   }, [valuesState, selectedTreeKey]);
   return (
     <>

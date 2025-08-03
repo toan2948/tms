@@ -42,7 +42,7 @@ export function SessionDialog({
   const { setFileName } = useOtherStateStore();
   const changedKeys = useMemo(() => filterChangedKeys(filesInfo), [filesInfo]);
 
-  console.log("changedKeys", changedKeys);
+  // console.log("changedKeys", changedKeys);
 
   const editedKeys = useMemo(
     () => changedKeys.filter((key) => !key.isNew),
@@ -88,17 +88,20 @@ export function SessionDialog({
   );
 
   //format data before displaying
-  const editedKeysSessionFormat = formatSessionDialogData(
-    editedKeys,
-    (e) => !e.isNew
+  const editedKeysSessionFormat = useMemo(
+    () => formatSessionDialogData(editedKeys, (e) => !e.isNew),
+    [editedKeys]
   );
-  const NotEmptyNewKeysSessionFormat = formatSessionDialogData(
-    NotEmptyNewKeys,
-    (e) => (e.isNew ? true : false)
+  const NotEmptyNewKeysSessionFormat = useMemo(
+    () =>
+      formatSessionDialogData(NotEmptyNewKeys, (e) => (e.isNew ? true : false)),
+    [NotEmptyNewKeys]
   );
 
-  const emptyNewKeysSessionFormat =
-    formatEmptyNewKeysForSessionDialog(emptyNewKeys);
+  const emptyNewKeysSessionFormat = useMemo(
+    () => formatEmptyNewKeysForSessionDialog(emptyNewKeys),
+    [emptyNewKeys]
+  );
 
   //--
 
