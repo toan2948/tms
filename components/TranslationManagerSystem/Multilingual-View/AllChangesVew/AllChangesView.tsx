@@ -10,18 +10,14 @@ import {
   groupTranslationValues,
 } from "@/utils/languages/processData";
 import { Box, Divider } from "@mui/material";
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import { KeySection } from "./KeySection";
 
-const AllChangesView = ({
-  setSeeAllChanges,
-}: {
-  setSeeAllChanges: React.Dispatch<React.SetStateAction<boolean>>;
-}) => {
+const AllChangesView = () => {
   const { filesInfo } = useAllKeyFileStore();
 
   const { setSelectedTreeKey, DBkeys, setParentIDs } = useTreeKeyStore();
-  const { setFileName } = useOtherStateStore();
+  const { setFileName, setSeeAllChanges } = useOtherStateStore();
   const changedKeys = useMemo(() => filterChangedKeys(filesInfo), [filesInfo]);
 
   //the lowest level new keys
@@ -89,7 +85,7 @@ const AllChangesView = ({
 
     setSelectedTreeKey(findSelectedKey(IDs[0], filename, DBkeys));
     setParentIDs(Array.isArray(IDs) ? IDs.slice(1).reverse() : []);
-    setSeeAllChanges(false);
+    setSeeAllChanges();
   };
 
   return (

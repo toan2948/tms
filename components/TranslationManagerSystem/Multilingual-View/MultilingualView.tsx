@@ -1,26 +1,20 @@
 "use client";
-import { Box, Button, Stack, styled } from "@mui/material";
+import { useOtherStateStore } from "@/store/useOtherStateStore";
+import { useViewStore } from "@/store/useViewStore";
+import { Stack } from "@mui/material";
 import React from "react";
-
+import ChangeViewButtons from "../InteractComp/ChangeViewButtons";
 import FileSelection from "../InteractComp/FileSelection";
+import LanguageSelection from "../InteractComp/LanguageSelection";
 import { AddKeyField } from "./AddKeyField";
 import AllChangesView from "./AllChangesVew/AllChangesView";
 import { SessionDialog } from "./Dialogs/Session/SessionDialog";
 import TreeView from "./TreeView/TreeView";
-export const HeaderBox = styled(Stack)(({}) => ({
-  width: "100%",
-  borderBottom: "solid 1px black",
-  maxHeight: "50px",
-  minHeight: "50px",
-  alignItems: "center",
-  justifyContent: "center",
-}));
+
 const MultilingualView = () => {
-  const [seeAllChanges, setSeeAllChanges] = React.useState(false);
-
+  const { seeAllChanges, setSeeAllChanges } = useOtherStateStore();
   const [openDialog, setOpenDialog] = React.useState(false);
-
-  // const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
+  const { multiViewState } = useViewStore();
 
   return (
     <>
@@ -35,32 +29,11 @@ const MultilingualView = () => {
         alignItems={"center"}
       >
         <FileSelection />
-
-        <AddKeyField />
-
-        <Box>
-          <Button
-            variant='contained'
-            onClick={() => {
-              setSeeAllChanges(!seeAllChanges);
-            }}
-            sx={{
-              marginRight: "10px",
-              backgroundColor: "#4caf50",
-            }}
-          >
-            {!seeAllChanges ? "See All Changes " : "See Tree View"}
-          </Button>
-          <Button onClick={() => setOpenDialog(true)} variant='contained'>
-            Save Session
-          </Button>
-        </Box>
+        {/* switch between milti and bilingual views */}
+        {multiViewState ? <AddKeyField /> : <LanguageSelection />}
+        <ChangeViewButtons setOpenDialog={setOpenDialog} />
       </Stack>
-      {seeAllChanges ? (
-        <AllChangesView setSeeAllChanges={setSeeAllChanges} />
-      ) : (
-        <TreeView />
-      )}
+      {seeAllChanges ? <AllChangesView /> : <TreeView />}
     </>
   );
 };

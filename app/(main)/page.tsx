@@ -1,5 +1,4 @@
 "use client";
-import BilingualView from "@/components/TranslationManagerSystem/BilingualView/BilingualView";
 import MultilingualView from "@/components/TranslationManagerSystem/Multilingual-View/MultilingualView";
 import { useViewStore } from "@/store/useViewStore";
 import { Box, Button, ButtonGroup, Stack } from "@mui/material";
@@ -26,8 +25,7 @@ function HomePage() {
           </Button>
         </ButtonGroup>
       </Stack>
-      {/* <MultilingualView /> */}
-      {multiViewState ? <MultilingualView /> : <BilingualView />}
+      <MultilingualView />
     </Box>
   );
 }

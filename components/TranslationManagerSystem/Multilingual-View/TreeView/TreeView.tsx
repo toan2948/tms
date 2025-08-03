@@ -8,11 +8,18 @@ import {
   fetchTranslationKeysByFilenameAndLanguage,
 } from "@/utils/languages/dataFunctions";
 import { buildKeyTreeFromFlatList } from "@/utils/languages/processData";
-import { Stack } from "@mui/material";
+import { Stack, styled } from "@mui/material";
 import { useEffect, useState } from "react";
-import { HeaderBox } from "../MultilingualView";
 import BasicSimpleTreeView from "./BasicSimpleTreeView";
 import TranslationValueList from "./FieldList/TranslationValueList";
+export const HeaderBox = styled(Stack)(({}) => ({
+  width: "100%",
+  borderBottom: "solid 1px black",
+  maxHeight: "50px",
+  minHeight: "50px",
+  alignItems: "center",
+  justifyContent: "center",
+}));
 type TreeVewProps = {
   test?: boolean;
 };
