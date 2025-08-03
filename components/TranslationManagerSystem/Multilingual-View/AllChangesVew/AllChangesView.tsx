@@ -1,17 +1,17 @@
-import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useFileNameStore } from "@/store/useFileNameStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import {
-  filterTranslationKeys,
+  filterChangedKeys,
   findParentIdsToRootByFullKeyPath,
   findSelectedKey,
   GroupedTranslationValues,
+  groupKeysByFullPath,
   groupTranslationValues,
 } from "@/utils/languages/processData";
-import { Box, Divider, Stack } from "@mui/material";
+import { Box, Divider } from "@mui/material";
 import React, { useMemo } from "react";
-import TranslationField from "../TreeView/FieldList/TranslationField";
+import { KeySection } from "./KeySection";
 
 const AllChangesView = ({
   setSeeAllChanges,
@@ -22,25 +22,54 @@ const AllChangesView = ({
 
   const { setSelectedTreeKey, DBkeys, setParentIDs } = useTreeKeyStore();
   const { setFileName } = useFileNameStore();
-  const changedKeys = useMemo(
-    () => filterTranslationKeys(filesInfo),
-    [filesInfo]
-  );
+  const changedKeys = useMemo(() => filterChangedKeys(filesInfo), [filesInfo]);
+
+  //the lowest level new keys
   const newKeys = useMemo(
-    () =>
-      changedKeys.filter(
-        (key) => key.isNew && !key.has_children //reduce the key to english language only and has no children
-      ),
+    () => changedKeys.filter((key) => key.isNew && !key.has_children),
     [changedKeys]
   );
+
+  const groupedNewKeysFullPath = groupKeysByFullPath(newKeys);
+
+  //the new keys are missing translations
+  const emptyNewKeys = useMemo(
+    () =>
+      groupedNewKeysFullPath
+        .filter((group) =>
+          group.keys.every((key) => key.value === null || key.value === "")
+        )
+        .map((group) => group.keys)
+        .flat(),
+    [groupedNewKeysFullPath]
+  );
+  //the new keys that have translations
+  const NotEmptyNewKeys = useMemo(
+    () =>
+      groupedNewKeysFullPath
+        .filter((group) =>
+          group.keys.some((key) => key.value !== null && key.value !== "")
+        )
+        .map((group) => group.keys)
+        .flat(),
+    [groupedNewKeysFullPath]
+  );
+
+  console.log("groupedNewKeysFullPath", groupedNewKeysFullPath);
+  console.log("emptyNewKeys", emptyNewKeys);
 
   const groupedEditedValueKeys = useMemo(
     () => groupTranslationValues(changedKeys, (e) => !e.isNew),
     [changedKeys]
   );
   const groupedNewKeys = useMemo(
-    () => groupTranslationValues(newKeys, (e) => e.isNew === true),
-    [newKeys]
+    () => groupTranslationValues(NotEmptyNewKeys, (e) => e.isNew === true),
+    [NotEmptyNewKeys]
+  );
+
+  const groupedEmptyKeys = useMemo(
+    () => groupTranslationValues(emptyNewKeys, (e) => e.isNew === true),
+    [emptyNewKeys]
   );
 
   const handleGroupClick = (group: GroupedTranslationValues) => {
@@ -65,74 +94,28 @@ const AllChangesView = ({
 
   return (
     <Box>
+      {groupedEmptyKeys && groupedEmptyKeys.length > 0 && (
+        <KeySection
+          formattedKeyList={groupedEmptyKeys}
+          keyStatus='Missing Translation Keys'
+          handleGroupClick={handleGroupClick}
+        />
+      )}
       {groupedEditedValueKeys && groupedEditedValueKeys.length > 0 && (
-        <>
-          <Typo1624 weight={600} color='green'>
-            Edited Keys:
-          </Typo1624>
-
-          {groupedEditedValueKeys.map((group, index) => (
-            <Stack key={index} sx={{ margin: "30px 0" }}>
-              <Stack direction={"row"} gap={"10px"}>
-                <Typo1624
-                  weight={600}
-                  color={group.color}
-                  sx={{ cursor: "pointer" }}
-                  onClick={() => handleGroupClick(group)}
-                >
-                  {group.filename}: {group.fullKey}
-                </Typo1624>
-                {group.isKeyNameChanged && (
-                  <Typo1624 color='red'>
-                    (Old key name: {group.oldFullKey})
-                  </Typo1624>
-                )}
-              </Stack>
-
-              <Box width={"95%"} alignSelf={"end"}>
-                {group.list.map((item, itemIndex) => (
-                  <TranslationField
-                    key={itemIndex}
-                    index={itemIndex}
-                    data={item}
-                  />
-                ))}
-              </Box>
-            </Stack>
-          ))}
-        </>
+        <KeySection
+          formattedKeyList={groupedEditedValueKeys}
+          keyStatus=' Edited Keys'
+          handleGroupClick={handleGroupClick}
+        />
       )}
       <Divider sx={{ margin: "20px 0" }} />
 
       {groupedNewKeys && groupedNewKeys.length > 0 && (
-        <>
-          <Typo1624 weight={600} color='orange'>
-            New Keys:
-          </Typo1624>
-
-          {groupedNewKeys.map((group, index) => (
-            <Stack key={index} sx={{ margin: "30px 0" }}>
-              <Typo1624
-                weight={600}
-                color={group.color}
-                sx={{ cursor: "pointer" }}
-                onClick={() => handleGroupClick(group)}
-              >
-                {group.filename}: {group.fullKey}
-              </Typo1624>
-
-              <Box width={"95%"} alignSelf={"end"}>
-                {group.list.map((item, itemIndex) => (
-                  <TranslationField
-                    key={itemIndex}
-                    index={itemIndex}
-                    data={item}
-                  />
-                ))}
-              </Box>
-            </Stack>
-          ))}
-        </>
+        <KeySection
+          formattedKeyList={groupedNewKeys}
+          keyStatus=' New Keys'
+          handleGroupClick={handleGroupClick}
+        />
       )}
 
       {!groupedEditedValueKeys && !newKeys && <Box>No changes made.</Box>}
@@ -141,3 +124,32 @@ const AllChangesView = ({
 };
 
 export default AllChangesView;
+{
+  /* <Box>
+      {groupedEmptyKeys && groupedEmptyKeys.length > 0 && (
+        <KeySection
+          formattedKeyList={groupedEmptyKeys}
+          keyStatus='Missing Translation Keys'
+          handleGroupClick={handleGroupClick}
+        />
+      )}
+      {groupedEditedValueKeys && groupedEditedValueKeys.length > 0 && (
+        <KeySection
+          formattedKeyList={groupedEditedValueKeys}
+          keyStatus=' Edited Keys'
+          handleGroupClick={handleGroupClick}
+        />
+      )}
+      <Divider sx={{ margin: "20px 0" }} />
+
+      {groupedNewKeys && groupedNewKeys.length > 0 && (
+        <KeySection
+          formattedKeyList={groupedNewKeys}
+          keyStatus=' New Keys'
+          handleGroupClick={handleGroupClick}
+        />
+      )}
+
+      {!groupedEditedValueKeys && !newKeys && <Box>No changes made.</Box>}
+    </Box> */
+}

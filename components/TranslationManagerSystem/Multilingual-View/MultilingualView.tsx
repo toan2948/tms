@@ -16,7 +16,7 @@ import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { SelectChangeEvent } from "@mui/material/Select";
 import { AddKeyField } from "./AddKeyField";
 import AllChangesView from "./AllChangesVew/AllChangesView";
-import { SessionDialog } from "./Dialogs/SessionDialog";
+import { SessionDialog } from "./Dialogs/Session/SessionDialog";
 import TreeView from "./TreeView/TreeView";
 export const HeaderBox = styled(Stack)(({}) => ({
   width: "100%",

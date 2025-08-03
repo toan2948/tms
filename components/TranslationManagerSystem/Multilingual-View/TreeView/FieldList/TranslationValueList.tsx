@@ -9,7 +9,7 @@ import { useViewStore } from "@/store/useViewStore";
 import { KeyState } from "@/types/keyType";
 import {
   checkDuplicateKeyName,
-  filterTranslationKeys,
+  filterChangedKeys,
   getTranslationKeys,
 } from "@/utils/languages/processData";
 import { Box, Button, List, Stack } from "@mui/material";
@@ -77,10 +77,7 @@ const TranslationValueList = () => {
 
   //this changedKeys is used as a dependent factor in useEffect to update valuesState when the state FilesInfo is changed
   //filesInfo can not be used directly in useEffect because it will cause a bug as filesInfo is a dynamic state that can change the size of dependencies array of the useEffect
-  const changedKeys = useMemo(
-    () => filterTranslationKeys(filesInfo),
-    [filesInfo]
-  );
+  const changedKeys = useMemo(() => filterChangedKeys(filesInfo), [filesInfo]);
 
   useEffect(() => {
     setNewKeyName(selectedTreeKey?.key_path_segment || ""); //set the initial value for the edit field

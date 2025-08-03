@@ -48,7 +48,7 @@ const sortKeysInFieldList = (result: KeyState[]) => {
   return result;
 };
 
-export const filterTranslationKeys = (
+export const filterChangedKeys = (
   localStorageFilesInfo: FileState<KeyState>[]
 ): KeyState[] => {
   // 1st Step: filter out the changed keys from localStorageFilesInfo and updated version temporarily
@@ -143,6 +143,14 @@ const colorPalette = [
   "#ffc107",
 ];
 
+export type ColoredChangedKey = {
+  label: string;
+  color: string;
+  fileName: string;
+  full_key_path: string;
+  isKeyNameChanged: boolean;
+  oldFullKey: string;
+};
 export const formatSessionDialogData = (
   keys: KeyState[],
   filterFn: (item: KeyState) => boolean
@@ -191,14 +199,6 @@ export const formatSessionDialogData = (
   }
 
   // 4. Build final array
-  type ColoredChangedKey = {
-    label: string;
-    color: string;
-    filename: string;
-    fullKey: string;
-    isKeyNameChanged: boolean;
-    oldFullKey: string;
-  };
 
   const changedKeyStrings: ColoredChangedKey[] = Array.from(
     groupedMap.entries()
@@ -215,10 +215,10 @@ export const formatSessionDialogData = (
     ]) => ({
       label: `${key} -- ${Array.from(languages).join(", ")}`,
       color: filenameToColor.get(filename)!,
-      filename: filename,
+      fileName: filename,
       isKeyNameChanged,
       oldFullKey,
-      fullKey: fullKeyPath,
+      full_key_path: fullKeyPath,
     })
   );
   return changedKeyStrings;
@@ -524,4 +524,53 @@ export function setTreeKeys(filesInfo: FileState<KeyState>[]): DBkeys[] {
         } as TranslationTreeKey;
       }),
     }));
+}
+
+type GroupFullPath = {
+  full_key_path: string;
+  keys: KeyState[];
+};
+
+export function groupKeysByFullPath(keys: KeyState[]): GroupFullPath[] {
+  const groupedMap = keys.reduce((map, key) => {
+    const path = key.full_key_path;
+    if (!map.has(path)) {
+      map.set(path, []);
+    }
+    map.get(path)!.push(key);
+    return map;
+  }, new Map<string, KeyState[]>());
+
+  return Array.from(groupedMap.entries())
+    .map(([full_key_path, keys]) => ({ full_key_path, keys }))
+    .sort((a, b) => a.full_key_path.localeCompare(b.full_key_path));
+}
+
+function getRandomColor(existingColors: Set<string>): string {
+  const letters = "0123456789ABCDEF";
+  let color = "#";
+  do {
+    color = "#";
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+  } while (existingColors.has(color));
+  return color;
+}
+
+export function formatEmptyNewKeysForSessionDialog(
+  groups: GroupFullPath[]
+): { full_key_path: string; color: string; fileName: string; label: string }[] {
+  const usedColors = new Set<string>();
+
+  return groups.map((group) => {
+    const color = getRandomColor(usedColors);
+    usedColors.add(color);
+    return {
+      label: `${group.keys[0]?.fileName}: ${group.full_key_path}`,
+      full_key_path: group.full_key_path,
+      color,
+      fileName: group.keys[0]?.fileName || "Unknown File",
+    };
+  });
 }

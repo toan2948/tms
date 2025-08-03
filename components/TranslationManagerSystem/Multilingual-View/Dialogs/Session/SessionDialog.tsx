@@ -7,23 +7,18 @@ import {
   updateChangedKeys,
 } from "@/utils/languages/dataFunctions";
 import {
-  filterTranslationKeys,
+  filterChangedKeys,
   findParentIdsToRootByFullKeyPath,
   findSelectedKey,
+  formatEmptyNewKeysForSessionDialog,
   formatSessionDialogData,
+  groupKeysByFullPath,
 } from "@/utils/languages/processData";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogTitle,
-  List,
-  ListItem,
-  Stack,
-  Typography,
-} from "@mui/material";
-import { Dispatch, SetStateAction, useMemo } from "react";
+import { Box, Button, Dialog, DialogTitle, Stack } from "@mui/material";
+import { Dispatch, SetStateAction, useMemo, useState } from "react";
 import { toast } from "react-toastify";
+import { MissingTranslationKeysDialog } from "./MissingTranslationKeyDialog";
+import SessionKeyList from "./SessionKeyList";
 export interface SessionDialogProps {
   open: boolean;
   onClose: Dispatch<SetStateAction<boolean>>;
@@ -35,45 +30,87 @@ export function SessionDialog({
   onClose,
   setSeeAllChanges,
 }: SessionDialogProps) {
+  const [
+    openMissingTranslationKeysDialog,
+    setOpenMissingTranslationKeysDialog,
+  ] = useState(false);
   const { filesInfo, setFilesInfo } = useAllKeyFileStore();
 
   const { setSelectedTreeKey, DBkeys } = useTreeKeyStore();
 
   const { setParentIDs } = useTreeKeyStore();
   const { setFileName } = useFileNameStore();
-  const changedKeys = useMemo(
-    () => filterTranslationKeys(filesInfo),
-    [filesInfo]
-  );
+  const changedKeys = useMemo(() => filterChangedKeys(filesInfo), [filesInfo]);
+
+  console.log("changedKeys", changedKeys);
 
   const editedKeys = useMemo(
     () => changedKeys.filter((key) => !key.isNew),
     [changedKeys]
   );
 
+  // New keys will be inserted into DB
   const newKeys = useMemo(
     () => changedKeys.filter((key) => key.isNew),
     [changedKeys]
   );
 
-  const newLowestLevelKeys = changedKeys.filter(
-    (key) => key.isNew && !key.has_children //reduce the key to english language only
+  //the new keys are displayed in the session dialog
+  const newLowestLevelKeys = useMemo(
+    () =>
+      changedKeys.filter(
+        (key) => key.isNew && !key.has_children //reduce the key to english language only
+      ),
+    [changedKeys]
   );
 
+  const groupedNewKeys = groupKeysByFullPath(newLowestLevelKeys);
+
+  //the new keys are missing translations
+  const emptyNewKeys = useMemo(
+    () =>
+      groupedNewKeys.filter((group) =>
+        group.keys.every((key) => key.value === null || key.value === "")
+      ),
+    [groupedNewKeys]
+  );
+
+  //the new keys that have translations
+  const NotEmptyNewKeys = useMemo(
+    () =>
+      groupedNewKeys
+        .filter((group) =>
+          group.keys.some((key) => key.value !== null && key.value !== "")
+        )
+        .map((group) => group.keys)
+        .flat(),
+    [groupedNewKeys]
+  );
+
+  //format data before displaying
   const editedKeysSessionFormat = formatSessionDialogData(
     editedKeys,
     (e) => !e.isNew
   );
-  const newKeysSessionFormat = formatSessionDialogData(
-    newLowestLevelKeys,
+  const NotEmptyNewKeysSessionFormat = formatSessionDialogData(
+    NotEmptyNewKeys,
     (e) => (e.isNew ? true : false)
   );
+
+  const emptyNewKeysSessionFormat =
+    formatEmptyNewKeysForSessionDialog(emptyNewKeys);
+
+  //--
 
   const handleClose = () => {
     onClose(false);
   };
 
   const updateDB = async () => {
+    if (emptyNewKeysSessionFormat.length > 0) {
+      setOpenMissingTranslationKeysDialog(true); // Open dialog if there are missing translation keys
+      return;
+    }
     await updateChangedKeys(editedKeys);
     await insertNewTranslationKeys(newKeys); // Insert new keys into the DB
     onClose(false);
@@ -102,81 +139,41 @@ export function SessionDialog({
   return (
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle textAlign={"center"}>Session Changes</DialogTitle>
-
+      <MissingTranslationKeysDialog
+        open={openMissingTranslationKeysDialog}
+        setOpen={setOpenMissingTranslationKeysDialog}
+        data={emptyNewKeysSessionFormat}
+      />
       <Box
         sx={{
           padding: "10px",
         }}
       >
+        {emptyNewKeysSessionFormat && emptyNewKeysSessionFormat.length > 0 && (
+          <SessionKeyList
+            keyStatus='Missing translation keys'
+            formattedKeyList={emptyNewKeysSessionFormat}
+            handleClick={handleClick}
+          />
+        )}
+
         {editedKeysSessionFormat && editedKeysSessionFormat.length > 0 && (
-          <>
-            <Typography>Changes on key values:</Typography>
-
-            <Box
-              sx={{
-                border: "1px solid black",
-
-                padding: "10px",
-                marginBottom: "10px",
-              }}
-            >
-              <List sx={{ pt: 0 }}>
-                {editedKeysSessionFormat.map((item, index) => (
-                  <ListItem
-                    key={index}
-                    sx={{
-                      borderRadius: "5px",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => {
-                      handleClick(item.fullKey, item.filename);
-                    }}
-                  >
-                    <Typography color={item.color}> {item.label}</Typography>
-                    {item.isKeyNameChanged && (
-                      <Typography color={"red"}>
-                        (Old key name:
-                        {item.oldFullKey})
-                      </Typography>
-                    )}
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
-          </>
+          <SessionKeyList
+            keyStatus='Changes on key values'
+            formattedKeyList={editedKeysSessionFormat}
+            handleClick={handleClick}
+          />
         )}
-        {newKeysSessionFormat && newKeysSessionFormat.length > 0 && (
-          <>
-            <Typography>New keys:</Typography>
-
-            <Box
-              sx={{
-                border: "1px solid black",
-                padding: "10px",
-                marginBottom: "10px",
-              }}
-            >
-              <List sx={{ pt: 0 }}>
-                {newKeysSessionFormat.map((item, index) => (
-                  <ListItem
-                    key={index}
-                    sx={{
-                      borderRadius: "5px",
-                      cursor: "pointer",
-                    }}
-                    onClick={() => {
-                      handleClick(item.fullKey, item.filename);
-                    }}
-                  >
-                    <Typography color={item.color}> {item.label}</Typography>
-                  </ListItem>
-                ))}
-              </List>
-            </Box>
-          </>
-        )}
+        {NotEmptyNewKeysSessionFormat &&
+          NotEmptyNewKeysSessionFormat.length > 0 && (
+            <SessionKeyList
+              keyStatus='New keys with translations'
+              formattedKeyList={NotEmptyNewKeysSessionFormat}
+              handleClick={handleClick}
+            />
+          )}
         {editedKeysSessionFormat.length > 0 ||
-        newKeysSessionFormat.length > 0 ? (
+        NotEmptyNewKeysSessionFormat.length > 0 ? (
           <Stack direction={"row"} justifyContent={"flex-end"}>
             <Button
               variant='outlined'
