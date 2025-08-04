@@ -4,7 +4,7 @@ import {
   LanguageType,
   TranslationTreeKey,
 } from "@/types/keyType";
-import { setDBKeysfromOutsideFunction } from "@/utils/languages/processData";
+import { setDBKeysFromOutsideFunction } from "@/utils/languages/processData";
 import { create } from "zustand";
 import { useTreeKeyStore } from "./useTreeKeyStore";
 
@@ -46,7 +46,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
       filesInfo: files,
     }));
     localStorage.setItem("translationEdits", JSON.stringify(files));
-    setDBKeysfromOutsideFunction(files);
+    setDBKeysFromOutsideFunction(files);
   },
 
   addKeysToFilesInfo: (
@@ -307,7 +307,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
       });
 
       localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
-      setDBKeysfromOutsideFunction(updatedFiles);
+      setDBKeysFromOutsideFunction(updatedFiles);
 
       return { filesInfo: updatedFiles };
     });

@@ -532,7 +532,7 @@ export function setTreeKeys(filesInfo: FileState<KeyState>[]): DBkeys[] {
     }));
 }
 
-export function setDBKeysfromOutsideFunction(files: FileState<KeyState>[]) {
+export function setDBKeysFromOutsideFunction(files: FileState<KeyState>[]) {
   const newTreeKeys = setTreeKeys(files);
 
   const setDBKeysFromOtherStore =

@@ -37,8 +37,9 @@ export function MissingTranslationKeysDialog({
         }}
       >
         <Typography sx={{ padding: "10px" }}>
-          These keys do not have translations for all languages, these keys will
-          not be saved:
+          Below keys do not have translations for all languages, please
+          translating at least one language of each key or delete the keys if
+          they are unused:
         </Typography>
         <List sx={{ pt: 0 }}>
           {data.map((item, index) => (
