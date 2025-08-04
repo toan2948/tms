@@ -1,5 +1,6 @@
 // lib/translations/group.ts
 
+import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import {
   DBkeys,
   FileState,
@@ -358,7 +359,8 @@ export const groupTranslationValues = (
       groupedMap.set(key, {
         filename: item.fileName ? item.fileName : "Unknown File",
         fullKey: item.full_key_path,
-        isKeyNameChanged: item.full_key_path !== item.old_full_key_path,
+        isKeyNameChanged:
+          item.full_key_path !== item.old_full_key_path && !item.isNew, //by a new key, the old name will not be shown
         oldFullKey: item.old_full_key_path || "",
         list: [item],
         color: "", // to be assigned later
@@ -528,6 +530,15 @@ export function setTreeKeys(filesInfo: FileState<KeyState>[]): DBkeys[] {
         } as TranslationTreeKey;
       }),
     }));
+}
+
+export function setDBKeysfromOutsideFunction(files: FileState<KeyState>[]) {
+  const newTreeKeys = setTreeKeys(files);
+
+  const setDBKeysFromOtherStore =
+    useTreeKeyStore.getState().setDBKeysFromOtherStore;
+
+  setDBKeysFromOtherStore(newTreeKeys);
 }
 
 type GroupFullPath = {

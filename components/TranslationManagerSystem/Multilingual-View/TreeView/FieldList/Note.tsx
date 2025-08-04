@@ -39,7 +39,6 @@ const Note = () => {
   const handleEditNote = async () => {
     if (selectedTreeKey === null) return;
     const trimmedNote = noteState.trim();
-    console.log("trimmed note", trimmedNote);
 
     //If add or edit note, we will proceed with the note editing
     // const isValid = /^[a-zA-Z0-9_]*$/.test(trimmedKey);

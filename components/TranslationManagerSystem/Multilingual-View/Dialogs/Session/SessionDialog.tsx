@@ -121,7 +121,6 @@ export function SessionDialog({
     localStorage.removeItem("DBkeys"); // Clear DBkeys from localStorage
     const data = await fetchAllTranslationFiles(); // Fetch updated data from the DB
     setFilesInfo(data);
-    localStorage.setItem("translationEdits", JSON.stringify(data));
     toast.success("Saved to DB!");
   };
 
@@ -175,8 +174,7 @@ export function SessionDialog({
               handleClick={handleClick}
             />
           )}
-        {editedKeysSessionFormat.length > 0 ||
-        NotEmptyNewKeysSessionFormat.length > 0 ? (
+        {editedKeysSessionFormat.length > 0 || groupedNewKeys.length > 0 ? (
           <Stack direction={"row"} justifyContent={"flex-end"}>
             <Button
               variant='outlined'
