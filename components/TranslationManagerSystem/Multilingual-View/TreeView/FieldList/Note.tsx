@@ -22,7 +22,8 @@ const Note = () => {
 
   const handleEditNote = async (deleteIt?: boolean) => {
     if (selectedTreeKey === null) return;
-    const trimmedKey = noteState.trim();
+    const trimmedNote = noteState.trim();
+    console.log("trimmed note", trimmedNote);
 
     // If deleteIt is true, we will delete the note
     if (deleteIt) {
@@ -41,7 +42,7 @@ const Note = () => {
 
     //If add or edit note, we will proceed with the note editing
     // const isValid = /^[a-zA-Z0-9_]*$/.test(trimmedKey);
-    if (!trimmedKey) {
+    if (!trimmedNote) {
       setNoteEmpty(true);
       setError(true);
       setShowHelperText(true);
@@ -52,13 +53,14 @@ const Note = () => {
       return;
     }
 
-    const editSuccess = await editNote(selectedTreeKey.id, trimmedKey);
+    const editSuccess = await editNote(selectedTreeKey.id, trimmedNote);
 
+    console.log("editSuccess", editSuccess);
     if (editSuccess) {
-      setSelectedTreeKey({ ...selectedTreeKey, notes: trimmedKey }); // Update the selectedTreeKey with the new note
+      setSelectedTreeKey({ ...selectedTreeKey, notes: trimmedNote }); // Update the selectedTreeKey with the new note
       updateKeyNoteInFilesInfo(
         selectedTreeKey.full_key_path,
-        trimmedKey,
+        trimmedNote,
         fileNameState
       );
       setOpenAddNotesField(false); // Close the edit field after saving}
@@ -97,7 +99,7 @@ const Note = () => {
         <EditableTextFieldWithSave
           value={noteState}
           onChange={setNoteState}
-          onSave={handleEditNote}
+          onSave={() => handleEditNote(false)}
           show={openAddNotesField}
           error={error}
           helperText={

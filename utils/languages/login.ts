@@ -38,7 +38,7 @@ export async function getUser() {
     return null;
   }
   // Fetch user profile details
-  const { data: profile, error } = await supabase
+  const { data: profile } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", user.id)
