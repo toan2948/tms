@@ -107,10 +107,10 @@ export const filterChangedKeys = (
       version: !key.value
         ? 0
         : key.isNew
-          ? 1
-          : isUpdatedEnglishKey
-            ? isUpdatedEnglishKey
-            : englishVersion, // Use the updated version if English key is also changed
+        ? 1
+        : isUpdatedEnglishKey
+        ? isUpdatedEnglishKey
+        : englishVersion, // Use the updated version if English key is also changed
 
       //todo: case of english and other languages are updated at the same time
       last_edited_at: key.last_edited_at,
@@ -340,6 +340,8 @@ export type GroupedTranslationValues = {
   oldFullKey: string;
   list: KeyState[];
   color: string; // color for the filename
+  pathSegment: string;
+  old_pathSegment: string; // old path segment
 };
 
 export const groupTranslationValues = (
@@ -360,6 +362,8 @@ export const groupTranslationValues = (
         oldFullKey: item.old_full_key_path || "",
         list: [item],
         color: "", // to be assigned later
+        pathSegment: item.key_path_segment,
+        old_pathSegment: item.old_segment || "", // old path segment
       });
     } else {
       groupedMap.get(key)!.list.push(item);

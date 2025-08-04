@@ -30,11 +30,12 @@ export const KeySection = ({
           >
             {group.filename}: {group.fullKey}
           </Typo1624>
-          {group.isKeyNameChanged && (
-            <Typo1624 color='red'>
-              (Old key name: {group.oldFullKey ? group.oldFullKey : "Null"})
-            </Typo1624>
-          )}
+          {group.isKeyNameChanged &&
+            group.pathSegment !== group.old_pathSegment && (
+              <Typo1624 color='red'>
+                (Old key name: {group.oldFullKey ? group.oldFullKey : "Null"})
+              </Typo1624>
+            )}
 
           <Box width={"95%"} alignSelf={"end"}>
             {group.list.map((item, itemIndex) => (

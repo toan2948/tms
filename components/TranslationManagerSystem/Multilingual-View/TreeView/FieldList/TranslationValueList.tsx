@@ -140,13 +140,15 @@ const TranslationValueList = () => {
                 </Typo1424>
               </Box>
               {selectedTreeKey.old_full_key_path !==
-                selectedTreeKey.full_key_path && (
-                <Box>
-                  <Typo1424 color='red'>
-                    Old key name: {selectedTreeKey?.old_full_key_path}
-                  </Typo1424>
-                </Box>
-              )}
+                selectedTreeKey.full_key_path &&
+                selectedTreeKey.key_path_segment !==
+                  selectedTreeKey.old_segment && (
+                  <Box>
+                    <Typo1424 color='red'>
+                      Old key name: {selectedTreeKey?.old_full_key_path}
+                    </Typo1424>
+                  </Box>
+                )}
             </Stack>
           </Box>
           <Note />
