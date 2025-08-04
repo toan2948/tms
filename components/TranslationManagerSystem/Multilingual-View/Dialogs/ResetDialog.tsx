@@ -1,7 +1,6 @@
 import * as React from "react";
 
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
-import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { KeyState } from "@/types/keyType";
 import {
   Box,
@@ -34,15 +33,12 @@ export function ResetDialog({
   const handleClose = () => {
     onClose(false);
   };
-  const { selectedTreeKey } = useTreeKeyStore();
   const { updateKeyChanged } = useAllKeyFileStore();
 
   const handleReset = () => {
     // console.log("Resetting value to DBValue:", DBValue?.value, value);
     updateKeyChanged({
-      full_key_path: selectedTreeKey?.full_key_path
-        ? selectedTreeKey.full_key_path
-        : "",
+      full_key_path: data.full_key_path ? data.full_key_path : "",
       id: data.id,
       isChanged: false,
       value: data.old_value ?? "",
