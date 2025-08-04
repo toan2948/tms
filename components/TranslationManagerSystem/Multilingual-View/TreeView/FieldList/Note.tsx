@@ -20,25 +20,26 @@ const Note = () => {
 
   const [isNoteEmpty, setNoteEmpty] = useState(false);
 
-  const handleEditNote = async (deleteIt?: boolean) => {
+  const handleDeleteNote = async () => {
+    if (selectedTreeKey === null) return;
+
+    const deleteSuccess = await editNote(selectedTreeKey.id, "", true);
+    if (deleteSuccess) {
+      setSelectedTreeKey({ ...selectedTreeKey, notes: null }); // Update the selectedTreeKey with the new note
+      updateKeyNoteInFilesInfo(
+        selectedTreeKey.full_key_path,
+        null,
+        fileNameState
+      );
+      setOpenAddNotesField(false); // Close the edit field after saving}
+      setNoteState(""); // Clear the note state
+    }
+  };
+
+  const handleEditNote = async () => {
     if (selectedTreeKey === null) return;
     const trimmedNote = noteState.trim();
     console.log("trimmed note", trimmedNote);
-
-    // If deleteIt is true, we will delete the note
-    if (deleteIt) {
-      const deleteSuccess = await editNote(selectedTreeKey.id, "", true);
-      if (deleteSuccess) {
-        setSelectedTreeKey({ ...selectedTreeKey, notes: null }); // Update the selectedTreeKey with the new note
-        updateKeyNoteInFilesInfo(
-          selectedTreeKey.full_key_path,
-          null,
-          fileNameState
-        );
-        setOpenAddNotesField(false); // Close the edit field after saving}
-      }
-      return;
-    }
 
     //If add or edit note, we will proceed with the note editing
     // const isValid = /^[a-zA-Z0-9_]*$/.test(trimmedKey);
@@ -89,7 +90,7 @@ const Note = () => {
             >
               {selectedTreeKey?.notes ? "Edit Notes" : "Add Notes"}
             </Button>
-            <RedOutlineButton onClick={() => handleEditNote(true)}>
+            <RedOutlineButton onClick={() => handleDeleteNote()}>
               Delete Note
             </RedOutlineButton>
           </Stack>
@@ -99,7 +100,7 @@ const Note = () => {
         <EditableTextFieldWithSave
           value={noteState}
           onChange={setNoteState}
-          onSave={() => handleEditNote(false)}
+          onSave={handleEditNote}
           show={openAddNotesField}
           error={error}
           helperText={
