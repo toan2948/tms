@@ -18,7 +18,7 @@ export const AddKeyField = () => {
   const [isNewKeyAdded, setIsNewKeyAdded] = useState(false);
   const [openAddKeyField, setOpenAddKeyField] = useState(false);
   const [error, setError] = useState(false);
-  const [showHelperText, setShowHelperText] = useState("");
+  const [helperText, setHelperText] = useState("");
 
   const handleAddKey = useCallback(async () => {
     const trimmedKey = newKeyState.trim();
@@ -28,10 +28,11 @@ export const AddKeyField = () => {
     if (!trimmedKey) return;
     if (!isValid) {
       setError(true);
-      setShowHelperText(
+      setHelperText(
         "Only letters, numbers, dot (.) and underscore (_) allowed"
       );
       setTimeout(() => {
+        setHelperText("");
         setError(false);
       }, 3000);
       return;
@@ -54,8 +55,11 @@ export const AddKeyField = () => {
 
     if (duplicateFound) {
       setError(true);
-      setShowHelperText(`Key "${trimmedKey}" already exists!`);
-      setTimeout(() => setError(false), 4000);
+      setHelperText(`Key "${trimmedKey}" already exists!`);
+      setTimeout(() => {
+        setHelperText("");
+        setError(false);
+      }, 4000);
       return;
     }
 
@@ -71,8 +75,11 @@ export const AddKeyField = () => {
         if (parentKey && parentKey.has_children === false) {
           // ❌ Parent exists but is a leaf node (invalid)
           setError(true);
-          setShowHelperText("Parent key is already a leaf node!");
-          setTimeout(() => setError(false), 4000);
+          setHelperText("Parent key is already a leaf node!");
+          setTimeout(() => {
+            setHelperText("");
+            setError(false);
+          }, 4000);
           return;
         }
       }
@@ -192,7 +199,7 @@ export const AddKeyField = () => {
             variant='outlined'
             value={newKeyState}
             error={error}
-            helperText={showHelperText}
+            helperText={helperText}
             sx={{
               display: openAddKeyField ? "block" : "none", // ✅ hide instead of unmount
               "& .MuiOutlinedInput-root": {
