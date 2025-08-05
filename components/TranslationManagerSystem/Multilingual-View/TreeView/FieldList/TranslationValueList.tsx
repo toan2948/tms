@@ -14,7 +14,7 @@ import {
 } from "@/utils/languages/processData";
 import { Box, Button, List, Stack } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
-import { DeleteKeyDialog } from "../../Dialogs/DeleteKeyDialog";
+import { DeleteKeyDialog } from "../../Dialogs/Delete/DeleteKeyDialog";
 import Note from "./Note";
 import TranslationField from "./TranslationField";
 const TranslationValueList = () => {

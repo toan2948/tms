@@ -105,6 +105,7 @@ export function SessionDialog({
 
   //--
 
+  //close the dialog
   const handleClose = () => {
     onClose(false);
   };
@@ -117,8 +118,6 @@ export function SessionDialog({
     await updateChangedKeys(editedKeys);
     await insertNewTranslationKeys(newKeys); // Insert new keys into the DB
     onClose(false);
-    localStorage.removeItem("translationEdits"); // Clear localStorage after saving to DB
-    localStorage.removeItem("DBkeys"); // Clear DBkeys from localStorage
     const data = await fetchAllTranslationFiles(); // Fetch updated data from the DB
     setFilesInfo(data);
     toast.success("Saved to DB!");
