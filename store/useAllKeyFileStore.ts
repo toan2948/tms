@@ -121,6 +121,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
       }
 
       // Collect descendant keys (by parent_id) for all matching keys
+
       const collectDescendantsByParentId = (
         startIds: string[],
         all: KeyState[]
@@ -142,33 +143,48 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
         return toRemove;
       };
 
-      // Collect isNew === true parents upward by full_key_path
-      // const collectIsNewParents = (startKeys: KeyState[], all: KeyState[]) => {
-      //   const toRemove = new Set<string>();
+      // Enhanced: collect isNew parents only if they have no remaining children
+      const collectIsNewParents = (
+        startKeys: KeyState[],
+        all: KeyState[],
+        alreadyMarkedForRemoval: Set<string>
+      ) => {
+        const toRemove = new Set<string>();
 
-      //   for (const key of startKeys) {
-      //     let current = key;
-      //     while (current.parent_id) {
-      //       const parent = all.find((k) => k.id === current.parent_id);
-      //       if (parent?.isNew === true) {
-      //         toRemove.add(parent.id);
-      //         current = parent;
-      //       } else {
-      //         break;
-      //       }
-      //     }
-      //   }
+        for (const key of startKeys) {
+          let current = key;
 
-      //   return toRemove;
-      // };
+          while (current.parent_id) {
+            const parent = all.find((k) => k.id === current.parent_id);
+            if (!parent || parent.isNew !== true) break;
+
+            const otherChildren = all.filter(
+              (k) =>
+                k.parent_id === parent.id &&
+                k.id !== current.id &&
+                !alreadyMarkedForRemoval.has(k.id)
+            );
+
+            if (otherChildren.length === 0) {
+              toRemove.add(parent.id);
+              current = parent;
+            } else {
+              break;
+            }
+          }
+        }
+
+        return toRemove;
+      };
 
       const initialIds = initialKeysToRemove.map((k) => k.id);
       const descendantIds = collectDescendantsByParentId(initialIds, allKeys);
-      // const parentIds = initialKeysToRemove.some((k) => k.isNew === true)
-      //   ? collectIsNewParents(initialKeysToRemove, allKeys)
-      //   : new Set<string>();
 
-      const idsToRemove = new Set([...descendantIds]);
+      const parentIds = initialKeysToRemove.some((k) => k.isNew === true)
+        ? collectIsNewParents(initialKeysToRemove, allKeys, descendantIds)
+        : new Set<string>();
+
+      const idsToRemove = new Set([...descendantIds, ...parentIds]);
 
       // Remove from all language versions of the file
       const updatedFiles = filesInfo.map((file) => {
@@ -187,6 +203,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
 
       const setDBKeys = get().setDBKeys;
       setDBKeys(updatedFiles);
+
       return { filesInfo: updatedFiles };
     });
   },
