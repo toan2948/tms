@@ -15,11 +15,10 @@ export const AddKeyField = () => {
   const { addKeysToFilesInfo, filesInfo, DBkeys } = useAllKeyFileStore();
   const { setSelectedTreeKey, setParentIDs, parentIDs } = useTreeKeyStore();
   const [newKeyState, setNewKeyState] = useState("");
-  const [isKeyExisted, setIsKeyExisted] = useState(false);
   const [isNewKeyAdded, setIsNewKeyAdded] = useState(false);
   const [openAddKeyField, setOpenAddKeyField] = useState(false);
   const [error, setError] = useState(false);
-  const [showHelperText, setShowHelperText] = useState(false);
+  const [showHelperText, setShowHelperText] = useState("");
 
   const handleAddKey = useCallback(async () => {
     const trimmedKey = newKeyState.trim();
@@ -29,9 +28,10 @@ export const AddKeyField = () => {
     if (!trimmedKey) return;
     if (!isValid) {
       setError(true);
-      setShowHelperText(true);
+      setShowHelperText(
+        "Only letters, numbers, dot (.) and underscore (_) allowed"
+      );
       setTimeout(() => {
-        setShowHelperText(false);
         setError(false);
       }, 3000);
       return;
@@ -53,12 +53,31 @@ export const AddKeyField = () => {
     }
 
     if (duplicateFound) {
-      setIsKeyExisted(true);
-      setTimeout(() => setIsKeyExisted(false), 4000);
+      setError(true);
+      setShowHelperText(`Key "${trimmedKey}" already exists!`);
+      setTimeout(() => setError(false), 4000);
       return;
     }
 
     const keySegments = trimmedKey.split(".");
+    const parentPath = keySegments.slice(0, -1).join(".");
+
+    // Validate parent in all matching files
+    for (const file of matchingFiles) {
+      if (parentPath) {
+        const parentKey = file.keys.find(
+          (key) => key.full_key_path === parentPath
+        );
+        if (parentKey && parentKey.has_children === false) {
+          // ❌ Parent exists but is a leaf node (invalid)
+          setError(true);
+          setShowHelperText("Parent key is already a leaf node!");
+          setTimeout(() => setError(false), 4000);
+          return;
+        }
+      }
+    }
+
     const fileInfoUpdates: KeyState[] = [];
     for (const file of matchingFiles) {
       let parentID: string | null = null;
@@ -173,11 +192,7 @@ export const AddKeyField = () => {
             variant='outlined'
             value={newKeyState}
             error={error}
-            helperText={
-              showHelperText
-                ? "Only letters, numbers, dot (.) and underscore (_) allowed"
-                : ""
-            }
+            helperText={showHelperText}
             sx={{
               display: openAddKeyField ? "block" : "none", // ✅ hide instead of unmount
               "& .MuiOutlinedInput-root": {
@@ -236,11 +251,6 @@ export const AddKeyField = () => {
         </>
       </Stack>
       <Box alignSelf={"center"}>
-        {isKeyExisted && (
-          <Typo1224 style={{ color: "red", fontSize: "12px" }}>
-            Key {newKeyState} already exists!
-          </Typo1224>
-        )}
         {isNewKeyAdded && (
           <Typo1224 style={{ color: "green", fontSize: "12px" }}>
             Key {newKeyState} is added!

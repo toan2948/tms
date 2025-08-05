@@ -66,7 +66,6 @@ const TranslationValueList = () => {
       }, 3000);
       return;
     }
-    // updateKeyPathSegment(selectedTreeKey.id, trimmedKey, fileNameState);
     updateKeyPathSegmentInFiles(
       selectedTreeKey.full_key_path,
       trimmedKey,
