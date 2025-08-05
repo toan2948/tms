@@ -1,6 +1,5 @@
 // lib/translations/group.ts
 
-import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import {
   DBkeys,
   FileState,
@@ -530,15 +529,6 @@ export function setTreeKeys(filesInfo: FileState<KeyState>[]): DBkeys[] {
         } as TranslationTreeKey;
       }),
     }));
-}
-
-export function setDBKeysFromOutsideFunction(files: FileState<KeyState>[]) {
-  const newTreeKeys = setTreeKeys(files);
-
-  const setDBKeysFromOtherStore =
-    useTreeKeyStore.getState().setDBKeysFromOtherStore;
-
-  setDBKeysFromOtherStore(newTreeKeys);
 }
 
 type GroupFullPath = {

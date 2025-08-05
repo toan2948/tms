@@ -34,11 +34,10 @@ export function SessionDialog({
     openMissingTranslationKeysDialog,
     setOpenMissingTranslationKeysDialog,
   ] = useState(false);
-  const { filesInfo, setFilesInfo } = useAllKeyFileStore();
+  const { filesInfo, DBkeys, setFilesInfo } = useAllKeyFileStore();
 
-  const { setSelectedTreeKey, DBkeys } = useTreeKeyStore();
+  const { setSelectedTreeKey, setParentIDs } = useTreeKeyStore();
 
-  const { setParentIDs } = useTreeKeyStore();
   const { setFileName } = useOtherStateStore();
   const changedKeys = useMemo(() => filterChangedKeys(filesInfo), [filesInfo]);
 

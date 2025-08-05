@@ -14,9 +14,9 @@ import { useMemo } from "react";
 import { KeySection } from "./KeySection";
 
 const AllChangesView = () => {
-  const { filesInfo } = useAllKeyFileStore();
+  const { filesInfo, DBkeys } = useAllKeyFileStore();
 
-  const { setSelectedTreeKey, DBkeys, setParentIDs } = useTreeKeyStore();
+  const { setSelectedTreeKey, setParentIDs } = useTreeKeyStore();
   const { setFileName, setSeeAllChanges } = useOtherStateStore();
   const changedKeys = useMemo(() => filterChangedKeys(filesInfo), [filesInfo]);
 

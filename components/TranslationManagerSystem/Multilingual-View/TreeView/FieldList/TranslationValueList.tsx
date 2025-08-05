@@ -18,7 +18,7 @@ import { DeleteKeyDialog } from "../../Dialogs/Delete/DeleteKeyDialog";
 import Note from "./Note";
 import TranslationField from "./TranslationField";
 const TranslationValueList = () => {
-  const { selectedTreeKey, DBkeys, updateKeyPathSegment } = useTreeKeyStore();
+  const { selectedTreeKey } = useTreeKeyStore();
   const [error, setError] = useState(false);
   const [showHelperText, setShowHelperText] = useState(false);
   const [openDeleteKeyDialog, setOpenDeleteKeyDialog] = useState(false);
@@ -27,7 +27,8 @@ const TranslationValueList = () => {
   const { fileNameState } = useOtherStateStore();
   const [valuesState, setValuesState] = React.useState<KeyState[]>([]);
 
-  const { filesInfo, updateKeyPathSegmentInFiles } = useAllKeyFileStore();
+  const { filesInfo, DBkeys, updateKeyPathSegmentInFiles } =
+    useAllKeyFileStore();
   const [newKeyName, setNewKeyName] = useState(
     selectedTreeKey?.key_path_segment || ""
   );
@@ -65,7 +66,7 @@ const TranslationValueList = () => {
       }, 3000);
       return;
     }
-    updateKeyPathSegment(selectedTreeKey.id, trimmedKey, fileNameState);
+    // updateKeyPathSegment(selectedTreeKey.id, trimmedKey, fileNameState);
     updateKeyPathSegmentInFiles(
       selectedTreeKey.full_key_path,
       trimmedKey,

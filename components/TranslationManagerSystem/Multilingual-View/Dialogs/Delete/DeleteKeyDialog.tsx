@@ -25,13 +25,7 @@ export function DeleteKeyDialog({
   setOpenDeleteKeyDialog,
 }: DeleteKeyDialogProps) {
   // const [openWarningDialog, setOpenWarningDialog] = useState(false);
-  const {
-    removeKeyFromTree,
-    selectedTreeKey,
-    setSelectedTreeKey,
-    DBkeys,
-    setParentIDs,
-  } = useTreeKeyStore();
+  const { selectedTreeKey, setSelectedTreeKey } = useTreeKeyStore();
 
   const { fileNameState } = useOtherStateStore();
   const { removeKeyFromFilesInfo } = useAllKeyFileStore();
@@ -41,7 +35,6 @@ export function DeleteKeyDialog({
 
   const handleDelete = async () => {
     if (selectedTreeKey?.isNew) {
-      removeKeyFromTree(selectedTreeKey.id, fileNameState);
       removeKeyFromFilesInfo(selectedTreeKey, fileNameState);
     } else {
       // if (selectedTreeKey?.children && selectedTreeKey?.children.length > 0) {
@@ -51,10 +44,6 @@ export function DeleteKeyDialog({
       // }
       await deleteKeyByFullPathAndFileName(
         selectedTreeKey?.full_key_path ? selectedTreeKey.full_key_path : "",
-        fileNameState
-      );
-      removeKeyFromTree(
-        selectedTreeKey?.id ? selectedTreeKey?.id : "",
         fileNameState
       );
 

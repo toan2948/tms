@@ -1,12 +1,8 @@
 import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useOtherStateStore } from "@/store/useOtherStateStore";
-import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { TranslationTreeKey } from "@/types/keyType";
-import {
-  fetchAllTranslationFiles,
-  fetchTranslationKeysByFilenameAndLanguage,
-} from "@/utils/languages/dataFunctions";
+import { fetchAllTranslationFiles } from "@/utils/languages/dataFunctions";
 import { buildKeyTreeFromFlatList } from "@/utils/languages/processData";
 import { Stack, styled } from "@mui/material";
 import { useEffect, useState } from "react";
@@ -29,7 +25,6 @@ const TreeView = ({}: TreeVewProps) => {
 
   const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
   const { filesInfo, setFilesInfo } = useAllKeyFileStore();
-  const { DBkeys, setDBKeys } = useTreeKeyStore();
 
   // Fetch file data once on mount
   useEffect(() => {
@@ -44,7 +39,6 @@ const TreeView = ({}: TreeVewProps) => {
           setFilesInfo(parsedData);
         } else {
           setFilesInfo(data);
-          localStorage.setItem("translationEdits", JSON.stringify(data));
         }
       } catch (error) {
         console.error("Error loading translation data:", error);
@@ -52,24 +46,9 @@ const TreeView = ({}: TreeVewProps) => {
     }
 
     fetchKeysAndSaveToLocal();
-  }, [fileNameState, JSON.stringify(DBkeys)]); //DBkeys is used to trigger the effect when keys are updated
+  }, [fileNameState, JSON.stringify(filesInfo)]);
 
-  // Fetch keys when file changes
   useEffect(() => {
-    async function fetchKeysForBuildingTree() {
-      try {
-        const keys = await fetchTranslationKeysByFilenameAndLanguage(
-          fileNameState,
-          "en" //it does not matter which language we use here, as we are fetching all keys
-        );
-        setDBKeys(keys, fileNameState);
-        const tree = buildKeyTreeFromFlatList(keys);
-        setTreeKeys(tree);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    }
-
     if (!fileNameState) {
       console.warn("⚠️ fileNameState is empty, skipping fetch");
       return;
@@ -85,13 +64,8 @@ const TreeView = ({}: TreeVewProps) => {
         keys: [],
       };
       if (entry?.keys.length > 0) {
-        setDBKeys(entry.keys, fileNameState);
         setTreeKeys(buildKeyTreeFromFlatList(entry?.keys));
-      } else {
-        fetchKeysForBuildingTree();
       }
-    } else {
-      fetchKeysForBuildingTree();
     }
   }, [fileNameState, JSON.stringify(filesInfo)]); //filesInfo is used to trigger the effect when files are updated
 

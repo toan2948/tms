@@ -2,19 +2,18 @@ import { Typo1224 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { KeyState, TranslationTreeKey } from "@/types/keyType";
+import { KeyState } from "@/types/keyType";
 import {
   findParentIdsToRootByFullKeyPath,
   findSelectedKey,
 } from "@/utils/languages/processData";
 import { Box, Button, InputAdornment, Stack, TextField } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
-
+import { v4 as uuidv4 } from "uuid";
 export const AddKeyField = () => {
   const { fileNameState } = useOtherStateStore();
-  const { addKeysToFilesInfo, filesInfo } = useAllKeyFileStore();
-  const { addKeysToTree, setSelectedTreeKey, setParentIDs, parentIDs, DBkeys } =
-    useTreeKeyStore();
+  const { addKeysToFilesInfo, filesInfo, DBkeys } = useAllKeyFileStore();
+  const { setSelectedTreeKey, setParentIDs, parentIDs } = useTreeKeyStore();
   const [newKeyState, setNewKeyState] = useState("");
   const [isKeyExisted, setIsKeyExisted] = useState(false);
   const [isNewKeyAdded, setIsNewKeyAdded] = useState(false);
@@ -25,6 +24,8 @@ export const AddKeyField = () => {
   const handleAddKey = useCallback(async () => {
     const trimmedKey = newKeyState.trim();
     const isValid = /^[a-zA-Z0-9._]*$/.test(trimmedKey);
+
+    // const isLevelLowerAdded =
     if (!trimmedKey) return;
     if (!isValid) {
       setError(true);
@@ -58,7 +59,6 @@ export const AddKeyField = () => {
     }
 
     const keySegments = trimmedKey.split(".");
-    const keysToAdd: TranslationTreeKey[] = [];
     const fileInfoUpdates: KeyState[] = [];
     for (const file of matchingFiles) {
       let parentID: string | null = null;
@@ -71,21 +71,7 @@ export const AddKeyField = () => {
           (k) => k.full_key_path === currentPath
         );
         if (!existingParent) {
-          const newParentId = crypto.randomUUID();
-          const newParent: TranslationTreeKey = {
-            id: newParentId,
-            full_key_path: currentPath,
-            has_children: true,
-            parent_id: parentID,
-            level: i,
-            notes: null,
-            isNew: true,
-            key_path_segment: keySegments[i],
-            language_code: file.language_code,
-            language_name: file.language_name,
-          };
-
-          keysToAdd.push(newParent);
+          const newParentId = uuidv4();
 
           fileInfoUpdates.push({
             full_key_path: currentPath,
@@ -115,21 +101,7 @@ export const AddKeyField = () => {
       }
 
       // Add final leaf key
-      const leafId = crypto.randomUUID();
-      const newLeaf: TranslationTreeKey = {
-        id: leafId,
-        notes: null,
-        full_key_path: trimmedKey,
-        has_children: false,
-        parent_id: parentID,
-        level: keySegments.length - 1,
-        isNew: true,
-        key_path_segment: keySegments[keySegments.length - 1],
-        language_code: file.language_code,
-        language_name: file.language_name,
-      };
-
-      keysToAdd.push(newLeaf);
+      const leafId = uuidv4();
 
       fileInfoUpdates.push({
         full_key_path: trimmedKey,
@@ -153,8 +125,6 @@ export const AddKeyField = () => {
       });
 
       // Batch add to store
-      addKeysToTree(keysToAdd, file.fileName);
-
       addKeysToFilesInfo(fileInfoUpdates, file.fileName, file.language_code);
     }
 
