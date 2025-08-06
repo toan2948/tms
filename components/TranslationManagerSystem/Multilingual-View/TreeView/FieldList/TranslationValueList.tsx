@@ -5,8 +5,10 @@ import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
+import { useUserStore } from "@/store/useUserStore";
 import { useViewStore } from "@/store/useViewStore";
 import { KeyState } from "@/types/keyType";
+import { isDevOrAdmin } from "@/utils/languages/login";
 import {
   checkDuplicateKeyName,
   filterChangedKeys,
@@ -19,6 +21,10 @@ import Note from "./Note";
 import TranslationField from "./TranslationField";
 const TranslationValueList = () => {
   const { selectedTreeKey } = useTreeKeyStore();
+  const { filesInfo, DBkeys, updateKeyPathSegmentInFiles } =
+    useAllKeyFileStore();
+  const { sourceLanguage, targetLanguage, multiViewState } = useViewStore();
+  const { user } = useUserStore();
   const [error, setError] = useState(false);
   const [showHelperText, setShowHelperText] = useState(false);
   const [openDeleteKeyDialog, setOpenDeleteKeyDialog] = useState(false);
@@ -27,12 +33,9 @@ const TranslationValueList = () => {
   const { fileNameState } = useOtherStateStore();
   const [valuesState, setValuesState] = React.useState<KeyState[]>([]);
 
-  const { filesInfo, DBkeys, updateKeyPathSegmentInFiles } =
-    useAllKeyFileStore();
   const [newKeyName, setNewKeyName] = useState(
     selectedTreeKey?.key_path_segment || ""
   );
-  const { sourceLanguage, targetLanguage, multiViewState } = useViewStore();
 
   const handleEditKeyName = () => {
     if (selectedTreeKey === null) return;
@@ -154,15 +157,17 @@ const TranslationValueList = () => {
           <Note />
 
           <Stack direction={"row"}>
-            <RedOutlineButton onClick={() => setOpenDeleteKeyDialog(true)}>
-              Delete Key
-            </RedOutlineButton>
+            {isDevOrAdmin(user?.role) && (
+              <RedOutlineButton onClick={() => setOpenDeleteKeyDialog(true)}>
+                Delete Key
+              </RedOutlineButton>
+            )}
             <Stack
               direction={"row"}
               justifyContent={"center"}
               alignItems={"center"}
             >
-              {!openEditKeyField && (
+              {isDevOrAdmin(user?.role) && !openEditKeyField && (
                 <Button
                   sx={{ marginRight: "10px" }}
                   variant={"outlined"}

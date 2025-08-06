@@ -4,19 +4,23 @@ import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
+import { useUserStore } from "@/store/useUserStore";
 import { editNote } from "@/utils/languages/editNote";
+import { isDevOrAdmin } from "@/utils/languages/login";
 import { Button, Stack } from "@mui/material";
 import { useState } from "react";
 
 const Note = () => {
-  const [openAddNotesField, setOpenAddNotesField] = useState(false);
   const { selectedTreeKey, setSelectedTreeKey } = useTreeKeyStore();
+  const { user } = useUserStore();
+  const { updateKeyNoteInFilesInfo } = useAllKeyFileStore();
+  const { fileNameState } = useOtherStateStore();
+
+  const [openAddNotesField, setOpenAddNotesField] = useState(false);
+
   const [showHelperText, setShowHelperText] = useState(false);
   const [error, setError] = useState(false);
-  const { fileNameState } = useOtherStateStore();
   const [noteState, setNoteState] = useState(selectedTreeKey?.notes || "");
-
-  const { updateKeyNoteInFilesInfo } = useAllKeyFileStore();
 
   const [isNoteEmpty, setNoteEmpty] = useState(false);
 
@@ -78,9 +82,9 @@ const Note = () => {
     <>
       <Stack direction={"row"} alignItems={"center"} gap={"10px"}>
         <Typo1424 weight={500}>
-          {selectedTreeKey?.notes || "No notes available"}
+          Note: {selectedTreeKey?.notes || "No notes available"}
         </Typo1424>
-        {!openAddNotesField && (
+        {isDevOrAdmin(user?.role) && !openAddNotesField && (
           <Stack direction={"column"} alignItems={"center"}>
             <Button
               variant={"outlined"}
@@ -89,6 +93,7 @@ const Note = () => {
             >
               {selectedTreeKey?.notes ? "Edit Notes" : "Add Notes"}
             </Button>
+
             <RedOutlineButton onClick={() => handleDeleteNote()}>
               Delete Note
             </RedOutlineButton>

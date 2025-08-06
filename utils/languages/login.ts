@@ -1,27 +1,6 @@
 import { createClient } from "../supabase/client";
 
-export async function signIn(
-  email: string,
-  password: string
-): Promise<string | null> {
-  const supabase = createClient();
-
-  if (!email || !password) return "Email and password are required.";
-
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    console.error("Error login:", error.message);
-    return error.message;
-  }
-
-  return null;
-}
-
-export async function getUser() {
+export async function getProfile() {
   const supabase = createClient();
   const {
     data: { user },
@@ -46,3 +25,18 @@ export async function getUser() {
 
   return profile || null;
 }
+type Role = "admin" | "dev" | "editor";
+type Action = "delete" | "edit_name" | "edit_value" | "add";
+
+const permissions: Record<Role, Action[]> = {
+  admin: ["delete", "edit_name", "edit_value", "add"],
+  dev: ["delete", "edit_name", "edit_value", "add"],
+  editor: ["edit_value"],
+};
+
+export function canAccess(role: Role | null, action: Action): boolean {
+  if (!role) return false;
+  return permissions[role]?.includes(action);
+}
+export const isDevOrAdmin = (role: string | null | undefined) =>
+  role === "admin" || role === "dev";

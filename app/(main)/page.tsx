@@ -2,7 +2,7 @@
 import MultilingualView from "@/components/TranslationManagerSystem/Multilingual-View/MultilingualView";
 import { useUserStore } from "@/store/useUserStore";
 import { useViewStore } from "@/store/useViewStore";
-import { getUser } from "@/utils/languages/login";
+import { getProfile } from "@/utils/languages/login";
 import { Box, Button, ButtonGroup, Stack } from "@mui/material";
 import { useEffect } from "react";
 import { signOut } from "../login/actions";
@@ -17,14 +17,13 @@ function HomePage() {
   };
 
   useEffect(() => {
-    const fetchUser = async () => {
-      const profile = await getUser();
-      console.log("Fetching user data...", profile);
+    const fetchProfile = async () => {
+      const profile = await getProfile();
       setUser(profile);
     };
-
-    fetchUser();
+    fetchProfile();
   }, []);
+
   return (
     <Box sx={{ padding: "20px 20px 20px 20px", width: "100%", height: "100%" }}>
       <h1>Translation Panel</h1>

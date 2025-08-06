@@ -1,6 +1,8 @@
 "use client";
 import { useOtherStateStore } from "@/store/useOtherStateStore";
+import { useUserStore } from "@/store/useUserStore";
 import { useViewStore } from "@/store/useViewStore";
+import { isDevOrAdmin } from "@/utils/languages/login";
 import { Stack } from "@mui/material";
 import React from "react";
 import ChangeViewButtons from "../InteractComp/ChangeViewButtons";
@@ -15,6 +17,7 @@ const MultilingualView = () => {
   const { seeAllChanges, setSeeAllChanges } = useOtherStateStore();
   const [openDialog, setOpenDialog] = React.useState(false);
   const { multiViewState } = useViewStore();
+  const { user } = useUserStore();
 
   return (
     <>
@@ -30,7 +33,11 @@ const MultilingualView = () => {
       >
         <FileSelection />
         {/* switch between milti and bilingual views */}
-        {multiViewState ? <AddKeyField /> : <LanguageSelection />}
+        {multiViewState ? (
+          isDevOrAdmin(user?.role) && <AddKeyField />
+        ) : (
+          <LanguageSelection />
+        )}
         <ChangeViewButtons setOpenDialog={setOpenDialog} />
       </Stack>
       {seeAllChanges ? <AllChangesView /> : <TreeView />}

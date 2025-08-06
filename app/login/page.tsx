@@ -1,9 +1,33 @@
 "use client";
 
-import { Box, Button, Paper, TextField, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  CircularProgress,
+  Paper,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useState } from "react";
 import { login } from "./actions";
 
 export default function LoginPage() {
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setIsLoading(true);
+
+    // Create a FormData object to pass to the server action
+    const formData = new FormData(event.currentTarget);
+
+    try {
+      await login(formData); // call your server action
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <Box
       display='flex'
@@ -24,7 +48,7 @@ export default function LoginPage() {
         <Typography variant='h5' component='h1' gutterBottom align='center'>
           Log In
         </Typography>
-        <form>
+        <form onSubmit={handleSubmit}>
           <TextField
             id='email'
             name='email'
@@ -34,6 +58,7 @@ export default function LoginPage() {
             fullWidth
             margin='normal'
             required
+            disabled={isLoading}
           />
           <TextField
             id='password'
@@ -44,16 +69,21 @@ export default function LoginPage() {
             fullWidth
             margin='normal'
             required
+            disabled={isLoading}
           />
           <Button
             type='submit'
             variant='contained'
             color='primary'
             fullWidth
-            formAction={login}
+            disabled={isLoading}
             sx={{ mt: 2 }}
           >
-            Log in
+            {isLoading ? (
+              <CircularProgress size={24} color='inherit' />
+            ) : (
+              "Log in"
+            )}
           </Button>
         </form>
       </Paper>
