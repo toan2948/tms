@@ -5,11 +5,16 @@ import { useViewStore } from "@/store/useViewStore";
 import { getUser } from "@/utils/languages/login";
 import { Box, Button, ButtonGroup, Stack } from "@mui/material";
 import { useEffect } from "react";
+import { signOut } from "../login/actions";
 
 function HomePage() {
   const { multiViewState, setView } = useViewStore();
 
   const { setUser } = useUserStore();
+
+  const handleSignout = async () => {
+    await signOut();
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -23,6 +28,7 @@ function HomePage() {
   return (
     <Box sx={{ padding: "20px 20px 20px 20px", width: "100%", height: "100%" }}>
       <h1>Translation Panel</h1>
+      <Button onClick={() => handleSignout()}>Sign out</Button>
 
       <Stack sx={{ width: "100%", marginBottom: "20px", alignItems: "center" }}>
         <ButtonGroup aria-label='Basic button group'>

@@ -1,77 +1,62 @@
 "use client";
 
-import { signIn } from "@/utils/languages/login";
-import {
-  Alert,
-  Box,
-  Button,
-  Container,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Box, Button, Paper, TextField, Typography } from "@mui/material";
+import { login } from "./actions";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [errorMsg, setErrorMsg] = useState("");
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg("");
-    console.log("Logging in with:", { email, password });
-
-    const error = await signIn(email, password);
-
-    if (error) {
-      setErrorMsg(error);
-    } else {
-      router.push("/");
-    }
-  };
-
   return (
-    <Container maxWidth='sm'>
-      <Box
+    <Box
+      display='flex'
+      justifyContent='center'
+      alignItems='center'
+      minHeight='100vh'
+      bgcolor='#f5f5f5'
+    >
+      <Paper
+        elevation={3}
         sx={{
-          mt: 8,
           p: 4,
+          width: "100%",
+          maxWidth: 400,
           borderRadius: 2,
-          boxShadow: 3,
-          bgcolor: "background.paper",
         }}
       >
-        <Typography variant='h5' component='h1' gutterBottom>
-          Login
+        <Typography variant='h5' component='h1' gutterBottom align='center'>
+          Log In
         </Typography>
-        <form onSubmit={handleLogin}>
-          <Stack spacing={2}>
-            <TextField
-              label='Email'
-              type='email'
-              fullWidth
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <TextField
-              label='Password'
-              type='password'
-              fullWidth
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            {errorMsg && <Alert severity='error'>{errorMsg}</Alert>}
-            <Button variant='contained' color='primary' type='submit'>
-              Log In
-            </Button>
-          </Stack>
+        <form>
+          <TextField
+            id='email'
+            name='email'
+            type='email'
+            label='Email'
+            variant='outlined'
+            fullWidth
+            margin='normal'
+            required
+          />
+          <TextField
+            id='password'
+            name='password'
+            type='password'
+            label='Password'
+            variant='outlined'
+            fullWidth
+            margin='normal'
+            required
+          />
+          <Button
+            type='submit'
+            variant='contained'
+            color='primary'
+            fullWidth
+            formAction={login}
+            sx={{ mt: 2 }}
+          >
+            Log in
+          </Button>
         </form>
-      </Box>
-    </Container>
+      </Paper>
+    </Box>
   );
 }
