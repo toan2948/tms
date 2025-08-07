@@ -38,8 +38,8 @@ const LanguageSelection = () => {
             onChange={handleChangeSource}
             sx={{ width: "200px" }}
           >
-            <MenuItem value='English'>English</MenuItem>
-            <MenuItem value='Chinese'>Chinese</MenuItem>
+            <MenuItem value='english'>English</MenuItem>
+            <MenuItem value='chinese'>Chinese</MenuItem>
           </Select>
         </FormControl>
       </Box>
@@ -55,10 +55,10 @@ const LanguageSelection = () => {
             onChange={handleChangeTarget}
             sx={{ width: "200px" }}
           >
-            <MenuItem value='Russian'>Russian</MenuItem>
-            <MenuItem value='Spanish'>Spain</MenuItem>
-            <MenuItem value='Chinese'>Chinese</MenuItem>
-            <MenuItem value='English'>Chinese</MenuItem>
+            <MenuItem value='russian'>Russian</MenuItem>
+            <MenuItem value='spanish'>Spain</MenuItem>
+            <MenuItem value='chinese'>Chinese</MenuItem>
+            <MenuItem value='english'>Chinese</MenuItem>
           </Select>
         </FormControl>
       </Box>
