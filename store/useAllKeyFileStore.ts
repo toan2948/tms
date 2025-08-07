@@ -42,7 +42,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
     set(() => ({
       filesInfo: files,
     }));
-    localStorage.setItem("translationEdits", JSON.stringify(files));
+    localStorage.setItem("filesStorage", JSON.stringify(files));
   },
 
   addKeysToFilesInfo: (
@@ -70,7 +70,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
         return file;
       });
 
-      localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
+      localStorage.setItem("filesStorage", JSON.stringify(updatedFiles));
 
       return { filesInfo: updatedFiles };
     });
@@ -178,7 +178,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
         };
       });
 
-      localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
+      localStorage.setItem("filesStorage", JSON.stringify(updatedFiles));
       return { filesInfo: updatedFiles };
     });
   },
@@ -205,7 +205,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
       }),
     }));
     const updatedFiles = get().filesInfo;
-    localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
+    localStorage.setItem("filesStorage", JSON.stringify(updatedFiles));
   },
   updateKeyPathSegmentInFiles: (oldFullKeyPath, newSegment, fileName) => {
     const setSelectedTreeKey = useTreeKeyStore.getState().setSelectedTreeKey;
@@ -294,7 +294,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
         };
       });
 
-      localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
+      localStorage.setItem("filesStorage", JSON.stringify(updatedFiles));
 
       return { filesInfo: updatedFiles };
     });
@@ -320,7 +320,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
         };
       });
 
-      localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
+      localStorage.setItem("filesStorage", JSON.stringify(updatedFiles));
 
       return { filesInfo: updatedFiles };
     });

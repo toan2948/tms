@@ -80,10 +80,10 @@ const Note = () => {
   };
   return (
     <>
-      <Stack direction={"row"} alignItems={"center"} gap={"10px"}>
+      <Stack direction={"column"} gap={"10px"}>
         <Typo1424 weight={500}>Note: {selectedTreeKey?.notes}</Typo1424>
         {isDevOrAdmin(user?.role) && !openAddNotesField && (
-          <Stack direction={"column"} alignItems={"center"}>
+          <Stack direction={"row"} alignItems={"center"}>
             <Button
               variant={"outlined"}
               sx={{ marginRight: "10px" }}

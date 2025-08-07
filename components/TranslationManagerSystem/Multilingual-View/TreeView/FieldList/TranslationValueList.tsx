@@ -146,8 +146,8 @@ const TranslationValueList = () => {
                   </Box>
                 )}
             </Stack>
+            <Note />
           </Box>
-          <Note />
 
           <Stack direction={"row"}>
             {isDevOrAdmin(user?.role) && (

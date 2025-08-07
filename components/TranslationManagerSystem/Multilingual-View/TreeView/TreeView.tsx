@@ -31,10 +31,11 @@ const TreeView = ({}: TreeVewProps) => {
 
   // Fetch file data once on mount
   useEffect(() => {
+    //fetch data and save to filesInfo state/localStorage
     async function fetchKeysAndSaveToLocal() {
       try {
         const data = await fetchAllTranslationFiles();
-        const localStorageFilesInfo = localStorage.getItem("translationEdits");
+        const localStorageFilesInfo = localStorage.getItem("filesStorage");
 
         if (localStorageFilesInfo !== null && localStorageFilesInfo !== "[]") {
           console.log("Using data from localStorage");
@@ -57,7 +58,7 @@ const TreeView = ({}: TreeVewProps) => {
       return;
     }
 
-    const localStorageFilesInfo = localStorage.getItem("translationEdits");
+    const localStorageFilesInfo = localStorage.getItem("filesStorage");
 
     if (localStorageFilesInfo) {
       const parsedData: FileState<KeyState>[] = JSON.parse(
