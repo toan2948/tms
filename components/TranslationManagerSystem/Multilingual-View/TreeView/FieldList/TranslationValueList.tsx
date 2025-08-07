@@ -75,7 +75,6 @@ const TranslationValueList = () => {
       fileNameState
     );
     setOpenEditKeyField(false); // Close the edit field after saving
-    // setSelectedTreeKey({ ...selectedTreeKey, key_path_segment: trimmedKey });
   };
 
   //this changedKeys is used as a dependent factor in useEffect to update valuesState when the state FilesInfo is changed
@@ -84,11 +83,9 @@ const TranslationValueList = () => {
 
   useEffect(() => {
     setNewKeyName(selectedTreeKey?.key_path_segment || ""); //set the initial value for the edit field
-    // console.log("selectedTreeKey changed", selectedTreeKey);
   }, [selectedTreeKey]);
 
   useEffect(() => {
-    // console.log(fileNameState, selectedTreeKey?.full_key_path);
     const allValueStates = getTranslationKeys(
       fileNameState,
       selectedTreeKey,
@@ -116,9 +113,6 @@ const TranslationValueList = () => {
     multiViewState,
   ]); //valuesState in this condition will cause infinite loop
 
-  useEffect(() => {
-    // console.log("valueState changed", valuesState);
-  }, [valuesState, selectedTreeKey]);
   return (
     <>
       <DeleteKeyDialog

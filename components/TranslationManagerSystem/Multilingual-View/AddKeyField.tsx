@@ -160,7 +160,6 @@ export const AddKeyField = () => {
   }, [newKeyState, filesInfo, fileNameState]);
 
   // useEffect(() => {
-  //   console.log("selectedTreeKey", selectedTreeKey, parentIDs);
   // }, [parentIDs]);
 
   useEffect(() => {

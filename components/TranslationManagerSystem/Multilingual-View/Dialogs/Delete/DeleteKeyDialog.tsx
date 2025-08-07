@@ -62,11 +62,8 @@ export function DeleteKeyDialog({
   };
 
   // useEffect(() => {
-  //   console.log(
-  //     "selectedTreeKey in DeleteKeyDialog",
-  //     selectedTreeKey?.children
-  //   );
-  // }, [selectedTreeKey]);
+
+  // }, []);
 
   return (
     <Dialog onClose={handleClose} open={open}>
