@@ -1,10 +1,11 @@
-import { KeyState, LanguageType, TranslationTreeKey } from "@/types/keyType";
+import { KeyState, LanguageType } from "@/types/keyType";
 import { createClient } from "../supabase/client";
 
+//UNUSED Function
 export async function fetchTranslationKeysByFilenameAndLanguage(
   filename: string,
   languageCode: string
-): Promise<TranslationTreeKey[]> {
+): Promise<KeyState[]> {
   const supabase = await createClient();
 
   //just look for keys of files in english
@@ -38,7 +39,7 @@ export async function fetchTranslationKeysByFilenameAndLanguage(
   const { data: keys, error: keyError } = await supabase
     .from("translation_keys")
     .select(
-      "id, file_id, parent_id, key_path_segment, full_key_path, level, has_children, notes"
+      "id, file_id, value, version, parent_id, key_path_segment, full_key_path, level, has_children, notes"
     )
     .eq("file_id", file.id)
     .order("level", { ascending: true });
@@ -50,6 +51,9 @@ export async function fetchTranslationKeysByFilenameAndLanguage(
   //add language_code and language_name to each key //to overcome the typescript
   const keysWithLanguage = keys.map((key) => ({
     ...key,
+    isChanged: false, // default false for now
+    version: key.version || 0, // Ensure version is always defined
+    old_value: key.value || null, // Assuming old_value is the same as value at the beginning
     language_code: "en", // Assuming English as default
     language_name: "English", // Assuming English as default
     old_full_key_path: key.full_key_path, // Assuming this is the same as full_key_path at the beginning
@@ -250,41 +254,6 @@ export async function deleteKeyByFullPathAndFileName(
   }
 
   return { deletedCount: idsToDelete.length };
-}
-
-export async function deleteTranslationKey(
-  fullKeyPath: string,
-  filename: string
-) {
-  const supabase = await createClient();
-
-  // Step 1: Get all file IDs with the given filename
-  const { data: files, error: fileError } = await supabase
-    .from("translation_files")
-    .select("id")
-    .eq("filename", filename);
-
-  if (fileError) throw fileError;
-
-  if (!files || files.length === 0) {
-    throw new Error(`No translation_files found for filename: ${filename}`);
-  }
-
-  const fileIds = files.map((f) => f.id);
-
-  // Step 2: Delete keys with the matching full_key_path for those files
-  const { error: deleteError } = await supabase
-    .from("translation_keys")
-    .delete()
-    .in("file_id", fileIds)
-    .eq("full_key_path", fullKeyPath);
-
-  if (deleteError) {
-    console.error("Error deleting translation keys:", deleteError);
-    throw deleteError;
-  }
-
-  return { success: true, deletedFromFileCount: fileIds.length };
 }
 
 export async function fetchLanguages(): Promise<LanguageType[]> {

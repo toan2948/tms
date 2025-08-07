@@ -1,11 +1,6 @@
 // lib/translations/group.ts
 
-import {
-  FileState,
-  KeyState,
-  KeyStateWithoutOld,
-  TranslationTreeKey,
-} from "@/types/keyType";
+import { FileState, KeyState, TranslationTreeKey } from "@/types/keyType";
 
 export function getEnglishKeyVersion(
   fullKey: string,
@@ -456,18 +451,7 @@ export const findSelectedKey = (
 
   return currentSelectedKey || null;
 };
-export function populateOldValuesAndOldVersion(
-  files: FileState<KeyStateWithoutOld>[]
-): FileState<KeyState>[] {
-  return files.map((file) => ({
-    ...file,
-    keys: file.keys.map((key) => ({
-      ...key,
-      old_value: key.value, // Ensure old_value is always present
-      old_version: key.version,
-    })),
-  }));
-}
+
 export function normalizeEmpty(value: string | null | undefined): string {
   return value ?? "";
 }

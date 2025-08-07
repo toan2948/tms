@@ -60,14 +60,11 @@ export interface KeyState
   isChanged: boolean;
 }
 
-export type KeyStateWithoutOld = Omit<KeyState, "old_value" | "old_version">;
-
 // -----------------------------------
 // File State
 // -----------------------------------
 
-export interface FileState<T extends KeyState | KeyStateWithoutOld>
-  extends WithLanguage {
+export interface FileState<T extends KeyState> extends WithLanguage {
   file_id: string;
   fileName: string;
   isDirty: boolean;
@@ -78,9 +75,6 @@ export interface FileState<T extends KeyState | KeyStateWithoutOld>
 // Tree Type
 // -----------------------------------
 
-export interface KeyNode extends WithHierarchy, WithNotes, WithLanguage {
-  isNew?: boolean;
-}
-
-export type TreeNode<T> = T & { children?: TreeNode<T>[] };
-export type TranslationTreeKey = TreeNode<KeyNode>;
+export type TranslationTreeKey = KeyState & {
+  children?: TranslationTreeKey[];
+};
