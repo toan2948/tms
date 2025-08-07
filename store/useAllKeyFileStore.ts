@@ -1,5 +1,4 @@
-import { DBkeys, FileState, KeyState, LanguageType } from "@/types/keyType";
-import { setTreeKeys } from "@/utils/languages/processData";
+import { FileState, KeyState, LanguageType } from "@/types/keyType";
 import { create } from "zustand";
 import { useTreeKeyStore } from "./useTreeKeyStore";
 
@@ -7,7 +6,6 @@ type AllFileState = {
   //these states are to handle the error: localStorage is not defined (in case only localStorage is used)
   filesInfo: FileState<KeyState>[];
   languages: LanguageType[];
-  DBkeys: DBkeys[];
 
   setLanguages: (languages: LanguageType[]) => void;
   addKeysToFilesInfo: (
@@ -17,7 +15,6 @@ type AllFileState = {
   ) => void;
   removeKeyFromFilesInfo: (key: KeyState, fileName: string) => void;
   setFilesInfo: (files: FileState<KeyState>[]) => void;
-  setDBKeys: (files: FileState<KeyState>[]) => void;
 
   updateKeyChanged: (editedKey: KeyState) => void;
   updateKeyPathSegmentInFiles: (
@@ -35,7 +32,6 @@ type AllFileState = {
 
 export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
   filesInfo: [],
-  DBkeys: [],
 
   languages: [],
   setLanguages: (languages) =>
@@ -47,16 +43,6 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
       filesInfo: files,
     }));
     localStorage.setItem("translationEdits", JSON.stringify(files));
-    const setDBKeys = get().setDBKeys;
-    setDBKeys(files);
-  },
-  setDBKeys: (files) => {
-    const newTreeKeys = setTreeKeys(files);
-
-    set(() => ({
-      DBkeys: newTreeKeys,
-    }));
-    localStorage.setItem("DBkeys", JSON.stringify(newTreeKeys));
   },
 
   addKeysToFilesInfo: (
@@ -85,8 +71,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
       });
 
       localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
-      const setDBKeys = get().setDBKeys;
-      setDBKeys(updatedFiles);
+
       return { filesInfo: updatedFiles };
     });
   },
@@ -194,10 +179,6 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
       });
 
       localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
-
-      const setDBKeys = get().setDBKeys;
-      setDBKeys(updatedFiles);
-
       return { filesInfo: updatedFiles };
     });
   },
@@ -314,8 +295,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
       });
 
       localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
-      const setDBKeys = get().setDBKeys;
-      setDBKeys(updatedFiles);
+
       return { filesInfo: updatedFiles };
     });
   },
@@ -341,8 +321,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
       });
 
       localStorage.setItem("translationEdits", JSON.stringify(updatedFiles));
-      const setDBKeys = get().setDBKeys;
-      setDBKeys(updatedFiles);
+
       return { filesInfo: updatedFiles };
     });
   },

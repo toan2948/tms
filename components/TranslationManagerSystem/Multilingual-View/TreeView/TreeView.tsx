@@ -1,9 +1,12 @@
 import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useOtherStateStore } from "@/store/useOtherStateStore";
-import { TranslationTreeKey } from "@/types/keyType";
+import { FileState, KeyState, TranslationTreeKey } from "@/types/keyType";
 import { fetchAllTranslationFiles } from "@/utils/languages/dataFunctions";
-import { buildKeyTreeFromFlatList } from "@/utils/languages/processData";
+import {
+  buildKeyTreeFromFlatList,
+  findEnglishFiles,
+} from "@/utils/languages/processData";
 import { Stack, styled } from "@mui/material";
 import { useEffect, useState } from "react";
 import BasicSimpleTreeView from "./BasicSimpleTreeView";
@@ -54,12 +57,14 @@ const TreeView = ({}: TreeVewProps) => {
       return;
     }
 
-    const localStorageDBKeys = localStorage.getItem("DBkeys");
+    const localStorageFilesInfo = localStorage.getItem("translationEdits");
 
-    if (localStorageDBKeys) {
-      const parsedData: { fileName: string; keys: TranslationTreeKey[] }[] =
-        JSON.parse(localStorageDBKeys);
-      const entry = parsedData.find((e) => e.fileName === fileNameState) || {
+    if (localStorageFilesInfo) {
+      const parsedData: FileState<KeyState>[] = JSON.parse(
+        localStorageFilesInfo
+      );
+      const englishFiles = findEnglishFiles(parsedData);
+      const entry = englishFiles.find((e) => e.fileName === fileNameState) || {
         fileName: fileNameState,
         keys: [],
       };

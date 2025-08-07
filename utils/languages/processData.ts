@@ -1,9 +1,7 @@
 // lib/translations/group.ts
 
 import {
-  DBkeys,
   FileState,
-  KeyNode,
   KeyState,
   KeyStateWithoutOld,
   TranslationTreeKey,
@@ -436,7 +434,7 @@ export function findParentIdsToRootByFullKeyPath(
   return parentIds; // root → closest parent
 }
 
-const findEnglishFiles = (files: FileState<KeyState>[]) => {
+export const findEnglishFiles = (files: FileState<KeyState>[]) => {
   return files.filter((e) => e.language_code.toLowerCase() === "en");
 };
 
@@ -492,50 +490,6 @@ export const checkDuplicateKeyName = (
   if (siblingExists) return true;
   return false;
 };
-
-export function setTreeKeys(filesInfo: FileState<KeyState>[]): DBkeys[] {
-  return filesInfo
-    .filter((file) => file.language_code === "en") // Only English
-    .map((file) => ({
-      fileName: file.fileName,
-      keys: file.keys.map((key) => {
-        const {
-          id,
-          parent_id,
-          key_path_segment,
-          old_segment,
-          full_key_path,
-          old_full_key_path,
-          level,
-          has_children,
-          notes,
-          language_code,
-          language_name,
-          isNew,
-        } = key;
-
-        const keyNode: KeyNode = {
-          id,
-          parent_id,
-          key_path_segment,
-          old_segment,
-          full_key_path,
-          old_full_key_path,
-          level,
-          has_children,
-          notes,
-          language_code,
-          language_name,
-          isNew,
-        };
-
-        return {
-          ...keyNode,
-          children: [], // Optional: build actual tree here
-        } as TranslationTreeKey;
-      }),
-    }));
-}
 
 type GroupFullPath = {
   full_key_path: string;
