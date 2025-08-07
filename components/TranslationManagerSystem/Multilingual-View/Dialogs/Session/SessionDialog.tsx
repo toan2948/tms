@@ -29,7 +29,7 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
     openMissingTranslationKeysDialog,
     setOpenMissingTranslationKeysDialog,
   ] = useState(false);
-  const { filesInfo, DBkeys, setFilesInfo } = useAllKeyFileStore();
+  const { filesInfo, setFilesInfo } = useAllKeyFileStore();
   const { setSelectedTreeKey, setParentIDs } = useTreeKeyStore();
   const { setFileName, setSeeAllChanges } = useOtherStateStore();
   const changedKeys = useMemo(() => filterChangedKeys(filesInfo), [filesInfo]);
@@ -123,7 +123,7 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
       filesInfo,
       filename
     );
-    setSelectedTreeKey(findSelectedKey(IDs[0], filename, DBkeys));
+    setSelectedTreeKey(findSelectedKey(IDs[0], filename, filesInfo));
     setParentIDs(Array.isArray(IDs) ? IDs.slice(1).reverse() : []);
     setSeeAllChanges(false); // Close the session dialog and switch to the tree view
     handleClose();

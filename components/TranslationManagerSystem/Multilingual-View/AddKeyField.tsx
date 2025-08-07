@@ -12,7 +12,7 @@ import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 export const AddKeyField = () => {
   const { fileNameState } = useOtherStateStore();
-  const { addKeysToFilesInfo, filesInfo, DBkeys } = useAllKeyFileStore();
+  const { addKeysToFilesInfo, filesInfo } = useAllKeyFileStore();
   const { setSelectedTreeKey, setParentIDs, parentIDs } = useTreeKeyStore();
   const [newKeyState, setNewKeyState] = useState("");
   const [isNewKeyAdded, setIsNewKeyAdded] = useState(false);
@@ -170,9 +170,11 @@ export const AddKeyField = () => {
       filesInfo,
       fileNameState
     );
+    //if newKeyState ist null, then not run setSelectedTreeKey and setParentIDs,
+    //this is to prevent filesInfo changes in another component, which make this comp re-render and selectedKey will be null, because IDs is null
+
     if (newKeyState.trim()) {
-      //prevent filesInfo changes in another component, which make this comp re-render and selectedKey will be null, because IDs is null
-      setSelectedTreeKey(findSelectedKey(IDs[0], fileNameState, DBkeys));
+      setSelectedTreeKey(findSelectedKey(IDs[0], fileNameState, filesInfo));
 
       setParentIDs(
         parentIDs.concat(Array.isArray(IDs) ? IDs.slice(1).reverse() : [])

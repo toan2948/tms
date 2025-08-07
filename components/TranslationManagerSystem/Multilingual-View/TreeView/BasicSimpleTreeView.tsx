@@ -17,7 +17,7 @@ export default function BasicSimpleTreeView({ data }: TreeViewProps) {
   const apiRef = useTreeViewApiRef();
   const { parentIDs, setParentIDs, selectedTreeKey, setSelectedTreeKey } =
     useTreeKeyStore();
-  const { DBkeys } = useAllKeyFileStore();
+  const { filesInfo } = useAllKeyFileStore();
   const { fileNameState } = useOtherStateStore();
   const renderTree = (node: TranslationTreeKey) => (
     <TreeItem
@@ -71,7 +71,7 @@ export default function BasicSimpleTreeView({ data }: TreeViewProps) {
         onItemClick={(event, itemId) => {
           setParentIDs([]); //no longer needed, only need when redirect from AllChangeView or SessionDialog
 
-          const theKey = findSelectedKey(itemId, fileNameState, DBkeys);
+          const theKey = findSelectedKey(itemId, fileNameState, filesInfo);
           setSelectedTreeKey(theKey);
         }}
         expandedItems={expandedItems}

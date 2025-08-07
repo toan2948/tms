@@ -1,4 +1,4 @@
-import { TranslationTreeKey } from "@/types/keyType";
+import { KeyState, TranslationTreeKey } from "@/types/keyType";
 import { create } from "zustand";
 
 type TreeKeyState = {
@@ -6,9 +6,7 @@ type TreeKeyState = {
   parentIDs: string[];
   setParentIDs: (ids: string[]) => void;
 
-  setSelectedTreeKey: (key: TranslationTreeKey | null) => void;
-
-  // setDBKeysFromOtherStore: (keys: DBkeys[]) => void;
+  setSelectedTreeKey: (key: KeyState | null) => void;
 
   reset: () => void;
 };
@@ -16,16 +14,8 @@ type TreeKeyState = {
 export const useTreeKeyStore = create<TreeKeyState>((set) => ({
   selectedTreeKey: null,
   parentIDs: [],
-  setParentIDs: (ids: string[]) => set(() => ({ parentIDs: ids })),
-  setSelectedTreeKey: (key: TranslationTreeKey | null) =>
-    set(() => ({ selectedTreeKey: key })),
-
-  // setDBKeysFromOtherStore: (newDBkeys) => {
-  //   set(() => ({
-  //     DBkeys: newDBkeys,
-  //   }));
-  //   localStorage.setItem("DBkeys", JSON.stringify(newDBkeys));
-  // },
+  setParentIDs: (ids) => set(() => ({ parentIDs: ids })),
+  setSelectedTreeKey: (key) => set(() => ({ selectedTreeKey: key })),
 
   reset: () => set({ selectedTreeKey: null, parentIDs: [] }),
 }));

@@ -14,7 +14,7 @@ import { useMemo } from "react";
 import { KeySection } from "./KeySection";
 
 const AllChangesView = () => {
-  const { filesInfo, DBkeys } = useAllKeyFileStore();
+  const { filesInfo } = useAllKeyFileStore();
 
   const { setSelectedTreeKey, setParentIDs } = useTreeKeyStore();
   const { setFileName, setSeeAllChanges } = useOtherStateStore();
@@ -83,7 +83,7 @@ const AllChangesView = () => {
       filename
     );
 
-    setSelectedTreeKey(findSelectedKey(IDs[0], filename, DBkeys));
+    setSelectedTreeKey(findSelectedKey(IDs[0], filename, filesInfo));
     setParentIDs(Array.isArray(IDs) ? IDs.slice(1).reverse() : []);
     setSeeAllChanges(false);
   };

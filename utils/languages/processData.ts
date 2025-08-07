@@ -436,15 +436,20 @@ export function findParentIdsToRootByFullKeyPath(
   return parentIds; // root → closest parent
 }
 
+const findEnglishFiles = (files: FileState<KeyState>[]) => {
+  return files.filter((e) => e.language_code.toLowerCase() === "en");
+};
+
 export const findSelectedKey = (
   ID: string,
   filename: string,
-  keyList: {
-    fileName: string;
-    keys: TranslationTreeKey[];
-  }[]
-): TranslationTreeKey | null => {
-  const keysOfCurrentFile = keyList.find((e) => e.fileName === filename)?.keys;
+  keyList: FileState<KeyState>[]
+): KeyState | null => {
+  //consider english file only
+  const englishFiles = findEnglishFiles(keyList);
+  const keysOfCurrentFile = englishFiles.find(
+    (e) => e.fileName === filename
+  )?.keys;
   if (!keysOfCurrentFile) {
     console.warn("No keys found for the current file:", filename);
     return null;
