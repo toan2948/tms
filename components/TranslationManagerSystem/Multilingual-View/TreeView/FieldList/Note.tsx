@@ -7,7 +7,7 @@ import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { useUserStore } from "@/store/useUserStore";
 import { editNote } from "@/utils/languages/editNote";
 import { isDevOrAdmin } from "@/utils/languages/login";
-import { Button, Stack } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import { useState } from "react";
 
 const Note = () => {
@@ -79,8 +79,12 @@ const Note = () => {
     }
   };
   return (
-    <>
-      <Stack direction={"column"} gap={"10px"}>
+    <Box
+      sx={{
+        height: "70px",
+      }}
+    >
+      <Stack direction={"column"}>
         <Typo1424 weight={500}>Note: {selectedTreeKey?.notes}</Typo1424>
         {isDevOrAdmin(user?.role) && !openAddNotesField && (
           <Stack direction={"row"} alignItems={"center"}>
@@ -125,7 +129,7 @@ const Note = () => {
           Cancel
         </Button>
       </Stack>
-    </>
+    </Box>
   );
 };
 

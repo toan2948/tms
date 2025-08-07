@@ -13,6 +13,10 @@ import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { deleteKeyByFullPathAndFileName } from "@/utils/languages/dataFunctions";
+import {
+  findParentIdsToRootByFullKeyPath,
+  findSelectedKey,
+} from "@/utils/languages/processData";
 import { toast } from "react-toastify";
 
 export interface DeleteKeyDialogProps {
@@ -25,10 +29,11 @@ export function DeleteKeyDialog({
   setOpenDeleteKeyDialog,
 }: DeleteKeyDialogProps) {
   // const [openWarningDialog, setOpenWarningDialog] = useState(false);
-  const { selectedTreeKey, setSelectedTreeKey } = useTreeKeyStore();
+  const { selectedTreeKey, setSelectedTreeKey, setParentIDs } =
+    useTreeKeyStore();
 
   const { fileNameState } = useOtherStateStore();
-  const { removeKeyFromFilesInfo } = useAllKeyFileStore();
+  const { removeKeyFromFilesInfo, filesInfo } = useAllKeyFileStore();
   const handleClose = () => {
     setOpenDeleteKeyDialog(false);
   };
@@ -50,13 +55,32 @@ export function DeleteKeyDialog({
       if (selectedTreeKey) {
         removeKeyFromFilesInfo(selectedTreeKey, fileNameState);
       }
+      const parentID = selectedTreeKey?.parent_id;
+      const parentKey = filesInfo
+        .find(
+          (file) =>
+            file.fileName === fileNameState && file.language_code === "en"
+        )
+        ?.keys.find((key) => key.id === parentID);
+      if (parentKey) {
+        //this section is keep opening the parent key in the tree view when its child is deleted
+        const IDs = findParentIdsToRootByFullKeyPath(
+          parentKey.full_key_path,
+          filesInfo,
+          fileNameState
+        );
+
+        setSelectedTreeKey(findSelectedKey(IDs[0], fileNameState, filesInfo));
+        setParentIDs(Array.isArray(IDs) ? IDs.slice(1).reverse() : []);
+      } else {
+        setSelectedTreeKey(null); // Reset selected key ID after deletion
+      }
     }
 
     setOpenDeleteKeyDialog(false);
     // if (!selectedTreeKey?.id) {
     //   toast.error("Key ID is missing, cannot delete key.");
     // }
-    setSelectedTreeKey(null); // Reset selected key ID after deletion
 
     toast.success("the key is deleted!");
   };

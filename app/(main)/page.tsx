@@ -1,5 +1,6 @@
 "use client";
 import MultilingualView from "@/components/TranslationManagerSystem/Multilingual-View/MultilingualView";
+import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 import { useUserStore } from "@/store/useUserStore";
 import { useViewStore } from "@/store/useViewStore";
 import { getProfile } from "@/utils/languages/login";
@@ -10,7 +11,7 @@ import { signOut } from "../login/actions";
 function HomePage() {
   const { multiViewState, setView } = useViewStore();
 
-  const { setUser } = useUserStore();
+  const { setUser, user } = useUserStore();
 
   const handleSignout = async () => {
     await signOut();
@@ -24,10 +25,20 @@ function HomePage() {
     fetchProfile();
   }, []);
 
+  useEffect(() => {
+    console.log("User profile updated:", user);
+  }, [user]);
+
   return (
     <Box sx={{ padding: "20px 20px 20px 20px", width: "100%", height: "100%" }}>
-      <h1>Translation Panel</h1>
-      <Button onClick={() => handleSignout()}>Sign out</Button>
+      <Stack direction={"row"} justifyContent={"space-between"}>
+        <Box>
+          {/* <Typo1624>Translation Panel</Typo1624> */}
+          <Typo1624>User: {user?.full_name || user?.email}</Typo1624>
+        </Box>
+
+        <Button onClick={() => handleSignout()}>Sign out</Button>
+      </Stack>
 
       <Stack sx={{ width: "100%", marginBottom: "20px", alignItems: "center" }}>
         <ButtonGroup aria-label='Basic button group'>
