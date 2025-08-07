@@ -4,15 +4,14 @@ type FilenameState = {
   fileNameState: string;
   setFileName: (newName: string) => void;
   seeAllChanges: boolean;
-  setSeeAllChanges: () => void;
+  setSeeAllChanges: (value: boolean) => void;
   reset: () => void;
 };
 
 export const useOtherStateStore = create<FilenameState>((set) => ({
   fileNameState: "common",
   seeAllChanges: false,
-  setSeeAllChanges: () =>
-    set((state) => ({ seeAllChanges: !state.seeAllChanges })),
+  setSeeAllChanges: (value) => set(() => ({ seeAllChanges: value })),
   setFileName: (newName: string) => set(() => ({ fileNameState: newName })),
   reset: () => set({ fileNameState: "common" }),
 }));

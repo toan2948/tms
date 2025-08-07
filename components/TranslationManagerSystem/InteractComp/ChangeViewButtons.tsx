@@ -13,7 +13,7 @@ const ChangeViewButtons = ({
       <Button
         variant='contained'
         onClick={() => {
-          setSeeAllChanges();
+          setSeeAllChanges(!seeAllChanges);
         }}
         sx={{
           marginRight: "10px",

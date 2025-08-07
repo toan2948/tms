@@ -14,18 +14,14 @@ import { SessionDialog } from "./Dialogs/Session/SessionDialog";
 import TreeView from "./TreeView/TreeView";
 
 const MultilingualView = () => {
-  const { seeAllChanges, setSeeAllChanges } = useOtherStateStore();
+  const { seeAllChanges } = useOtherStateStore();
   const [openDialog, setOpenDialog] = React.useState(false);
   const { multiViewState } = useViewStore();
   const { user } = useUserStore();
 
   return (
     <>
-      <SessionDialog
-        open={openDialog}
-        onClose={setOpenDialog}
-        setSeeAllChanges={setSeeAllChanges}
-      />
+      <SessionDialog open={openDialog} onClose={setOpenDialog} />
       <Stack
         direction={"row"}
         justifyContent={"space-between"}

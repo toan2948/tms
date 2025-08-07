@@ -85,7 +85,7 @@ const AllChangesView = () => {
 
     setSelectedTreeKey(findSelectedKey(IDs[0], filename, DBkeys));
     setParentIDs(Array.isArray(IDs) ? IDs.slice(1).reverse() : []);
-    setSeeAllChanges();
+    setSeeAllChanges(false);
   };
 
   return (

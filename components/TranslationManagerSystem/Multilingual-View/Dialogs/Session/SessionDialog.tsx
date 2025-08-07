@@ -22,23 +22,16 @@ import SessionKeyList from "./SessionKeyList";
 export interface SessionDialogProps {
   open: boolean;
   onClose: Dispatch<SetStateAction<boolean>>;
-  setSeeAllChanges: Dispatch<SetStateAction<boolean>>;
 }
 
-export function SessionDialog({
-  open,
-  onClose,
-  setSeeAllChanges,
-}: SessionDialogProps) {
+export function SessionDialog({ open, onClose }: SessionDialogProps) {
   const [
     openMissingTranslationKeysDialog,
     setOpenMissingTranslationKeysDialog,
   ] = useState(false);
   const { filesInfo, DBkeys, setFilesInfo } = useAllKeyFileStore();
-
   const { setSelectedTreeKey, setParentIDs } = useTreeKeyStore();
-
-  const { setFileName } = useOtherStateStore();
+  const { setFileName, setSeeAllChanges } = useOtherStateStore();
   const changedKeys = useMemo(() => filterChangedKeys(filesInfo), [filesInfo]);
 
   // console.log("changedKeys", changedKeys);
