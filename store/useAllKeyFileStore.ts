@@ -1,10 +1,4 @@
-import {
-  DBkeys,
-  FileState,
-  KeyState,
-  LanguageType,
-  TranslationTreeKey,
-} from "@/types/keyType";
+import { DBkeys, FileState, KeyState, LanguageType } from "@/types/keyType";
 import { setTreeKeys } from "@/utils/languages/processData";
 import { create } from "zustand";
 import { useTreeKeyStore } from "./useTreeKeyStore";
@@ -21,7 +15,7 @@ type AllFileState = {
     fileName: string,
     language_code: string
   ) => void;
-  removeKeyFromFilesInfo: (key: TranslationTreeKey, fileName: string) => void;
+  removeKeyFromFilesInfo: (key: KeyState, fileName: string) => void;
   setFilesInfo: (files: FileState<KeyState>[]) => void;
   setDBKeys: (files: FileState<KeyState>[]) => void;
 
@@ -96,7 +90,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
       return { filesInfo: updatedFiles };
     });
   },
-  removeKeyFromFilesInfo: (treeKey: TranslationTreeKey, fileName: string) => {
+  removeKeyFromFilesInfo: (treeKey, fileName) => {
     set((state) => {
       const { filesInfo } = state;
 

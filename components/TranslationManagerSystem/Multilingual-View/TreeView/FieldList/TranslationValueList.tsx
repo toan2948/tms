@@ -21,8 +21,7 @@ import Note from "./Note";
 import TranslationField from "./TranslationField";
 const TranslationValueList = () => {
   const { selectedTreeKey } = useTreeKeyStore();
-  const { filesInfo, DBkeys, updateKeyPathSegmentInFiles } =
-    useAllKeyFileStore();
+  const { filesInfo, updateKeyPathSegmentInFiles } = useAllKeyFileStore();
   const { sourceLanguage, targetLanguage, multiViewState } = useViewStore();
   const { user } = useUserStore();
   const [error, setError] = useState(false);
@@ -55,7 +54,7 @@ const TranslationValueList = () => {
     const isDuplicatedName = checkDuplicateKeyName(
       trimmedKey,
       selectedTreeKey,
-      DBkeys,
+      filesInfo,
       fileNameState
     );
 

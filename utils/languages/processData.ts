@@ -226,7 +226,7 @@ export const formatSessionDialogData = (
 
 export const getTranslationKeys = (
   fileN: string,
-  selectedKey: TranslationTreeKey | null,
+  selectedKey: KeyState | null,
   files: FileState<KeyState>[]
 ): KeyState[] => {
   if (!selectedKey) return [];
@@ -475,12 +475,13 @@ export function normalizeEmpty(value: string | null | undefined): string {
 }
 export const checkDuplicateKeyName = (
   newName: string,
-  old_key: TranslationTreeKey,
-  DBkeys: { fileName: string; keys: TranslationTreeKey[] }[],
+  old_key: KeyState,
+  files: FileState<KeyState>[],
   fileNameState: string
 ) => {
   const { parent_id, level } = old_key;
-  const a = DBkeys.find((e) => e.fileName === fileNameState)?.keys || [];
+  const englishFiles = findEnglishFiles(files);
+  const a = englishFiles.find((e) => e.fileName === fileNameState)?.keys || [];
   const siblingExists = a.some(
     (k) =>
       k.id !== old_key.id &&

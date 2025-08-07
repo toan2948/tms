@@ -1,8 +1,8 @@
-import { KeyState, TranslationTreeKey } from "@/types/keyType";
+import { KeyState } from "@/types/keyType";
 import { create } from "zustand";
 
 type TreeKeyState = {
-  selectedTreeKey: TranslationTreeKey | null;
+  selectedTreeKey: KeyState | null;
   parentIDs: string[];
   setParentIDs: (ids: string[]) => void;
 
