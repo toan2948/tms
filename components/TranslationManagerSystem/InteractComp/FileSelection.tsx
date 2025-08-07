@@ -9,8 +9,8 @@ import {
 } from "@mui/material";
 
 const FileSelection = () => {
-  const { fileNameState, setFileName, seeAllChanges } = useOtherStateStore();
-  const { setSelectedTreeKey } = useTreeKeyStore();
+  const { seeAllChanges } = useOtherStateStore();
+  const { setSelectedTreeKey, fileNameState, setFileName } = useTreeKeyStore();
 
   const handleChange = (event: SelectChangeEvent) => {
     setSelectedTreeKey(null); // Reset selected key when changing file

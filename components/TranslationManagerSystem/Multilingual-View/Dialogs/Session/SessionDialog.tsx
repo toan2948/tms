@@ -30,8 +30,8 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
     setOpenMissingTranslationKeysDialog,
   ] = useState(false);
   const { filesInfo, setFilesInfo } = useAllKeyFileStore();
-  const { setSelectedTreeKey, setParentIDs } = useTreeKeyStore();
-  const { setFileName, setSeeAllChanges } = useOtherStateStore();
+  const { setSelectedTreeKey, setParentIDs, setFileName } = useTreeKeyStore();
+  const { setSeeAllChanges } = useOtherStateStore();
   const changedKeys = useMemo(() => filterChangedKeys(filesInfo), [filesInfo]);
 
   // console.log("changedKeys", changedKeys);

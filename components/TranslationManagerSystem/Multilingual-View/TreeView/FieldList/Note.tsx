@@ -2,7 +2,6 @@ import EditableTextFieldWithSave from "@/components/ui/EditTextField";
 import RedOutlineButton from "@/components/ui/RedOutlineButton";
 import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
-import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { useUserStore } from "@/store/useUserStore";
 import { editNote } from "@/utils/languages/editNote";
@@ -11,10 +10,10 @@ import { Box, Button, Stack } from "@mui/material";
 import { useState } from "react";
 
 const Note = () => {
-  const { selectedTreeKey, setSelectedTreeKey } = useTreeKeyStore();
+  const { selectedTreeKey, setSelectedTreeKey, fileNameState } =
+    useTreeKeyStore();
   const { user } = useUserStore();
   const { updateKeyNoteInFilesInfo } = useAllKeyFileStore();
-  const { fileNameState } = useOtherStateStore();
 
   const [openAddNotesField, setOpenAddNotesField] = useState(false);
 

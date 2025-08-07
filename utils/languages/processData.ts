@@ -314,18 +314,6 @@ export function buildKeyTreeFromFlatList(
   return tree;
 }
 
-export function findKeyStateByIdAcrossFiles(
-  fileStates: FileState<KeyState>[],
-  keyId: string
-): KeyState | undefined {
-  for (const file of fileStates) {
-    const key = file.keys.find((k) => k.id === keyId);
-    if (key) {
-      return key;
-    }
-  }
-  return undefined;
-}
 export type GroupedTranslationValues = {
   filename: string;
   fullKey: string;

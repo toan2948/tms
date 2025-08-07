@@ -16,8 +16,8 @@ import { KeySection } from "./KeySection";
 const AllChangesView = () => {
   const { filesInfo } = useAllKeyFileStore();
 
-  const { setSelectedTreeKey, setParentIDs } = useTreeKeyStore();
-  const { setFileName, setSeeAllChanges } = useOtherStateStore();
+  const { setSelectedTreeKey, setParentIDs, setFileName } = useTreeKeyStore();
+  const { setSeeAllChanges } = useOtherStateStore();
   const changedKeys = useMemo(() => filterChangedKeys(filesInfo), [filesInfo]);
 
   //the lowest level new keys

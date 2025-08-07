@@ -4,6 +4,8 @@ import { create } from "zustand";
 type TreeKeyState = {
   selectedTreeKey: KeyState | null;
   parentIDs: string[];
+  fileNameState: string;
+  setFileName: (newName: string) => void;
   setParentIDs: (ids: string[]) => void;
 
   setSelectedTreeKey: (key: KeyState | null) => void;
@@ -14,6 +16,9 @@ type TreeKeyState = {
 export const useTreeKeyStore = create<TreeKeyState>((set) => ({
   selectedTreeKey: null,
   parentIDs: [],
+  fileNameState: "common",
+  setFileName: (newName: string) => set(() => ({ fileNameState: newName })),
+
   setParentIDs: (ids) => set(() => ({ parentIDs: ids })),
   setSelectedTreeKey: (key) => set(() => ({ selectedTreeKey: key })),
 

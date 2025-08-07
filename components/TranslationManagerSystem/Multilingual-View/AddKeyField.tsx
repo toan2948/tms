@@ -1,6 +1,5 @@
 import { Typo1224 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
-import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { KeyState } from "@/types/keyType";
 import {
@@ -11,9 +10,9 @@ import { Box, Button, InputAdornment, Stack, TextField } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 export const AddKeyField = () => {
-  const { fileNameState } = useOtherStateStore();
   const { addKeysToFilesInfo, filesInfo } = useAllKeyFileStore();
-  const { setSelectedTreeKey, setParentIDs, parentIDs } = useTreeKeyStore();
+  const { setSelectedTreeKey, setParentIDs, parentIDs, fileNameState } =
+    useTreeKeyStore();
   const [newKeyState, setNewKeyState] = useState("");
   const [isNewKeyAdded, setIsNewKeyAdded] = useState(false);
   const [openAddKeyField, setOpenAddKeyField] = useState(false);
