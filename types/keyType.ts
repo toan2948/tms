@@ -58,6 +58,7 @@ export interface KeyState
   old_value: string | null;
   isNew?: boolean;
   isChanged: boolean;
+  isNameEdited?: boolean; // Indicates if the key name has been edited
 }
 
 // -----------------------------------

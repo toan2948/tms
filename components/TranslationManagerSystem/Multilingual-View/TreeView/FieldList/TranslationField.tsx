@@ -44,26 +44,10 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
   };
   const handleSave = () => {
     updateKeyChanged({
-      full_key_path: data?.full_key_path ? data.full_key_path : "",
-      id: data.id,
-      isChanged: data.isNew ? false : true, //make sure the new added keys will not be listed in the edited key list
+      ...data,
+      isChanged: data.isNew ? false : true, //this is to make sure the new added keys will not be listed in the edited key list
       value: value,
-      version: data.version,
       last_edited_at: new Date(),
-      has_children: data.has_children,
-      parent_id: data.parent_id,
-      notes: data.notes,
-      old_version: data.old_version, // Store the old version to do comparison
-      old_value: data.old_value, // Store the old value to do comparison
-      key_path_segment: data.key_path_segment,
-      level: data.level,
-      language_code: data.language_code,
-      language_name: data.language_name,
-      file_id: data.file_id,
-      fileName: data.fileName,
-      isNew: data.isNew,
-      old_full_key_path: data.old_full_key_path,
-      old_segment: data.old_segment,
     });
     setEnableSaveButton(false);
     setIsResetButtonEnabled(true);

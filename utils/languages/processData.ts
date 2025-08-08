@@ -47,32 +47,17 @@ export const filterChangedKeys = (
   // 1st Step: filter out the changed keys from localStorageFilesInfo and updated version temporarily
   const changedKeys = localStorageFilesInfo.flatMap((file) =>
     file.keys
-      .filter((key) => key.isChanged || key.isNew)
+      .filter((key) => key.isChanged || key.isNew || key.isNameEdited)
       .map((key) => {
         // Find the corresponding key in the localStorageDBValues
 
         return {
-          id: key.id,
-          value: key.value,
-          old_value: key.old_value || null, // Ensure old_value is always present
-          full_key_path: key.full_key_path,
+          ...key,
+          version: !key.value ? 0 : key.version + 1, // Increment version for local changes
+          notes: key.notes || null,
+          fileName: file.fileName,
           language_code: file.language_code,
           language_name: file.language_name,
-          fileName: file.fileName,
-          isChanged: key.isChanged, // Indicates if the key has been changed
-          version: !key.value ? 0 : key.version + 1, // Increment version for local changes
-          last_edited_at: key.last_edited_at,
-          has_children: key.has_children,
-          parent_id: key.parent_id,
-          notes: key.notes || null,
-
-          key_path_segment: key.key_path_segment,
-          old_segment: key.old_segment,
-          old_full_key_path: key.old_full_key_path,
-          level: key.level,
-          file_id: key.file_id, // Include file_id for reference
-          old_version: key.old_version, // Ensure old_version is always present
-          isNew: key.isNew, // Indicates if the key is newly added
         };
       })
   );
@@ -90,13 +75,7 @@ export const filterChangedKeys = (
       (e) => e.full_key_path === key.full_key_path && e.language_code === "en"
     )?.version;
     return {
-      id: key.id,
-      value: key.value,
-      old_value: key.old_value,
-      full_key_path: key.full_key_path,
-      language_code: key.language_code,
-      language_name: key.language_name,
-      fileName: key.fileName,
+      ...key,
       version: !key.value
         ? 0
         : key.isNew
@@ -106,19 +85,6 @@ export const filterChangedKeys = (
         : englishVersion, // Use the updated version if English key is also changed
 
       //todo: case of english and other languages are updated at the same time
-      last_edited_at: key.last_edited_at,
-      has_children: key.has_children,
-      parent_id: key.parent_id,
-      notes: key.notes || null,
-      key_path_segment: key.key_path_segment,
-      old_segment: key.old_segment,
-      old_full_key_path: key.old_full_key_path,
-      level: key.level,
-      file_id: key.file_id,
-      isChanged: key.isChanged, // Indicates if the key has been changed
-
-      old_version: key.old_version, // Ensure old_version is always present
-      isNew: key.isNew, // Indicates if the key is newly added
     };
   });
 

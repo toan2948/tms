@@ -36,26 +36,15 @@ export function ResetDialog({
   const { updateKeyChanged } = useAllKeyFileStore();
 
   const handleReset = () => {
-    // console.log("Resetting value to DBValue:", DBValue?.value, value);
+    console.log("reset", data);
     updateKeyChanged({
-      full_key_path: data.full_key_path ? data.full_key_path : "",
-      id: data.id,
+      ...data,
       isChanged: false,
       value: data.old_value ?? "",
       version: data.old_version ?? 0,
       last_edited_at: data?.last_edited_at //old_edit
         ? new Date(data.last_edited_at) //old_edit
         : new Date(),
-      has_children: data.has_children,
-      parent_id: data.parent_id,
-      notes: data.notes,
-      old_value: data.old_value, // Store the old value before resetting
-      key_path_segment: data.key_path_segment,
-      level: data.level,
-      language_code: data.language_code,
-      language_name: data.language_name,
-      file_id: data.file_id,
-      isNew: data.isNew,
     });
     setValue(data.old_value ?? ""); // Reset the value to the old value
     setIsSaveButtonEnabled(false);

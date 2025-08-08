@@ -265,12 +265,15 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
         for (const key of file.keys) {
           if (key.id === targetKey.id) {
             fileChanged = true;
-            const updated = {
+            const updated: KeyState = {
               ...key,
               key_path_segment: newSegment,
               full_key_path: newFullKeyPath,
-              isChanged: newSegment === key.old_segment ? false : true, //isChanged is false if the key name is changed back to the old before submitting to DB
+
+              isNameEdited:
+                newFullKeyPath === key.old_full_key_path ? false : true,
             };
+            console.log("updated", updated);
             updatedKeys.push(updated);
 
             // Also update selectedTreeKey if relevant
@@ -279,7 +282,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
             updatedKeys.push({
               ...key,
               full_key_path: idMap.get(key.id)!,
-              isChanged:
+              isNameEdited:
                 idMap.get(key.id)! === key.old_full_key_path ? false : true, //isChanged is false if the key name is changed back to the old before submitting to DB
             });
           } else {
@@ -290,7 +293,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
         return {
           ...file,
           keys: updatedKeys,
-          isDirty: fileChanged || updatedKeys.some((k) => k.isChanged),
+          isDirty: fileChanged || updatedKeys.some((k) => k.isNameEdited),
         };
       });
 
