@@ -38,9 +38,16 @@ export const KeySection = ({
             )}
 
           <Box width={"95%"} alignSelf={"end"}>
-            {group.list.map((item, itemIndex) => (
-              <TranslationField key={itemIndex} index={itemIndex} data={item} />
-            ))}
+            {group.list.map(
+              (item, itemIndex) =>
+                !item.has_children && (
+                  <TranslationField
+                    key={itemIndex}
+                    index={itemIndex}
+                    data={item}
+                  />
+                )
+            )}
           </Box>
         </Stack>
       ))}

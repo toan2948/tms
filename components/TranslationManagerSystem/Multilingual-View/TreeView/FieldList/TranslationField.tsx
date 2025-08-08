@@ -62,6 +62,8 @@ const TranslationField = ({ index, data }: TranslationFieldProps) => {
       file_id: data.file_id,
       fileName: data.fileName,
       isNew: data.isNew,
+      old_full_key_path: data.old_full_key_path,
+      old_segment: data.old_segment,
     });
     setEnableSaveButton(false);
     setIsResetButtonEnabled(true);
