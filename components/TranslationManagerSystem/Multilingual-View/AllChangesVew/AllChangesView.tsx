@@ -93,14 +93,14 @@ const AllChangesView = () => {
       {groupedEmptyKeys && groupedEmptyKeys.length > 0 && (
         <KeySection
           formattedKeyList={groupedEmptyKeys}
-          keyStatus='Missing Translation Keys'
+          keyStatus='Missing Translation Values'
           handleGroupClick={handleGroupClick}
         />
       )}
       {groupedEditedValueKeys && groupedEditedValueKeys.length > 0 && (
         <KeySection
           formattedKeyList={groupedEditedValueKeys}
-          keyStatus=' Edited Keys'
+          keyStatus='Edited Keys'
           handleGroupClick={handleGroupClick}
         />
       )}
@@ -109,7 +109,7 @@ const AllChangesView = () => {
       {groupedNewKeys && groupedNewKeys.length > 0 && (
         <KeySection
           formattedKeyList={groupedNewKeys}
-          keyStatus=' New Keys'
+          keyStatus='New Keys'
           handleGroupClick={handleGroupClick}
         />
       )}

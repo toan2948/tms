@@ -7,7 +7,7 @@ import { useUserStore } from "@/store/useUserStore";
 import { editNote } from "@/utils/languages/editNote";
 import { isDevOrAdmin } from "@/utils/languages/login";
 import { Box, Button, Stack } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const Note = () => {
   const { selectedTreeKey, setSelectedTreeKey, fileNameState } =
@@ -77,6 +77,10 @@ const Note = () => {
       }, 3000);
     }
   };
+  useEffect(() => {
+    setNoteState(selectedTreeKey?.notes || ""); // Update noteState when selectedTreeKey changes
+    setOpenAddNotesField(false); // Reset the open state when selectedTreeKey changes
+  }, [selectedTreeKey]);
   return (
     <Box
       sx={{

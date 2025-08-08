@@ -144,7 +144,7 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
       >
         {emptyNewKeysSessionFormat && emptyNewKeysSessionFormat.length > 0 && (
           <SessionKeyList
-            keyStatus='Missing translation keys'
+            keyStatus='Missing translation values'
             formattedKeyList={emptyNewKeysSessionFormat}
             handleClick={handleClick}
           />
@@ -152,7 +152,7 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
 
         {editedKeysSessionFormat && editedKeysSessionFormat.length > 0 && (
           <SessionKeyList
-            keyStatus='Changes on key values'
+            keyStatus='Edited Keys'
             formattedKeyList={editedKeysSessionFormat}
             handleClick={handleClick}
           />
@@ -160,7 +160,7 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
         {NotEmptyNewKeysSessionFormat &&
           NotEmptyNewKeysSessionFormat.length > 0 && (
             <SessionKeyList
-              keyStatus='New keys with translations'
+              keyStatus='New Keys'
               formattedKeyList={NotEmptyNewKeysSessionFormat}
               handleClick={handleClick}
             />
