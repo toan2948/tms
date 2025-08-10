@@ -148,11 +148,6 @@ const TranslationValueList = () => {
           </Box>
 
           <Stack direction={"row"}>
-            {isDevOrAdmin(user?.role) && (
-              <RedOutlineButton onClick={() => setOpenDeleteKeyDialog(true)}>
-                Delete Key
-              </RedOutlineButton>
-            )}
             <Stack
               direction={"row"}
               justifyContent={"center"}
@@ -193,6 +188,11 @@ const TranslationValueList = () => {
                 Cancel
               </Button>
             </Stack>
+            {isDevOrAdmin(user?.role) && (
+              <RedOutlineButton onClick={() => setOpenDeleteKeyDialog(true)}>
+                Delete Key
+              </RedOutlineButton>
+            )}
           </Stack>
         </Stack>
       )}
