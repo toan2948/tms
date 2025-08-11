@@ -21,14 +21,14 @@ export const AddKeyField = () => {
 
   const handleAddKey = useCallback(async () => {
     const trimmedKey = newKeyState.trim();
-    const isValid = /^[a-zA-Z0-9._]*$/.test(trimmedKey);
+    const isValid = /^[a-zA-Z0-9][a-zA-Z0-9._]*$/.test(trimmedKey);
 
     // const isLevelLowerAdded =
     if (!trimmedKey) return;
     if (!isValid) {
       setError(true);
       setHelperText(
-        "Only letters, numbers, dot (.) and underscore (_) allowed"
+        "The first character must be either letter or number. And only letters, numbers, dot (.) and underscore (_) allowed. "
       );
       setTimeout(() => {
         setHelperText("");

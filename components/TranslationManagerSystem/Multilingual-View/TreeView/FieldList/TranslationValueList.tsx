@@ -160,7 +160,7 @@ const TranslationValueList = () => {
         open={openDeleteKeyDialog}
         setOpen={setOpenDeleteKeyDialog}
         handleDelete={handleDelete}
-        title='key'
+        title='delete this key'
         warning={true}
       />
       {selectedTreeKey && (

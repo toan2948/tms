@@ -21,12 +21,12 @@ const AllChangesView = () => {
   const changedKeys = useMemo(() => filterChangedKeys(filesInfo), [filesInfo]);
 
   //the lowest level new keys
-  const newKeys = useMemo(
+  const newLowestLevelKeys = useMemo(
     () => changedKeys.filter((key) => key.isNew && !key.has_children),
     [changedKeys]
   );
 
-  const groupedNewKeysFullPath = groupKeysByFullPath(newKeys);
+  const groupedNewKeysFullPath = groupKeysByFullPath(newLowestLevelKeys);
 
   //the new keys are missing translations
   const emptyNewKeys = useMemo(
@@ -115,7 +115,9 @@ const AllChangesView = () => {
         />
       )}
 
-      {!groupedEditedValueKeys && !newKeys && <Box>No changes made.</Box>}
+      {!groupedEditedValueKeys && !newLowestLevelKeys && (
+        <Box>No changes made.</Box>
+      )}
     </Box>
   );
 };

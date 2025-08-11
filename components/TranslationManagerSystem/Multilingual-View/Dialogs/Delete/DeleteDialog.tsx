@@ -8,7 +8,6 @@ import {
 } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 
-import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 
@@ -18,6 +17,7 @@ export interface DeleteKeyDialogProps {
   handleDelete: () => Promise<void>;
   warning?: boolean;
   title: string;
+  actionText?: string;
 }
 
 export function DeleteDialog({
@@ -26,6 +26,7 @@ export function DeleteDialog({
   handleDelete,
   title,
   warning,
+  actionText,
 }: DeleteKeyDialogProps) {
   const { selectedTreeKey } = useTreeKeyStore();
 
@@ -40,7 +41,7 @@ export function DeleteDialog({
 
   return (
     <Dialog onClose={handleClose} open={open}>
-      <DialogTitle textAlign={"center"}>Delete {title}</DialogTitle>
+      <DialogTitle textAlign={"center"}> {title}</DialogTitle>
       <Box
         sx={{
           padding: "10px",
@@ -54,9 +55,9 @@ export function DeleteDialog({
         ) : (
           <>
             <Typography sx={{ padding: "10px" }} component='span'>
-              Are you sure to delete this {title}:
+              Are you sure you want to {title}
             </Typography>
-            <Typo1624 color='red'>{selectedTreeKey?.full_key_path}</Typo1624>
+            {/* <Typo1624 color='red'>{selectedTreeKey?.full_key_path}</Typo1624> */}
           </>
         )}
 
@@ -88,7 +89,7 @@ export function DeleteDialog({
             }}
             onClick={handleDelete}
           >
-            Delete
+            {actionText || "Delete"}
           </Button>
         </Stack>
       </Box>

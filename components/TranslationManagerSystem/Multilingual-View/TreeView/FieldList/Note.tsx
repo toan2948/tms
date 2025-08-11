@@ -93,7 +93,7 @@ const Note = () => {
         handleDelete={handleDeleteNote}
         open={openDeleteNoteDialog}
         setOpen={setOpenDeleteNoteDialog}
-        title='Note'
+        title='delete this Note'
         warning={false}
       />
       <Stack direction={"column"}>

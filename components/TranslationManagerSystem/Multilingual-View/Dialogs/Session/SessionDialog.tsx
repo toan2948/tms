@@ -56,27 +56,27 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
     [changedKeys]
   );
 
-  const groupedNewKeys = groupKeysByFullPath(newLowestLevelKeys);
+  const groupedNewKeysFullPath = groupKeysByFullPath(newLowestLevelKeys);
 
   //the new keys are missing translations
   const emptyNewKeys = useMemo(
     () =>
-      groupedNewKeys.filter((group) =>
+      groupedNewKeysFullPath.filter((group) =>
         group.keys.every((key) => key.value === null || key.value === "")
       ),
-    [groupedNewKeys]
+    [groupedNewKeysFullPath]
   );
 
   //the new keys that have translations
   const NotEmptyNewKeys = useMemo(
     () =>
-      groupedNewKeys
+      groupedNewKeysFullPath
         .filter((group) =>
           group.keys.some((key) => key.value !== null && key.value !== "")
         )
         .map((group) => group.keys)
         .flat(),
-    [groupedNewKeys]
+    [groupedNewKeysFullPath]
   );
 
   //format data before displaying
@@ -169,7 +169,7 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
               handleClick={handleClick}
             />
           )}
-        {editedKeysSessionFormat.length > 0 || groupedNewKeys.length > 0 ? (
+        {changedKeys.length > 0 ? (
           <Stack direction={"row"} justifyContent={"flex-end"}>
             <Button
               variant='outlined'

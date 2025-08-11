@@ -40,7 +40,8 @@ export const KeySection = ({
           <Box width={"95%"} alignSelf={"end"}>
             {group.list.map(
               (item, itemIndex) =>
-                !item.has_children && (
+                !item.has_children &&
+                item.isChanged && (
                   <TranslationField
                     key={itemIndex}
                     index={itemIndex}

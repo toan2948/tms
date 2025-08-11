@@ -140,7 +140,9 @@ export const formatSessionDialogData = (
         languages: new Set(),
       });
     }
-    groupedMap.get(groupKey)!.languages.add(item.language_code);
+    if (item.isChanged || item.isNew) {
+      groupedMap.get(groupKey)!.languages.add(item.language_code);
+    }
   });
 
   // 3. Assign a color per filename
@@ -172,7 +174,11 @@ export const formatSessionDialogData = (
         oldFullKey,
       },
     ]) => ({
-      label: `${key} -- ${Array.from(languages).join(", ")}`,
+      label: `${key} ${
+        Array.from(languages).length > 1
+          ? `-- ${Array.from(languages).join(", ")}`
+          : ""
+      }`,
       color: filenameToColor.get(filename)!,
       fileName: filename,
       isKeyNameChanged,
@@ -447,6 +453,16 @@ export function groupKeysByFullPath(keys: KeyState[]): GroupFullPath[] {
   return Array.from(groupedMap.entries())
     .map(([full_key_path, keys]) => ({ full_key_path, keys }))
     .sort((a, b) => a.full_key_path.localeCompare(b.full_key_path));
+}
+function findMissingKeys(
+  allKeys: KeyState[],
+  groups: GroupFullPath[]
+): KeyState[] {
+  // Create a Set for quick lookup of group paths
+  const groupPaths = new Set(groups.map((g) => g.full_key_path));
+
+  // Filter keys whose path is not in the Set
+  return allKeys.filter((key) => !groupPaths.has(key.full_key_path));
 }
 
 function getRandomColor(existingColors: Set<string>): string {
