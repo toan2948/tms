@@ -36,7 +36,6 @@ export function ResetDialog({
   const { updateKeyChanged } = useAllKeyFileStore();
 
   const handleReset = () => {
-    console.log("reset", data);
     updateKeyChanged({
       ...data,
       isChanged: false,

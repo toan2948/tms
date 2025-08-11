@@ -273,7 +273,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
               isNameEdited:
                 newFullKeyPath === key.old_full_key_path ? false : true,
             };
-            console.log("updated", updated);
+            // console.log("updated", updated);
             updatedKeys.push(updated);
 
             // Also update selectedTreeKey if relevant

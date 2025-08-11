@@ -61,7 +61,6 @@ const Note = () => {
 
     const editSuccess = await editNote(selectedTreeKey.id, trimmedNote);
 
-    console.log("editSuccess", editSuccess);
     if (editSuccess) {
       setSelectedTreeKey({ ...selectedTreeKey, notes: trimmedNote }); // Update the selectedTreeKey with the new note
       updateKeyNoteInFilesInfo(

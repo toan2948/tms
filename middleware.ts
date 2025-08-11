@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 
 export async function middleware(req: NextRequest) {
   // Log the request URL for debugging purposes
-  console.log("Middleware request URL:", req.url);
+  // console.log("Middleware request URL:", req.url);
   return updateSession(req);
 }
 

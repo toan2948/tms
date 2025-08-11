@@ -81,7 +81,11 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
 
   //format data before displaying
   const editedKeysSessionFormat = useMemo(
-    () => formatSessionDialogData(editedKeys, (e) => !e.isNew),
+    () =>
+      formatSessionDialogData(
+        editedKeys,
+        (e) => !e.isNew && e.old_segment !== e.key_path_segment
+      ),
     [editedKeys]
   );
   const NotEmptyNewKeysSessionFormat = useMemo(

@@ -51,11 +51,12 @@ const AllChangesView = () => {
     [groupedNewKeysFullPath]
   );
 
-  // console.log("groupedNewKeysFullPath", groupedNewKeysFullPath);
-  // console.log("emptyNewKeys", emptyNewKeys);
-
   const groupedEditedValueKeys = useMemo(
-    () => groupTranslationValues(changedKeys, (e) => !e.isNew),
+    () =>
+      groupTranslationValues(
+        changedKeys,
+        (e) => !e.isNew && e.old_segment !== e.key_path_segment //if the key name is changed, only the key whose segment is changed will be grouped
+      ),
     [changedKeys]
   );
   const groupedNewKeys = useMemo(
