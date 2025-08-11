@@ -60,7 +60,11 @@ export function DeleteDialog({
           </>
         )}
 
-        <Stack direction={"row"} justifyContent={"flex-end"}>
+        <Stack
+          direction={"row"}
+          justifyContent={"flex-end"}
+          sx={{ marginTop: "20px" }}
+        >
           <Button
             variant='outlined'
             sx={{

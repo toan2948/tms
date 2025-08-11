@@ -161,6 +161,7 @@ const TranslationValueList = () => {
         setOpen={setOpenDeleteKeyDialog}
         handleDelete={handleDelete}
         title='key'
+        warning={true}
       />
       {selectedTreeKey && (
         <Stack

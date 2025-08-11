@@ -55,7 +55,7 @@ const AllChangesView = () => {
     () =>
       groupTranslationValues(
         changedKeys,
-        (e) => !e.isNew && e.old_segment !== e.key_path_segment //if the key name is changed, only the key whose segment is changed will be grouped
+        (e) => (!e.isNew && e.old_segment !== e.key_path_segment) || e.isChanged //if the key name is changed, only the key whose segment is changed will be grouped
       ),
     [changedKeys]
   );

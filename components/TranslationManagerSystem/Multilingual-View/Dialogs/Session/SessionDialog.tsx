@@ -84,7 +84,7 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
     () =>
       formatSessionDialogData(
         editedKeys,
-        (e) => !e.isNew && e.old_segment !== e.key_path_segment
+        (e) => (!e.isNew && e.old_segment !== e.key_path_segment) || e.isChanged
       ),
     [editedKeys]
   );
