@@ -7,20 +7,26 @@ import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { useUserStore } from "@/store/useUserStore";
 import { useViewStore } from "@/store/useViewStore";
 import { KeyState } from "@/types/keyType";
+import { deleteKeyByFullPathAndFileName } from "@/utils/languages/dataFunctions";
 import { isDevOrAdmin } from "@/utils/languages/login";
 import {
   checkDuplicateKeyName,
   filterChangedKeys,
+  findParentIdsToRootByFullKeyPath,
+  findSelectedKey,
   getTranslationKeys,
 } from "@/utils/languages/processData";
 import { Box, Button, List, Stack } from "@mui/material";
 import React, { useEffect, useMemo, useState } from "react";
-import { DeleteKeyDialog } from "../../Dialogs/Delete/DeleteKeyDialog";
+import { toast } from "react-toastify";
+import { DeleteDialog } from "../../Dialogs/Delete/DeleteDialog";
 import Note from "./Note";
 import TranslationField from "./TranslationField";
 const TranslationValueList = () => {
-  const { selectedTreeKey, fileNameState } = useTreeKeyStore();
-  const { filesInfo, updateKeyPathSegmentInFiles } = useAllKeyFileStore();
+  const { selectedTreeKey, fileNameState, setSelectedTreeKey, setParentIDs } =
+    useTreeKeyStore();
+  const { filesInfo, updateKeyPathSegmentInFiles, removeKeyFromFilesInfo } =
+    useAllKeyFileStore();
   const { sourceLanguage, targetLanguage, multiViewState } = useViewStore();
   const { user } = useUserStore();
   const [error, setError] = useState(false);
@@ -73,6 +79,44 @@ const TranslationValueList = () => {
     );
     setOpenEditKeyField(false); // Close the edit field after saving
   };
+  const handleDelete = async () => {
+    if (selectedTreeKey?.isNew) {
+      removeKeyFromFilesInfo(selectedTreeKey, fileNameState);
+    } else {
+      await deleteKeyByFullPathAndFileName(
+        selectedTreeKey?.full_key_path ? selectedTreeKey.full_key_path : "",
+        fileNameState
+      );
+
+      if (selectedTreeKey) {
+        removeKeyFromFilesInfo(selectedTreeKey, fileNameState);
+      }
+      const parentID = selectedTreeKey?.parent_id;
+      const parentKey = filesInfo
+        .find(
+          (file) =>
+            file.fileName === fileNameState && file.language_code === "en"
+        )
+        ?.keys.find((key) => key.id === parentID);
+      if (parentKey) {
+        //this section is keep opening the parent key in the tree view when its child is deleted
+        const IDs = findParentIdsToRootByFullKeyPath(
+          parentKey.full_key_path,
+          filesInfo,
+          fileNameState
+        );
+
+        setSelectedTreeKey(findSelectedKey(IDs[0], fileNameState, filesInfo));
+        setParentIDs(Array.isArray(IDs) ? IDs.slice(1).reverse() : []);
+      } else {
+        setSelectedTreeKey(null); // Reset selected key ID after deletion
+      }
+    }
+
+    setOpenDeleteKeyDialog(false);
+
+    toast.success("the key is deleted!");
+  };
 
   //this changedKeys is used as a dependent factor in useEffect to update valuesState when the state FilesInfo is changed
   //filesInfo can not be used directly in useEffect because it will cause a bug as filesInfo is a dynamic state that can change the size of dependencies array of the useEffect
@@ -112,9 +156,11 @@ const TranslationValueList = () => {
 
   return (
     <>
-      <DeleteKeyDialog
+      <DeleteDialog
         open={openDeleteKeyDialog}
-        setOpenDeleteKeyDialog={setOpenDeleteKeyDialog}
+        setOpen={setOpenDeleteKeyDialog}
+        handleDelete={handleDelete}
+        title='key'
       />
       {selectedTreeKey && (
         <Stack

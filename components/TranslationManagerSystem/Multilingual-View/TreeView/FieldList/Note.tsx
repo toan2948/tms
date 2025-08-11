@@ -8,6 +8,7 @@ import { editNote } from "@/utils/languages/editNote";
 import { isDevOrAdmin } from "@/utils/languages/login";
 import { Box, Button, Stack } from "@mui/material";
 import { useEffect, useState } from "react";
+import { DeleteDialog } from "../../Dialogs/Delete/DeleteDialog";
 
 const Note = () => {
   const { selectedTreeKey, setSelectedTreeKey, fileNameState } =
@@ -16,6 +17,7 @@ const Note = () => {
   const { updateKeyNoteInFilesInfo } = useAllKeyFileStore();
 
   const [openAddNotesField, setOpenAddNotesField] = useState(false);
+  const [openDeleteNoteDialog, setOpenDeleteNoteDialog] = useState(false);
 
   const [showHelperText, setShowHelperText] = useState(false);
   const [error, setError] = useState(false);
@@ -35,6 +37,7 @@ const Note = () => {
         fileNameState
       );
       setOpenAddNotesField(false); // Close the edit field after saving}
+      setOpenDeleteNoteDialog(false); // Close the delete dialog
       setNoteState(""); // Clear the note state
     }
   };
@@ -87,6 +90,13 @@ const Note = () => {
         height: "70px",
       }}
     >
+      <DeleteDialog
+        handleDelete={handleDeleteNote}
+        open={openDeleteNoteDialog}
+        setOpen={setOpenDeleteNoteDialog}
+        title='Note'
+        warning={false}
+      />
       <Stack direction={"column"}>
         <Typo1424 weight={500}>Note: {selectedTreeKey?.notes}</Typo1424>
         {isDevOrAdmin(user?.role) && !openAddNotesField && (
@@ -99,9 +109,11 @@ const Note = () => {
               {selectedTreeKey?.notes ? "Edit Notes" : "Add Notes"}
             </Button>
 
-            <RedOutlineButton onClick={() => handleDeleteNote()}>
-              Delete Note
-            </RedOutlineButton>
+            {selectedTreeKey?.notes && (
+              <RedOutlineButton onClick={() => setOpenDeleteNoteDialog(true)}>
+                Delete Note
+              </RedOutlineButton>
+            )}
           </Stack>
         )}
       </Stack>
