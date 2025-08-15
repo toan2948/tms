@@ -1,13 +1,12 @@
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
+import { GroupedKeys } from "@/types/keyType";
 import {
-  filterChangedKeys,
   findParentIdsToRootByFullKeyPath,
   findSelectedKey,
-  GroupedTranslationValues,
-  groupKeysByFullPath,
-  groupTranslationValues,
+  groupingKeys,
+  processedChangedKeys,
 } from "@/utils/languages/processData";
 import { Box, Divider } from "@mui/material";
 import { useMemo } from "react";
@@ -18,61 +17,37 @@ const AllChangesView = () => {
 
   const { setSelectedTreeKey, setParentIDs, setFileName } = useTreeKeyStore();
   const { setSeeAllChanges } = useOtherStateStore();
-  const changedKeys = useMemo(() => filterChangedKeys(filesInfo), [filesInfo]);
 
-  //the lowest level new keys
-  const newLowestLevelKeys = useMemo(
-    () => changedKeys.filter((key) => key.isNew && !key.has_children),
-    [changedKeys]
-  );
+  const {
+    editedKeys,
+    NotEmptyNewKeys,
+    missingTranslationKeys,
+    newLowestLevelKeys,
+  } = useMemo(() => processedChangedKeys(filesInfo), [filesInfo]);
 
-  const groupedNewKeysFullPath = groupKeysByFullPath(newLowestLevelKeys);
-
-  //the new keys are missing translations
-  const emptyNewKeys = useMemo(
-    () =>
-      groupedNewKeysFullPath
-        .filter((group) =>
-          group.keys.every((key) => key.value === null || key.value === "")
-        )
-        .map((group) => group.keys)
-        .flat(),
-    [groupedNewKeysFullPath]
-  );
-  //the new keys that have translations
-  const NotEmptyNewKeys = useMemo(
-    () =>
-      groupedNewKeysFullPath
-        .filter((group) =>
-          group.keys.some((key) => key.value !== null && key.value !== "")
-        )
-        .map((group) => group.keys)
-        .flat(),
-    [groupedNewKeysFullPath]
-  );
-
+  //formatting data for displaying
   const groupedEditedValueKeys = useMemo(
     () =>
-      groupTranslationValues(
-        changedKeys,
+      groupingKeys(
+        editedKeys,
         (e) => (!e.isNew && e.old_segment !== e.key_path_segment) || e.isChanged //if the key name is changed, only the key whose segment is changed will be grouped
       ),
-    [changedKeys]
+    [editedKeys]
   );
+
   const groupedNewKeys = useMemo(
-    () => groupTranslationValues(NotEmptyNewKeys, (e) => e.isNew === true),
+    () => groupingKeys(NotEmptyNewKeys, (e) => e.isNew === true),
     [NotEmptyNewKeys]
   );
 
-  const groupedEmptyKeys = useMemo(
-    () => groupTranslationValues(emptyNewKeys, (e) => e.isNew === true),
-    [emptyNewKeys]
-  );
+  const groupedEmptyKeys = useMemo(() => {
+    return groupingKeys(missingTranslationKeys.flatMap((group) => group.keys));
+  }, [missingTranslationKeys]);
 
-  const handleGroupClick = (group: GroupedTranslationValues) => {
+  const handleGroupClick = (group: GroupedKeys) => {
     //only need a key, no need to care about which language
     const fullKeyPath = group.list[0].full_key_path;
-    const filename = group.filename;
+    const filename = group.fileName;
 
     setFileName(filename); //to build a tree corresponding to the filename
 

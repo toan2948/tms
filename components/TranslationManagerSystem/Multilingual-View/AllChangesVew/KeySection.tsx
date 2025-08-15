@@ -1,13 +1,13 @@
 import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
-import { GroupedTranslationValues } from "@/utils/languages/processData";
+import { GroupedKeys } from "@/types/keyType";
 import { Box, Stack } from "@mui/material";
 import TranslationField from "../TreeView/FieldList/TranslationField";
 
 type KeySectionProps = {
   keyStatus: string;
-  formattedKeyList: GroupedTranslationValues[];
+  formattedKeyList: GroupedKeys[];
 
-  handleGroupClick: (group: GroupedTranslationValues) => void;
+  handleGroupClick: (group: GroupedKeys) => void;
 };
 export const KeySection = ({
   formattedKeyList,
@@ -28,12 +28,13 @@ export const KeySection = ({
             sx={{ cursor: "pointer" }}
             onClick={() => handleGroupClick(group)}
           >
-            {group.filename}: {group.fullKey}
+            {group.fileName}: {group.full_key_path}
           </Typo1624>
-          {group.isKeyNameChanged &&
-            group.pathSegment !== group.old_pathSegment && (
+          {group.isNameEdited &&
+            group.key_path_segment !== group.old_segment && (
               <Typo1624 color='red'>
-                (Old key name: {group.oldFullKey ? group.oldFullKey : "Null"})
+                (Old key name:{" "}
+                {group.old_full_key_path ? group.old_full_key_path : "Null"})
               </Typo1624>
             )}
 

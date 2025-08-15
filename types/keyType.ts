@@ -62,6 +62,19 @@ export interface KeyState
 }
 
 // -----------------------------------
+// GroupedKey
+// -----------------------------------
+export type GroupedKeys = {
+  fileName: string;
+  color: string; // color for the filename
+  list: KeyState[];
+  isNameEdited: boolean; // Indicates if the key name has been edited
+} & Pick<
+  WithHierarchy,
+  "full_key_path" | "old_full_key_path" | "key_path_segment" | "old_segment"
+>;
+
+// -----------------------------------
 // File State
 // -----------------------------------
 

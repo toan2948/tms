@@ -7,12 +7,11 @@ import {
   updateChangedKeys,
 } from "@/utils/languages/dataFunctions";
 import {
-  filterChangedKeys,
   findParentIdsToRootByFullKeyPath,
   findSelectedKey,
   formatEmptyNewKeysForSessionDialog,
   formatSessionDialogData,
-  groupKeysByFullPath,
+  processedChangedKeys,
 } from "@/utils/languages/processData";
 import { Box, Button, Dialog, DialogTitle, Stack } from "@mui/material";
 import { Dispatch, SetStateAction, useMemo, useState } from "react";
@@ -32,54 +31,16 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
   const { filesInfo, setFilesInfo } = useAllKeyFileStore();
   const { setSelectedTreeKey, setParentIDs, setFileName } = useTreeKeyStore();
   const { setSeeAllChanges } = useOtherStateStore();
-  const changedKeys = useMemo(() => filterChangedKeys(filesInfo), [filesInfo]);
 
-  // console.log("changedKeys", changedKeys);
+  const {
+    changedKeys,
+    editedKeys,
+    NotEmptyNewKeys,
+    missingTranslationKeys,
+    NotMissingTranslationKeys,
+  } = useMemo(() => processedChangedKeys(filesInfo), [filesInfo]);
 
-  const editedKeys = useMemo(
-    () => changedKeys.filter((key) => !key.isNew),
-    [changedKeys]
-  );
-
-  // New keys will be inserted into DB
-  const newKeys = useMemo(
-    () => changedKeys.filter((key) => key.isNew),
-    [changedKeys]
-  );
-
-  //the new keys are displayed in the session dialog
-  const newLowestLevelKeys = useMemo(
-    () =>
-      changedKeys.filter(
-        (key) => key.isNew && !key.has_children //reduce the key to english language only
-      ),
-    [changedKeys]
-  );
-
-  const groupedNewKeysFullPath = groupKeysByFullPath(newLowestLevelKeys);
-
-  //the new keys are missing translations
-  const emptyNewKeys = useMemo(
-    () =>
-      groupedNewKeysFullPath.filter((group) =>
-        group.keys.every((key) => key.value === null || key.value === "")
-      ),
-    [groupedNewKeysFullPath]
-  );
-
-  //the new keys that have translations
-  const NotEmptyNewKeys = useMemo(
-    () =>
-      groupedNewKeysFullPath
-        .filter((group) =>
-          group.keys.some((key) => key.value !== null && key.value !== "")
-        )
-        .map((group) => group.keys)
-        .flat(),
-    [groupedNewKeysFullPath]
-  );
-
-  //format data before displaying
+  //formatting data for displaying
   const editedKeysSessionFormat = useMemo(
     () =>
       formatSessionDialogData(
@@ -94,9 +55,14 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
     [NotEmptyNewKeys]
   );
 
-  const emptyNewKeysSessionFormat = useMemo(
-    () => formatEmptyNewKeysForSessionDialog(emptyNewKeys),
-    [emptyNewKeys]
+  const emptyKeysSessionFormat = useMemo(
+    () => formatEmptyNewKeysForSessionDialog(missingTranslationKeys),
+    [missingTranslationKeys]
+  );
+  // New keys will be inserted into DB (all parent and their children keys)
+  const newKeys = useMemo(
+    () => NotMissingTranslationKeys.filter((key) => key.isNew),
+    [NotMissingTranslationKeys]
   );
 
   //--
@@ -107,7 +73,7 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
   };
 
   const updateDB = async () => {
-    if (emptyNewKeysSessionFormat.length > 0) {
+    if (emptyKeysSessionFormat.length > 0) {
       setOpenMissingTranslationKeysDialog(true); // Open dialog if there are missing translation keys
       return;
     }
@@ -139,17 +105,17 @@ export function SessionDialog({ open, onClose }: SessionDialogProps) {
       <MissingTranslationKeysDialog
         open={openMissingTranslationKeysDialog}
         setOpen={setOpenMissingTranslationKeysDialog}
-        data={emptyNewKeysSessionFormat}
+        data={emptyKeysSessionFormat}
       />
       <Box
         sx={{
           padding: "10px",
         }}
       >
-        {emptyNewKeysSessionFormat && emptyNewKeysSessionFormat.length > 0 && (
+        {emptyKeysSessionFormat && emptyKeysSessionFormat.length > 0 && (
           <SessionKeyList
             keyStatus='Missing translation values'
-            formattedKeyList={emptyNewKeysSessionFormat}
+            formattedKeyList={emptyKeysSessionFormat}
             handleClick={handleClick}
           />
         )}

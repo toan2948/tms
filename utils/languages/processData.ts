@@ -1,6 +1,11 @@
 // lib/translations/group.ts
 
-import { FileState, KeyState, TranslationTreeKey } from "@/types/keyType";
+import {
+  FileState,
+  GroupedKeys,
+  KeyState,
+  TranslationTreeKey,
+} from "@/types/keyType";
 
 export function getEnglishKeyVersion(
   fullKey: string,
@@ -107,8 +112,8 @@ export type ColoredChangedKey = {
   color: string;
   fileName: string;
   full_key_path: string;
-  isKeyNameChanged: boolean;
-  oldFullKey: string;
+  isNameEdited: boolean;
+  old_full_key_path: string;
 };
 export const formatSessionDialogData = (
   keys: KeyState[],
@@ -121,10 +126,10 @@ export const formatSessionDialogData = (
   const groupedMap = new Map<
     string,
     {
-      filename: string;
-      fullKey: string;
-      isKeyNameChanged: boolean;
-      oldFullKey: string;
+      fileName: string;
+      full_key_path: string;
+      isNameEdited: boolean;
+      old_full_key_path: string;
       languages: Set<string>;
     }
   >();
@@ -133,10 +138,10 @@ export const formatSessionDialogData = (
     const groupKey = `${item.fileName}: ${item.full_key_path}`;
     if (!groupedMap.has(groupKey)) {
       groupedMap.set(groupKey, {
-        filename: item.fileName ? item.fileName : "Unknown File",
-        fullKey: item.full_key_path,
-        isKeyNameChanged: item.full_key_path !== item.old_full_key_path,
-        oldFullKey: item.old_full_key_path || "",
+        fileName: item.fileName ? item.fileName : "Unknown File",
+        full_key_path: item.full_key_path,
+        isNameEdited: item.full_key_path !== item.old_full_key_path,
+        old_full_key_path: item.old_full_key_path || "",
         languages: new Set(),
       });
     }
@@ -149,10 +154,10 @@ export const formatSessionDialogData = (
   const filenameToColor = new Map<string, string>();
 
   let colorIndex = 0;
-  for (const { filename } of groupedMap.values()) {
-    if (!filenameToColor.has(filename)) {
+  for (const { fileName } of groupedMap.values()) {
+    if (!filenameToColor.has(fileName)) {
       filenameToColor.set(
-        filename,
+        fileName,
         colorPalette[colorIndex % colorPalette.length]
       );
       colorIndex++;
@@ -166,26 +171,21 @@ export const formatSessionDialogData = (
   ).map(
     ([
       key,
-      {
-        filename,
-        languages,
-        fullKey: fullKeyPath,
-        isKeyNameChanged,
-        oldFullKey,
-      },
+      { fileName, languages, full_key_path, isNameEdited, old_full_key_path },
     ]) => ({
       label: `${key} ${
-        Array.from(languages).length > 1
+        Array.from(languages).length > 0
           ? `-- ${Array.from(languages).join(", ")}`
           : ""
       }`,
-      color: filenameToColor.get(filename)!,
-      fileName: filename,
-      isKeyNameChanged,
-      oldFullKey,
-      full_key_path: fullKeyPath,
+      color: filenameToColor.get(fileName)!,
+      fileName: fileName,
+      isNameEdited,
+      old_full_key_path,
+      full_key_path,
     })
   );
+
   return changedKeyStrings;
 };
 
@@ -286,38 +286,28 @@ export function buildKeyTreeFromFlatList(
   return tree;
 }
 
-export type GroupedTranslationValues = {
-  filename: string;
-  fullKey: string;
-  isKeyNameChanged: boolean; // old full key path
-  oldFullKey: string;
-  list: KeyState[];
-  color: string; // color for the filename
-  pathSegment: string;
-  old_pathSegment: string; // old path segment
-};
-
-export const groupTranslationValues = (
+export const groupingKeys = (
   keys: KeyState[],
-  filterFn: (item: KeyState) => boolean
-): GroupedTranslationValues[] => {
-  const groupedMap = new Map<string, GroupedTranslationValues>();
+  filterFn?: (item: KeyState) => boolean
+): GroupedKeys[] => {
+  const groupedMap = new Map<string, GroupedKeys>();
 
-  const filteredKeys = keys.filter(filterFn);
+  const filteredKeys = filterFn ? keys.filter(filterFn) : keys;
+
   filteredKeys.forEach((item) => {
     const key = `${item.fileName}:::${item.full_key_path}`; // unique composite key
 
     if (!groupedMap.has(key)) {
       groupedMap.set(key, {
-        filename: item.fileName ? item.fileName : "Unknown File",
-        fullKey: item.full_key_path,
-        isKeyNameChanged:
+        fileName: item.fileName ? item.fileName : "Unknown File",
+        full_key_path: item.full_key_path,
+        isNameEdited:
           item.full_key_path !== item.old_full_key_path && !item.isNew, //by a new key, the old name will not be shown
-        oldFullKey: item.old_full_key_path || "",
+        old_full_key_path: item.old_full_key_path || "",
         list: [item],
         color: "", // to be assigned later
-        pathSegment: item.key_path_segment,
-        old_pathSegment: item.old_segment || "", // old path segment
+        key_path_segment: item.key_path_segment,
+        old_segment: item.old_segment || "", // old path segment
       });
     } else {
       groupedMap.get(key)!.list.push(item);
@@ -325,15 +315,14 @@ export const groupTranslationValues = (
   });
 
   const groups = Array.from(groupedMap.values());
-  // console.log("Grouped Translation Values:", groups);
   const filenameColorMap = new Map<string, string>();
   let colorIndex = 0;
 
   for (const group of groups) {
-    const filename = group.filename;
-    if (!filenameColorMap.has(filename)) {
+    const fName = group.fileName;
+    if (!filenameColorMap.has(fName)) {
       const color = colorPalette[colorIndex % colorPalette.length];
-      filenameColorMap.set(filename, color);
+      filenameColorMap.set(fName, color);
       colorIndex++;
     }
   }
@@ -341,7 +330,7 @@ export const groupTranslationValues = (
   // Attach color to each group based on its filename
   return groups.map((group) => ({
     ...group,
-    color: filenameColorMap.get(group.filename)!,
+    color: filenameColorMap.get(group.fileName)!,
   }));
 };
 
@@ -454,16 +443,6 @@ export function groupKeysByFullPath(keys: KeyState[]): GroupFullPath[] {
     .map(([full_key_path, keys]) => ({ full_key_path, keys }))
     .sort((a, b) => a.full_key_path.localeCompare(b.full_key_path));
 }
-function findMissingKeys(
-  allKeys: KeyState[],
-  groups: GroupFullPath[]
-): KeyState[] {
-  // Create a Set for quick lookup of group paths
-  const groupPaths = new Set(groups.map((g) => g.full_key_path));
-
-  // Filter keys whose path is not in the Set
-  return allKeys.filter((key) => !groupPaths.has(key.full_key_path));
-}
 
 function getRandomColor(existingColors: Set<string>): string {
   const letters = "0123456789ABCDEF";
@@ -493,3 +472,56 @@ export function formatEmptyNewKeysForSessionDialog(
     };
   });
 }
+
+export function findNonMissingTranslationKeys(
+  allKeys: KeyState[],
+  groups: GroupFullPath[]
+): KeyState[] {
+  // Create a Set for quick lookup of group paths
+  const groupPaths = new Set(groups.map((g) => g.full_key_path));
+
+  // Filter keys whose path is not in the Set
+  return allKeys.filter((key) => !groupPaths.has(key.full_key_path));
+}
+
+export const processedChangedKeys = (filesInfo: FileState<KeyState>[]) => {
+  const changedKeys = filterChangedKeys(filesInfo);
+  const missingTranslationKeys = groupKeysByFullPath(changedKeys).filter(
+    (group) =>
+      group.keys.every(
+        (key) => !key.has_children && (key.value === null || key.value === "")
+      )
+  );
+
+  const NotMissingTranslationKeys = findNonMissingTranslationKeys(
+    changedKeys,
+    missingTranslationKeys
+  );
+
+  //these new keys will be displayed in the session dialog/AllChangesView
+  const newLowestLevelKeys = NotMissingTranslationKeys.filter(
+    (key) => key.isNew && !key.has_children //reduce the key to english language only
+  );
+
+  const groupedNewKeysFullPath = groupKeysByFullPath(newLowestLevelKeys);
+
+  //the new keys that have translations
+  const NotEmptyNewKeys = groupedNewKeysFullPath
+    .filter((group) =>
+      group.keys.some((key) => key.value !== null && key.value !== "")
+    )
+    .map((group) => group.keys)
+    .flat();
+
+  //keys whose value/name has been changed
+  const editedKeys = NotMissingTranslationKeys.filter((key) => !key.isNew);
+  return {
+    changedKeys,
+    missingTranslationKeys,
+    NotMissingTranslationKeys,
+    newLowestLevelKeys,
+    groupedNewKeysFullPath,
+    NotEmptyNewKeys,
+    editedKeys,
+  };
+};

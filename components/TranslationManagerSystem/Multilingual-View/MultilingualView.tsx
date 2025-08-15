@@ -2,6 +2,7 @@
 import RedOutlineButton from "@/components/ui/RedOutlineButton";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useOtherStateStore } from "@/store/useOtherStateStore";
+import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { useUserStore } from "@/store/useUserStore";
 import { useViewStore } from "@/store/useViewStore";
 import { fetchAllTranslationFiles } from "@/utils/languages/dataFunctions";
@@ -22,6 +23,7 @@ const MultilingualView = () => {
   const [openDialog, setOpenDialog] = React.useState(false);
   const { multiViewState } = useViewStore();
   const { user } = useUserStore();
+  const { setSelectedTreeKey } = useTreeKeyStore();
 
   const { setFilesInfo } = useAllKeyFileStore();
   const [openResetAllChangesDialog, setOpenResetAllChangesDialog] =
@@ -36,6 +38,7 @@ const MultilingualView = () => {
     } catch (error) {
       console.error("Error loading translation data:", error);
     }
+    setSelectedTreeKey(null);
     setOpenResetAllChangesDialog(false);
   };
 
