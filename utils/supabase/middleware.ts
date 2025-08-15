@@ -1,11 +1,10 @@
+// tms/utils/supabase/middleware.ts
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
-    request,
-  });
-  console.log("Middleware request URL:", request.url);
+  // base response that will carry any cookie updates from Supabase
+  let supabaseResponse = NextResponse.next({ request });
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -16,55 +15,56 @@ export async function updateSession(request: NextRequest) {
           return request.cookies.getAll();
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value)
-          );
-          supabaseResponse = NextResponse.next({
-            request,
+          // update cookies on the incoming request (so subsequent reads see them)
+          cookiesToSet.forEach(({ name, value }) => {
+            request.cookies.set(name, value);
           });
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
-          );
+
+          // mirror them into the response we’ll forward/return
+          supabaseResponse = NextResponse.next({ request });
+          cookiesToSet.forEach(({ name, value }) => {
+            // NOTE: Next's types don't expose an options object here
+            supabaseResponse.cookies.set(name, value);
+          });
         },
       },
     }
   );
 
-  // Do not run code between createServerClient and
-  // supabase.auth.getUser(). A simple mistake could make it very hard to debug
-  // issues with users being randomly logged out.
-
-  // IMPORTANT: DO NOT REMOVE auth.getUser()
-
+  // ⚠️ Do not add code between client creation and getUser()
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  console.log("User middleware:", user);
+  const pathname = request.nextUrl.pathname;
+  const isLogin = pathname.startsWith("/login");
+  const isAuth = pathname.startsWith("/auth");
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith("/login") &&
-    !request.nextUrl.pathname.startsWith("/auth")
-  ) {
-    // no user, potentially respond by redirecting the user to the login page
-    const url = request.nextUrl.clone();
-    url.pathname = "/login";
-    return NextResponse.redirect(url);
+  // 1) Unauthenticated -> redirect to /login
+  if (!user && !isLogin && !isAuth) {
+    const url = new URL("/login", request.url);
+    const redirect = NextResponse.redirect(url);
+
+    // copy cookies from supabaseResponse into the redirect
+    supabaseResponse.cookies.getAll().forEach(({ name, value }) => {
+      redirect.cookies.set(name, value);
+    });
+
+    return redirect;
   }
 
-  // IMPORTANT: You *must* return the supabaseResponse object as it is.
-  // If you're creating a new response object with NextResponse.next() make sure to:
-  // 1. Pass the request in it, like so:
-  //    const myNewResponse = NextResponse.next({ request })
-  // 2. Copy over the cookies, like so:
-  //    myNewResponse.cookies.setAll(supabaseResponse.cookies.getAll())
-  // 3. Change the myNewResponse object to fit your needs, but avoid changing
-  //    the cookies!
-  // 4. Finally:
-  //    return myNewResponse
-  // If this is not done, you may be causing the browser and server to go out
-  // of sync and terminate the user's session prematurely!
+  // 2) Authenticated visiting /login -> redirect to /
+  if (user && isLogin) {
+    const url = new URL("/", request.url);
+    const redirect = NextResponse.redirect(url);
 
+    supabaseResponse.cookies.getAll().forEach(({ name, value }) => {
+      redirect.cookies.set(name, value);
+    });
+
+    return redirect;
+  }
+
+  // 3) Otherwise continue
   return supabaseResponse;
 }
