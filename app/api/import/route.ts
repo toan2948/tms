@@ -159,10 +159,6 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       });
     }
 
-    console.log(
-      "meta first 40 chars:",
-      formData.get("meta")?.toString().slice(0, 40) || "(empty)"
-    );
     // Parse meta (string OR Blob) safely
     const metaEntry = formData.get("meta");
     if (!metaEntry) {

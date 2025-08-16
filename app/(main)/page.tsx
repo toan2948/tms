@@ -29,9 +29,6 @@ function HomePage() {
     fetchProfile();
   }, []);
 
-  useEffect(() => {
-    console.log("User profile updated:", user);
-  }, [user]);
   //fetch languages
   useEffect(() => {
     async function fetchLanguagesFromDB() {

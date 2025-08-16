@@ -14,7 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import { redirect } from "next/navigation";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useState } from "react";
 
 // ==== Types ====
 interface LanguageOption {
@@ -55,9 +55,6 @@ export default function ImportPage() {
     }));
     setFiles((prev) => [...prev, ...newFiles]);
   };
-  useEffect(() => {
-    console.log("langu", languages);
-  }, []);
 
   // Remove one file
   const handleRemove = (index: number) => {

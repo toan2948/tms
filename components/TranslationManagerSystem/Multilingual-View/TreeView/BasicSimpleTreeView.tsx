@@ -62,7 +62,6 @@ export default function BasicSimpleTreeView({ data }: TreeViewProps) {
     }, 100);
 
     return () => clearTimeout(timeout); // Cleanup on unmount
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTreeKey, fileNameState]);
 
   return (

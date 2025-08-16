@@ -291,6 +291,5 @@ export async function fetchFiles(): Promise<WithFile[]> {
   if (langError || !files) {
     throw new Error(`No File not found: ${langError?.message}`);
   }
-  console.log("fetchFiles files", files);
   return files;
 }

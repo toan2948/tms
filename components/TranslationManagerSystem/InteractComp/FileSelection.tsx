@@ -27,8 +27,6 @@ const FileSelection = () => {
       setFiles(data);
     };
     fetchFilesFromDB();
-
-    console.log("FileSelection files", files);
   }, []);
   const reducedFiles = useMemo(
     () => [...new Set(files.map((item) => item.fileName))],
