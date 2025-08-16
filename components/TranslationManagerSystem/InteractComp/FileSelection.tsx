@@ -38,8 +38,7 @@ const FileSelection = () => {
   return (
     <FormControl
       sx={{
-        width: "20%",
-        marginBottom: "20px",
+        width: "250px",
         visibility: !seeAllChanges ? "visible" : "hidden",
       }}
     >

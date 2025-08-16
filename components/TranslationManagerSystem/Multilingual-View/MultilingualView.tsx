@@ -8,7 +8,7 @@ import { useViewStore } from "@/store/useViewStore";
 import { fetchAllTranslationFiles } from "@/utils/languages/dataFunctions";
 import { isDevOrAdmin } from "@/utils/languages/login";
 import { Button, Stack } from "@mui/material";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import ChangeViewButtons from "../InteractComp/ChangeViewButtons";
 import FileSelection from "../InteractComp/FileSelection";
@@ -25,6 +25,7 @@ const MultilingualView = () => {
   const { multiViewState } = useViewStore();
   const { user } = useUserStore();
   const { setSelectedTreeKey } = useTreeKeyStore();
+  const router = useRouter();
 
   const { setFilesInfo } = useAllKeyFileStore();
   const [openResetAllChangesDialog, setOpenResetAllChangesDialog] =
@@ -59,8 +60,15 @@ const MultilingualView = () => {
         justifyContent={"space-between"}
         alignItems={"center"}
       >
-        <FileSelection />
-        <Button onClick={() => redirect("/import")}>Import</Button>
+        <Stack
+          direction={"row"}
+          alignItems={"center"}
+          sx={{ marginBottom: "20px" }}
+        >
+          <FileSelection />
+          <Button onClick={() => router.push("/import")}>Import</Button>
+        </Stack>
+
         {/* switch between multi and bilingual views */}
         {multiViewState ? (
           seeAllChanges ? (
