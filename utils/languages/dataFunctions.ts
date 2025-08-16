@@ -1,4 +1,4 @@
-import { KeyState, WithLanguage } from "@/types/keyType";
+import { KeyState, WithFile, WithLanguage } from "@/types/keyType";
 import { createClient } from "../supabase/client";
 
 //UNUSED Function
@@ -275,4 +275,26 @@ export async function fetchLanguages(): Promise<WithLanguage[]> {
     throw new Error(`No Language not found: ${langError?.message}`);
   }
   return language;
+}
+
+export async function fetchFiles(): Promise<WithFile[]> {
+  const supabase = await createClient();
+
+  //just look for keys of files in english
+
+  const { data: files, error: langError } = await supabase
+    .from("translation_files")
+    .select(
+      `
+      language_id,
+      fileName:filename,
+      file_id:id
+    `
+    )
+    .order("filename", { ascending: true });
+  if (langError || !files) {
+    throw new Error(`No File not found: ${langError?.message}`);
+  }
+  console.log("fetchFiles files", files);
+  return files;
 }

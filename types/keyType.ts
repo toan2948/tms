@@ -33,6 +33,12 @@ export interface WithNotes {
   notes: string | null;
 }
 
+export interface WithFile {
+  file_id?: string;
+  fileName?: string;
+  language_id?: string;
+}
+
 // -----------------------------------
 // Key Value Types
 // -----------------------------------
@@ -42,9 +48,8 @@ export interface KeyState
     WithTimestamps,
     WithHierarchy,
     WithLanguage,
-    WithNotes {
-  file_id?: string;
-  fileName?: string;
+    WithNotes,
+    WithFile {
   value: string | null;
   old_value: string | null;
   isNew?: boolean;

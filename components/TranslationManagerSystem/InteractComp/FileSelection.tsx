@@ -1,5 +1,6 @@
 import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
+import { fetchFiles } from "@/utils/languages/dataFunctions";
 import {
   FormControl,
   InputLabel,
@@ -7,9 +8,10 @@ import {
   Select,
   SelectChangeEvent,
 } from "@mui/material";
+import { useEffect, useMemo } from "react";
 
 const FileSelection = () => {
-  const { seeAllChanges } = useOtherStateStore();
+  const { seeAllChanges, setFiles, files } = useOtherStateStore();
   const { setSelectedTreeKey, fileNameState, setFileName } = useTreeKeyStore();
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -17,6 +19,22 @@ const FileSelection = () => {
 
     setFileName(event.target.value as string);
   };
+
+  useEffect(() => {
+    const fetchFilesFromDB = async () => {
+      const data = await fetchFiles();
+      localStorage.setItem("files", JSON.stringify(data));
+      setFiles(data);
+    };
+    fetchFilesFromDB();
+
+    console.log("FileSelection files", files);
+  }, []);
+  const reducedFiles = useMemo(
+    () => [...new Set(files.map((item) => item.fileName))],
+    [files]
+  );
+
   return (
     <FormControl
       sx={{
@@ -33,8 +51,11 @@ const FileSelection = () => {
         label='filename'
         onChange={handleChange}
       >
-        <MenuItem value={"common"}>Common</MenuItem>
-        <MenuItem value={"movie"}>Movie</MenuItem>
+        {reducedFiles.map((name, index) => (
+          <MenuItem key={index} value={name}>
+            {name}
+          </MenuItem>
+        ))}
       </Select>
     </FormControl>
   );
