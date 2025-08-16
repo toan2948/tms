@@ -1,3 +1,4 @@
+import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useViewStore } from "@/store/useViewStore";
 import DoubleArrowIcon from "@mui/icons-material/DoubleArrow";
 import {
@@ -11,6 +12,8 @@ import {
 } from "@mui/material";
 
 const LanguageSelection = () => {
+  const { languages } = useAllKeyFileStore();
+
   const {
     sourceLanguage,
     targetLanguage,
@@ -38,8 +41,11 @@ const LanguageSelection = () => {
             onChange={handleChangeSource}
             sx={{ width: "200px" }}
           >
-            <MenuItem value='english'>English</MenuItem>
-            <MenuItem value='chinese'>Chinese</MenuItem>
+            {languages.map((lang) => (
+              <MenuItem key={lang.language_id} value={lang.language_name}>
+                {lang.language_name}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
       </Box>
@@ -55,10 +61,11 @@ const LanguageSelection = () => {
             onChange={handleChangeTarget}
             sx={{ width: "200px" }}
           >
-            <MenuItem value='russian'>Russian</MenuItem>
-            <MenuItem value='spanish'>Spain</MenuItem>
-            <MenuItem value='chinese'>Chinese</MenuItem>
-            <MenuItem value='english'>Chinese</MenuItem>
+            {languages.map((lang) => (
+              <MenuItem key={lang.language_id} value={lang.language_name}>
+                {lang.language_name}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
       </Box>

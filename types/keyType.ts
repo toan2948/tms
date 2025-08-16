@@ -5,6 +5,7 @@
 export interface WithLanguage {
   language_code: string;
   language_name: string;
+  language_id?: string;
 }
 
 export interface WithVersion {
@@ -30,16 +31,6 @@ export interface WithHierarchy {
 
 export interface WithNotes {
   notes: string | null;
-}
-
-// -----------------------------------
-// Language Types
-// -----------------------------------
-
-export interface LanguageType {
-  // For data returned from the "language" table
-  code: string;
-  name: string;
 }
 
 // -----------------------------------

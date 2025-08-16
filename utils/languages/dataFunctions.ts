@@ -1,4 +1,4 @@
-import { KeyState, LanguageType } from "@/types/keyType";
+import { KeyState, WithLanguage } from "@/types/keyType";
 import { createClient } from "../supabase/client";
 
 //UNUSED Function
@@ -256,14 +256,20 @@ export async function deleteKeyByFullPathAndFileName(
   return { deletedCount: idsToDelete.length };
 }
 
-export async function fetchLanguages(): Promise<LanguageType[]> {
+export async function fetchLanguages(): Promise<WithLanguage[]> {
   const supabase = await createClient();
 
   //just look for keys of files in english
 
   const { data: language, error: langError } = await supabase
     .from("languages")
-    .select("code, name")
+    .select(
+      `
+      language_id:id,
+      language_code:code,
+      language_name:name
+    `
+    )
     .order("code", { ascending: true });
   if (langError || !language) {
     throw new Error(`No Language not found: ${langError?.message}`);

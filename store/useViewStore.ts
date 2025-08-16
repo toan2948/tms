@@ -12,8 +12,8 @@ type ViewStore = {
 
 export const useViewStore = create<ViewStore>((set) => ({
   multiViewState: true,
-  sourceLanguage: "english",
-  targetLanguage: "spanish",
+  sourceLanguage: "English",
+  targetLanguage: "Spanish",
   setView: (isMulti) => set(() => ({ multiViewState: isMulti })),
   setTargetLanguage: (target) => set(() => ({ targetLanguage: target })),
   setSourceLanguage: (source) => set(() => ({ sourceLanguage: source })),

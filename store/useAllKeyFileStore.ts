@@ -1,13 +1,13 @@
-import { FileState, KeyState, LanguageType } from "@/types/keyType";
+import { FileState, KeyState, WithLanguage } from "@/types/keyType";
 import { create } from "zustand";
 import { useTreeKeyStore } from "./useTreeKeyStore";
 
 type AllFileState = {
   //these states are to handle the error: localStorage is not defined (in case only localStorage is used)
   filesInfo: FileState<KeyState>[];
-  languages: LanguageType[];
+  languages: WithLanguage[];
 
-  setLanguages: (languages: LanguageType[]) => void;
+  setLanguages: (languages: WithLanguage[]) => void;
   addKeysToFilesInfo: (
     key: KeyState[],
     fileName: string,

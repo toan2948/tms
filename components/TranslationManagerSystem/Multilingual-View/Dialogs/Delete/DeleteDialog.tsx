@@ -8,7 +8,6 @@ import {
 } from "@mui/material";
 import { Dispatch, SetStateAction } from "react";
 
-import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 
 export interface DeleteKeyDialogProps {
@@ -30,7 +29,6 @@ export function DeleteDialog({
 }: DeleteKeyDialogProps) {
   const { selectedTreeKey } = useTreeKeyStore();
 
-  const {} = useAllKeyFileStore();
   const handleClose = () => {
     setOpen(false);
   };

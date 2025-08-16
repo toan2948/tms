@@ -5,10 +5,13 @@ import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { useUserStore } from "@/store/useUserStore";
 import { useViewStore } from "@/store/useViewStore";
-import { fetchAllTranslationFiles } from "@/utils/languages/dataFunctions";
+import {
+  fetchAllTranslationFiles,
+  fetchLanguages,
+} from "@/utils/languages/dataFunctions";
 import { isDevOrAdmin } from "@/utils/languages/login";
 import { Stack } from "@mui/material";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChangeViewButtons from "../InteractComp/ChangeViewButtons";
 import FileSelection from "../InteractComp/FileSelection";
 import LanguageSelection from "../InteractComp/LanguageSelection";
@@ -25,9 +28,21 @@ const MultilingualView = () => {
   const { user } = useUserStore();
   const { setSelectedTreeKey } = useTreeKeyStore();
 
-  const { setFilesInfo } = useAllKeyFileStore();
+  const { setFilesInfo, setLanguages } = useAllKeyFileStore();
   const [openResetAllChangesDialog, setOpenResetAllChangesDialog] =
     useState(false);
+
+  //fetch languages
+  useEffect(() => {
+    async function fetchLanguagesFromDB() {
+      // This function can be used to fetch languages if needed
+      // Currently, it is not used in this component
+      const data = await fetchLanguages();
+      localStorage.setItem("languages", JSON.stringify(data));
+      setLanguages(data);
+    }
+    fetchLanguagesFromDB();
+  }, []);
 
   const resetChanges = async () => {
     // localStorage.removeItem("filesStorage");
