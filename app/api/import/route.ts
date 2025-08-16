@@ -1,17 +1,16 @@
 // app/api/import/route.ts
 export const runtime = "nodejs";
 
-import { createClient, SupabaseClient } from "@supabase/supabase-js";
+import { WithLanguage } from "@/types/keyType";
+import { createClient } from "@/utils/supabase/client";
+
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 
 /* ========= Types ========= */
-interface LanguageOption {
-  language_code: string;
-  language_name: string;
-}
+
 interface MetaData {
-  [filename: string]: LanguageOption;
+  [filename: string]: WithLanguage;
 }
 
 type JsonPrimitive = string | number | boolean | null;
@@ -43,10 +42,7 @@ interface UploadResult {
 }
 
 /* ========= Supabase ========= */
-const supabase: SupabaseClient = createClient(
-  process.env.SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-);
+const supabase = createClient();
 
 /* ========= Helpers ========= */
 function stripBOM(s: string): string {
