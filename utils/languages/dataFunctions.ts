@@ -259,8 +259,6 @@ export async function deleteKeyByFullPathAndFileName(
 export async function fetchLanguages(): Promise<WithLanguage[]> {
   const supabase = await createClient();
 
-  //just look for keys of files in english
-
   const { data: language, error: langError } = await supabase
     .from("languages")
     .select(
@@ -279,8 +277,6 @@ export async function fetchLanguages(): Promise<WithLanguage[]> {
 
 export async function fetchFiles(): Promise<WithFile[]> {
   const supabase = await createClient();
-
-  //just look for keys of files in english
 
   const { data: files, error: langError } = await supabase
     .from("translation_files")

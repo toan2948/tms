@@ -1,11 +1,10 @@
 "use client";
 
-import { createClient } from "@/utils/supabase/client";
+import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Box,
   Button,
-  CircularProgress,
   FormControl,
   IconButton,
   InputLabel,
@@ -14,6 +13,7 @@ import {
   Select,
   Typography,
 } from "@mui/material";
+import { redirect } from "next/navigation";
 import { ChangeEvent, useEffect, useState } from "react";
 
 // ==== Types ====
@@ -40,32 +40,11 @@ interface ApiResponse {
 }
 
 export default function ImportPage() {
-  const supabase = createClient();
   const [files, setFiles] = useState<PendingFile[]>([]);
-  const [languages, setLanguages] = useState<LanguageOption[]>([]);
-  const [loadingLangs, setLoadingLangs] = useState(true);
+  const { languages } = useAllKeyFileStore();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
-
-  // Fetch languages from Supabase
-  useEffect(() => {
-    const fetchLanguages = async () => {
-      setLoadingLangs(true);
-      const { data, error } = await supabase
-        .from("languages")
-        .select("id, code, name")
-        .order("name", { ascending: true });
-      if (error) {
-        setError("Failed to fetch languages: " + error.message);
-      } else if (data) {
-        setLanguages(data);
-      }
-      setLoadingLangs(false);
-    };
-
-    fetchLanguages();
-  }, [supabase]);
 
   // Add files (append mode)
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -76,6 +55,9 @@ export default function ImportPage() {
     }));
     setFiles((prev) => [...prev, ...newFiles]);
   };
+  useEffect(() => {
+    console.log("langu", languages);
+  }, []);
 
   // Remove one file
   const handleRemove = (index: number) => {
@@ -84,9 +66,20 @@ export default function ImportPage() {
 
   // Change language selection for one file
   const handleLanguageChange = (index: number, languageId: string) => {
-    const lang = languages.find((l) => l.id === languageId) ?? null;
+    const lang = languages.find((l) => l.language_id === languageId) ?? null;
     setFiles((prev) =>
-      prev.map((f, i) => (i === index ? { ...f, language: lang } : f))
+      prev.map((f, i) =>
+        i === index
+          ? {
+              ...f,
+              language: {
+                code: lang ? lang.language_code : "",
+                name: lang ? lang.language_name : "",
+                id: lang?.language_id ?? "",
+              },
+            }
+          : f
+      )
     );
   };
 
@@ -136,6 +129,8 @@ export default function ImportPage() {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setUploading(false);
+      localStorage.removeItem("filesStorage");
+      redirect("/");
     }
   };
 
@@ -173,21 +168,18 @@ export default function ImportPage() {
 
           <FormControl sx={{ minWidth: 150 }} size='small'>
             <InputLabel>Language</InputLabel>
-            {loadingLangs ? (
-              <CircularProgress size={20} />
-            ) : (
-              <Select
-                value={pf.language?.id ?? ""}
-                label='Language'
-                onChange={(e) => handleLanguageChange(index, e.target.value)}
-              >
-                {languages.map((lang) => (
-                  <MenuItem key={lang.id} value={lang.id}>
-                    {lang.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            )}
+
+            <Select
+              value={pf.language?.id ?? ""}
+              label='Language'
+              onChange={(e) => handleLanguageChange(index, e.target.value)}
+            >
+              {languages.map((lang) => (
+                <MenuItem key={lang.language_id} value={lang.language_id}>
+                  {lang.language_name}
+                </MenuItem>
+              ))}
+            </Select>
           </FormControl>
 
           <IconButton onClick={() => handleRemove(index)}>

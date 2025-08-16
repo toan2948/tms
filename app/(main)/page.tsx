@@ -1,8 +1,10 @@
 "use client";
 import MultilingualView from "@/components/TranslationManagerSystem/Multilingual-View/MultilingualView";
 import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
+import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useUserStore } from "@/store/useUserStore";
 import { useViewStore } from "@/store/useViewStore";
+import { fetchLanguages } from "@/utils/languages/dataFunctions";
 import { getProfile } from "@/utils/languages/login";
 import { Box, Button, ButtonGroup, Stack } from "@mui/material";
 import { useEffect } from "react";
@@ -12,6 +14,8 @@ function HomePage() {
   const { multiViewState, setView } = useViewStore();
 
   const { setUser, user } = useUserStore();
+
+  const { setLanguages } = useAllKeyFileStore();
 
   const handleSignout = async () => {
     await signOut();
@@ -28,6 +32,26 @@ function HomePage() {
   useEffect(() => {
     console.log("User profile updated:", user);
   }, [user]);
+  //fetch languages
+  useEffect(() => {
+    async function fetchLanguagesFromDB() {
+      const data = await fetchLanguages();
+      const localData = localStorage.getItem("languages");
+
+      if (localData !== null && localData !== "[]") {
+        // console.log("Using data from localStorage");
+        const parsedData = JSON.parse(localData);
+        setLanguages(parsedData);
+      } else {
+        setLanguages(data);
+      }
+
+      localStorage.setItem("languages", JSON.stringify(data));
+      setLanguages(data);
+    }
+
+    fetchLanguagesFromDB();
+  }, []);
 
   return (
     <Box sx={{ padding: "20px 20px 20px 20px", width: "100%", height: "100%" }}>
