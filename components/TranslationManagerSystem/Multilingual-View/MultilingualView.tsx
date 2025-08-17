@@ -66,7 +66,9 @@ const MultilingualView = () => {
           sx={{ marginBottom: "20px" }}
         >
           <FileSelection />
-          <Button onClick={() => router.push("/import")}>Import</Button>
+          <Button variant='contained' onClick={() => router.push("/import")}>
+            Import Files
+          </Button>
         </Stack>
 
         {/* switch between multi and bilingual views */}
