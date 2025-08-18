@@ -1,4 +1,5 @@
 import { KeyState, WithFile, WithLanguage } from "@/types/keyType";
+import { NextResponse } from "next/server";
 import { createClient } from "../supabase/client";
 
 //UNUSED Function
@@ -292,4 +293,56 @@ export async function fetchFiles(): Promise<WithFile[]> {
     throw new Error(`No File not found: ${langError?.message}`);
   }
   return files;
+}
+
+export async function deleteFile(fileName: string) {
+  const supabase = await createClient();
+  try {
+    if (!fileName) {
+      return NextResponse.json(
+        { ok: false, error: "No fileIds provided" },
+        { status: 400 }
+      );
+    }
+
+    const { data: files, error: fileError } = await supabase
+      .from("translation_files")
+      .select("id")
+      .eq("filename", fileName);
+
+    if (fileError || !files?.length)
+      return NextResponse.json(
+        { ok: false, error: "No fileIds found" },
+        { status: 400 }
+      );
+
+    const fileIds = files?.map((f) => f.id);
+
+    // 1️⃣ Delete keys associated with these files
+    const { error: keysError } = await supabase
+      .from("translation_keys")
+      .delete()
+      .in("file_id", fileIds);
+
+    if (keysError) throw keysError;
+
+    // 2️⃣ Delete the files themselves
+    const { error: filesError } = await supabase
+      .from("translation_files")
+      .delete()
+      .in("id", fileIds);
+
+    if (filesError) throw filesError;
+
+    return NextResponse.json({
+      ok: true,
+      deletedFileIds: fileIds,
+    });
+  } catch (err) {
+    console.error("Delete files error:", err);
+    return NextResponse.json(
+      { ok: false, error: err instanceof Error ? err.message : String(err) },
+      { status: 500 }
+    );
+  }
 }

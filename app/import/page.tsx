@@ -1,6 +1,8 @@
 "use client";
 
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
+import { useTreeKeyStore } from "@/store/useTreeKeyStore";
+import { fetchLanguages } from "@/utils/languages/dataFunctions";
 import DeleteIcon from "@mui/icons-material/Delete";
 import {
   Box,
@@ -11,10 +13,11 @@ import {
   MenuItem,
   Paper,
   Select,
+  SelectChangeEvent,
   Typography,
 } from "@mui/material";
 import { redirect } from "next/navigation";
-import { ChangeEvent, Suspense, useState } from "react";
+import { ChangeEvent, Suspense, useEffect, useState } from "react";
 // ==== Types ====
 interface LanguageOption {
   code: string;
@@ -40,11 +43,33 @@ interface ApiResponse {
 
 export default function ImportPage() {
   const [files, setFiles] = useState<PendingFile[]>([]);
-  const { languages } = useAllKeyFileStore();
+  const { languages, setLanguages } = useAllKeyFileStore();
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [globalLanguageId, setGlobalLanguageId] = useState<string>("");
 
+  const { setFileName } = useTreeKeyStore();
+  //fetch languages
+  useEffect(() => {
+    async function fetchLanguagesFromDB() {
+      const data = await fetchLanguages();
+      const localData = localStorage.getItem("languages");
+
+      if (localData !== null && localData !== "[]") {
+        // console.log("Using data from localStorage");
+        const parsedData = JSON.parse(localData);
+        setLanguages(parsedData);
+      } else {
+        setLanguages(data);
+      }
+
+      localStorage.setItem("languages", JSON.stringify(data));
+      setLanguages(data);
+    }
+
+    fetchLanguagesFromDB();
+  }, [languages, setLanguages]);
   // Add files (append mode)
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (!e.target.files) return;
@@ -79,6 +104,24 @@ export default function ImportPage() {
     );
   };
 
+  //Change all languages
+  const applyLanguageToAll = (languageId: string) => {
+    const lang = languages.find((l) => l.language_id === languageId) ?? null;
+    console.log("Applying language to all files:", lang);
+    setFiles((prev) =>
+      prev.map((f) => {
+        return {
+          ...f,
+          language: {
+            code: lang ? lang.language_code : "",
+            name: lang ? lang.language_name : "",
+            id: lang?.language_id ?? "",
+          },
+        };
+      })
+    );
+  };
+
   // Upload to API
   const handleUpload = async () => {
     setError(null);
@@ -97,6 +140,7 @@ export default function ImportPage() {
 
       const formData = new FormData();
       const meta: Record<string, { code: string; name: string }> = {};
+      // console.log("files for upload:", files);
 
       files.forEach((pf) => {
         formData.append("files", pf.file);
@@ -105,6 +149,8 @@ export default function ImportPage() {
           name: pf.language!.name,
         };
       });
+
+      // console.log("Meta data for upload:", meta);
 
       formData.append("meta", JSON.stringify(meta));
 
@@ -126,6 +172,7 @@ export default function ImportPage() {
     } finally {
       setUploading(false);
       localStorage.removeItem("filesStorage");
+      setFileName(files[0]?.file.name || "");
       redirect("/");
     }
   };
@@ -136,6 +183,53 @@ export default function ImportPage() {
         <Typography variant='h4' gutterBottom>
           Import Translation Files
         </Typography>
+
+        {/* NEW: Global language select + Apply button */}
+        <Paper
+          sx={{
+            p: 2,
+            mb: 2,
+            display: "flex",
+            gap: 2,
+            alignItems: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          <FormControl
+            sx={{ minWidth: 240 }}
+            size='small'
+            disabled={languages.length === 0}
+          >
+            <InputLabel>Global Language</InputLabel>
+            <Select
+              label='Global Language'
+              value={globalLanguageId}
+              onChange={(e: SelectChangeEvent<string>) => {
+                setGlobalLanguageId(e.target.value as string);
+                applyLanguageToAll(e.target.value);
+              }}
+            >
+              <MenuItem value=''>
+                <em>None</em>
+              </MenuItem>
+              {languages.map((lang) => (
+                <MenuItem key={lang.language_id} value={lang.language_id}>
+                  {lang.language_name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          <Button
+            variant='outlined'
+            onClick={() => applyLanguageToAll(globalLanguageId)}
+            disabled={
+              languages.length === 0 || !globalLanguageId || files.length === 0
+            }
+          >
+            Apply to all files
+          </Button>
+        </Paper>
 
         {/* File Input */}
         <Button variant='contained' component='label' sx={{ mb: 2 }}>

@@ -1,6 +1,5 @@
 import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { fetchFiles } from "@/utils/languages/dataFunctions";
 import {
   FormControl,
   InputLabel,
@@ -11,7 +10,7 @@ import {
 import { useEffect, useMemo } from "react";
 
 const FileSelection = () => {
-  const { seeAllChanges, setFiles, files } = useOtherStateStore();
+  const { seeAllChanges, files } = useOtherStateStore();
   const { setSelectedTreeKey, fileNameState, setFileName } = useTreeKeyStore();
 
   const handleChange = (event: SelectChangeEvent) => {
@@ -20,18 +19,14 @@ const FileSelection = () => {
     setFileName(event.target.value as string);
   };
 
-  useEffect(() => {
-    const fetchFilesFromDB = async () => {
-      const data = await fetchFiles();
-      localStorage.setItem("files", JSON.stringify(data));
-      setFiles(data);
-    };
-    fetchFilesFromDB();
-  }, []);
   const reducedFiles = useMemo(
     () => [...new Set(files.map((item) => item.fileName))],
     [files]
   );
+
+  useEffect(() => {
+    console.log("fileNameState", fileNameState);
+  }, [fileNameState, setFileName]);
 
   return (
     <FormControl

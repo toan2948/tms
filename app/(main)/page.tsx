@@ -2,9 +2,10 @@
 import MultilingualView from "@/components/TranslationManagerSystem/Multilingual-View/MultilingualView";
 import { Typo1624 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
+import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useUserStore } from "@/store/useUserStore";
 import { useViewStore } from "@/store/useViewStore";
-import { fetchLanguages } from "@/utils/languages/dataFunctions";
+import { fetchFiles, fetchLanguages } from "@/utils/languages/dataFunctions";
 import { getProfile } from "@/utils/languages/login";
 import { Box, Button, ButtonGroup, Stack } from "@mui/material";
 import { useEffect } from "react";
@@ -16,6 +17,7 @@ function HomePage() {
   const { setUser, user } = useUserStore();
 
   const { setLanguages } = useAllKeyFileStore();
+  const { setFiles, files } = useOtherStateStore();
 
   const handleSignout = async () => {
     await signOut();
@@ -49,6 +51,14 @@ function HomePage() {
 
     fetchLanguagesFromDB();
   }, []);
+  useEffect(() => {
+    const fetchFilesFromDB = async () => {
+      const data = await fetchFiles();
+      localStorage.setItem("files", JSON.stringify(data));
+      setFiles(data);
+    };
+    fetchFilesFromDB();
+  }, [files]);
 
   return (
     <Box sx={{ padding: "20px 20px 20px 20px", width: "100%", height: "100%" }}>

@@ -5,7 +5,10 @@ import { useOtherStateStore } from "@/store/useOtherStateStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
 import { useUserStore } from "@/store/useUserStore";
 import { useViewStore } from "@/store/useViewStore";
-import { fetchAllTranslationFiles } from "@/utils/languages/dataFunctions";
+import {
+  deleteFile,
+  fetchAllTranslationFiles,
+} from "@/utils/languages/dataFunctions";
 import { isDevOrAdmin } from "@/utils/languages/login";
 import { Button, Stack } from "@mui/material";
 import Link from "next/link";
@@ -24,7 +27,7 @@ const MultilingualView = () => {
   const [openDialog, setOpenDialog] = React.useState(false);
   const { multiViewState } = useViewStore();
   const { user } = useUserStore();
-  const { setSelectedTreeKey } = useTreeKeyStore();
+  const { setSelectedTreeKey, fileNameState } = useTreeKeyStore();
   const router = useRouter();
   useEffect(() => {
     // Prefetch the import page to improve performance when navigating
@@ -45,6 +48,14 @@ const MultilingualView = () => {
     }
     setSelectedTreeKey(null);
     setOpenResetAllChangesDialog(false);
+  };
+
+  const handleDeleteFile = async () => {
+    await deleteFile(fileNameState);
+    setSelectedTreeKey(null);
+    setFilesInfo([]);
+    localStorage.removeItem("filesStorage");
+    localStorage.removeItem("files");
   };
 
   return (
@@ -69,6 +80,9 @@ const MultilingualView = () => {
           sx={{ marginBottom: "20px" }}
         >
           <FileSelection />
+          <RedOutlineButton onClick={() => handleDeleteFile()}>
+            Delete current file
+          </RedOutlineButton>
           <Button component={Link} href='/import' prefetch variant='contained'>
             Import Files
           </Button>
