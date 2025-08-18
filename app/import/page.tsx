@@ -14,8 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import { redirect } from "next/navigation";
-import { ChangeEvent, useState } from "react";
-
+import { ChangeEvent, Suspense, useState } from "react";
 // ==== Types ====
 interface LanguageOption {
   code: string;
@@ -132,82 +131,84 @@ export default function ImportPage() {
   };
 
   return (
-    <Box p={3}>
-      <Typography variant='h4' gutterBottom>
-        Import Translation Files
-      </Typography>
+    <Suspense fallback={<div>Loading import…</div>}>
+      <Box p={3}>
+        <Typography variant='h4' gutterBottom>
+          Import Translation Files
+        </Typography>
 
-      {/* File Input */}
-      <Button variant='contained' component='label' sx={{ mb: 2 }}>
-        Add Files
-        <input
-          type='file'
-          hidden
-          multiple
-          accept='.json'
-          onChange={handleFileChange}
-        />
-      </Button>
-
-      {/* File List */}
-      {files.map((pf, index) => (
-        <Paper
-          key={`${pf.file.name}-${index}`}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            p: 1,
-            mb: 1,
-            gap: 2,
-          }}
-        >
-          <Typography sx={{ flex: 1 }}>{pf.file.name}</Typography>
-
-          <FormControl sx={{ minWidth: 150 }} size='small'>
-            <InputLabel>Language</InputLabel>
-
-            <Select
-              value={pf.language?.id ?? ""}
-              label='Language'
-              onChange={(e) => handleLanguageChange(index, e.target.value)}
-            >
-              {languages.map((lang) => (
-                <MenuItem key={lang.language_id} value={lang.language_id}>
-                  {lang.language_name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-
-          <IconButton onClick={() => handleRemove(index)}>
-            <DeleteIcon />
-          </IconButton>
-        </Paper>
-      ))}
-
-      {/* Actions */}
-      <Box mt={2}>
-        <Button
-          variant='contained'
-          color='primary'
-          onClick={handleUpload}
-          disabled={uploading || files.length === 0}
-        >
-          {uploading ? "Uploading..." : "Upload"}
+        {/* File Input */}
+        <Button variant='contained' component='label' sx={{ mb: 2 }}>
+          Add Files
+          <input
+            type='file'
+            hidden
+            multiple
+            accept='.json'
+            onChange={handleFileChange}
+          />
         </Button>
-      </Box>
 
-      {/* Feedback */}
-      {error && (
-        <Typography color='error' mt={2}>
-          {error}
-        </Typography>
-      )}
-      {success && (
-        <Typography color='success.main' mt={2}>
-          {success}
-        </Typography>
-      )}
-    </Box>
+        {/* File List */}
+        {files.map((pf, index) => (
+          <Paper
+            key={`${pf.file.name}-${index}`}
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              p: 1,
+              mb: 1,
+              gap: 2,
+            }}
+          >
+            <Typography sx={{ flex: 1 }}>{pf.file.name}</Typography>
+
+            <FormControl sx={{ minWidth: 150 }} size='small'>
+              <InputLabel>Language</InputLabel>
+
+              <Select
+                value={pf.language?.id ?? ""}
+                label='Language'
+                onChange={(e) => handleLanguageChange(index, e.target.value)}
+              >
+                {languages.map((lang) => (
+                  <MenuItem key={lang.language_id} value={lang.language_id}>
+                    {lang.language_name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <IconButton onClick={() => handleRemove(index)}>
+              <DeleteIcon />
+            </IconButton>
+          </Paper>
+        ))}
+
+        {/* Actions */}
+        <Box mt={2}>
+          <Button
+            variant='contained'
+            color='primary'
+            onClick={handleUpload}
+            disabled={uploading || files.length === 0}
+          >
+            {uploading ? "Uploading..." : "Upload"}
+          </Button>
+        </Box>
+
+        {/* Feedback */}
+        {error && (
+          <Typography color='error' mt={2}>
+            {error}
+          </Typography>
+        )}
+        {success && (
+          <Typography color='success.main' mt={2}>
+            {success}
+          </Typography>
+        )}
+      </Box>
+    </Suspense>
   );
 }

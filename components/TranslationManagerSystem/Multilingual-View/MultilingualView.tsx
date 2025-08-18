@@ -8,8 +8,9 @@ import { useViewStore } from "@/store/useViewStore";
 import { fetchAllTranslationFiles } from "@/utils/languages/dataFunctions";
 import { isDevOrAdmin } from "@/utils/languages/login";
 import { Button, Stack } from "@mui/material";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChangeViewButtons from "../InteractComp/ChangeViewButtons";
 import FileSelection from "../InteractComp/FileSelection";
 import LanguageSelection from "../InteractComp/LanguageSelection";
@@ -18,7 +19,6 @@ import AllChangesView from "./AllChangesVew/AllChangesView";
 import { DeleteDialog } from "./Dialogs/Delete/DeleteDialog";
 import { SessionDialog } from "./Dialogs/Session/SessionDialog";
 import TreeView from "./TreeView/TreeView";
-
 const MultilingualView = () => {
   const { seeAllChanges } = useOtherStateStore();
   const [openDialog, setOpenDialog] = React.useState(false);
@@ -26,7 +26,10 @@ const MultilingualView = () => {
   const { user } = useUserStore();
   const { setSelectedTreeKey } = useTreeKeyStore();
   const router = useRouter();
-
+  useEffect(() => {
+    // Prefetch the import page to improve performance when navigating
+    router.prefetch?.("/import");
+  }, [router]);
   const { setFilesInfo } = useAllKeyFileStore();
   const [openResetAllChangesDialog, setOpenResetAllChangesDialog] =
     useState(false);
@@ -66,7 +69,7 @@ const MultilingualView = () => {
           sx={{ marginBottom: "20px" }}
         >
           <FileSelection />
-          <Button variant='contained' onClick={() => router.push("/import")}>
+          <Button component={Link} href='/import' prefetch variant='contained'>
             Import Files
           </Button>
         </Stack>
