@@ -54,7 +54,17 @@ function HomePage() {
   useEffect(() => {
     const fetchFilesFromDB = async () => {
       const data = await fetchFiles();
-      localStorage.setItem("files", JSON.stringify(data));
+      const localData = localStorage.getItem("languages");
+
+      if (localData !== null && localData !== "[]") {
+        // console.log("Using data from localStorage");
+        const parsedData = JSON.parse(localData);
+        setFiles(parsedData);
+      } else {
+        setFiles(data);
+      }
+
+      localStorage.setItem("languages", JSON.stringify(data));
       setFiles(data);
     };
     fetchFilesFromDB();

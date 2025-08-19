@@ -1,18 +1,12 @@
 // app/api/import/route.ts
 export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-import { WithLanguage } from "@/types/keyType";
 import { createClient } from "@/utils/supabase/client";
-
 import { NextRequest, NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 
 /* ========= Types ========= */
-
-interface MetaData {
-  [filename: string]: WithLanguage;
-}
-
 type JsonPrimitive = string | number | boolean | null;
 type JsonValue = JsonPrimitive | JsonObject | JsonArray;
 type JsonObject = { [key: string]: JsonValue };
@@ -34,25 +28,24 @@ interface TranslationKeyInsert {
   level: number;
   has_children: boolean;
 }
-interface UploadResult {
-  filename: string;
-  language_code: string;
-  fileId: string;
-  languageId: string;
-}
+type FileResult =
+  | {
+      ok: true;
+      filenameOnDisk: string;
+      filename: string;
+      language_code: string;
+      languageId: string;
+      fileId: string;
+    }
+  | { ok: false; filenameOnDisk: string; error: string };
 
 /* ========= Supabase ========= */
-const supabase = createClient();
+
+const supabase = await createClient();
 
 /* ========= Helpers ========= */
 function stripBOM(s: string): string {
   return s.replace(/^\uFEFF/, "");
-}
-
-async function readFormDataText(entry: FormDataEntryValue): Promise<string> {
-  if (typeof entry === "string") return entry;
-  if (entry instanceof Blob) return await entry.text(); // handles File/Blob
-  throw new Error("Unexpected form-data value type");
 }
 
 function ensureRootObjectJSON(
@@ -64,8 +57,7 @@ function ensureRootObjectJSON(
     throw new Error(
       `${context} is not valid JSON (starts with "${
         cleaned.slice(0, 12) || "(empty)"
-      }"). ` +
-        `Append it as JSON: formData.append('meta', JSON.stringify(meta))`
+      }")`
     );
   }
   const parsed = JSON.parse(cleaned) as unknown;
@@ -75,109 +67,50 @@ function ensureRootObjectJSON(
   return parsed as Record<string, unknown>;
 }
 
-function parseMeta(metaText: string): MetaData {
-  const obj = ensureRootObjectJSON(metaText, "meta");
-  const out: MetaData = {};
-  for (const [filename, val] of Object.entries(obj)) {
-    const v = val as Record<string, unknown>;
-    // accept either {language_code, language_name} or {code, name}
-    const language_code =
-      typeof v?.language_code === "string"
-        ? v.language_code
-        : typeof v?.code === "string"
-        ? (v.code as string)
-        : "";
-    const language_name =
-      typeof v?.language_name === "string"
-        ? v.language_name
-        : typeof v?.name === "string"
-        ? (v.name as string)
-        : "";
-    if (!language_code || !language_name) {
-      throw new Error(
-        `Invalid meta for "${filename}". Expected { language_code, language_name }`
-      );
-    }
-    out[filename] = { language_code, language_name };
-  }
-  return out;
+function parseFilename(name: string): {
+  filename: string;
+  language_code: string;
+} {
+  // Accept either ".../foo_en.json" or "foo_en.json"
+  const justName = name.split("/").pop() || name;
+  const m = justName.match(/^(.+?)_([A-Za-z0-9-]+)\.json$/i);
+  if (!m)
+    throw new Error(
+      `Filename must be "name_languageCode.json". Got "${justName}"`
+    );
+  const [, base, lang] = m;
+  return { filename: base, language_code: lang.toLowerCase() };
 }
 
 function ensureDepthAllowed(level: number, fileName: string): void {
   if (level > 6) {
-    throw new Error(
-      `Max translation key depth exceeded in ${fileName} (level ${level} > 6).`
-    );
+    throw new Error(`Max depth exceeded for ${fileName}: level ${level} > 6`);
   }
 }
 
-/* ========= Route ========= */
+function serializeLeaf(v: JsonValue): string | null {
+  if (v === null) return null;
+  return typeof v === "string" ? v : JSON.stringify(v);
+}
+
+async function insertKeysInBatches(
+  rows: TranslationKeyInsert[],
+  batchSize = 800
+): Promise<void> {
+  for (let i = 0; i < rows.length; i += batchSize) {
+    const chunk = rows.slice(i, i + batchSize);
+    const { error } = await supabase.from("translation_keys").insert(chunk);
+    if (error)
+      throw new Error(`translation_keys insert failed: ${error.message}`);
+  }
+}
+
 export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
     const formData = await req.formData();
-    // DEBUG: echo what we received (use ?debug=1 on your POST URL)
-    if (req.nextUrl.searchParams.get("debug") === "1") {
-      const metaEntry = formData.get("meta");
-      const rawFiles = formData.getAll("files");
-
-      const metaType =
-        metaEntry == null
-          ? "null"
-          : typeof metaEntry === "string"
-          ? "string"
-          : metaEntry instanceof Blob
-          ? "blob"
-          : typeof metaEntry;
-
-      const metaPreview = metaEntry
-        ? typeof metaEntry === "string"
-          ? metaEntry.slice(0, 80)
-          : metaEntry instanceof Blob
-          ? `blob(${metaEntry.type || "no-type"})`
-          : String(metaEntry)
-        : "(missing)";
-
-      const fileSummaries = rawFiles.map((f) => {
-        if (f instanceof File)
-          return { name: f.name, type: f.type || "(none)", size: f.size };
-        return { notAFile: true, valueType: typeof f };
-      });
-
-      return NextResponse.json({
-        ok: true,
-        debug: {
-          metaType,
-          metaPreview,
-          filesCount: rawFiles.length,
-          files: fileSummaries,
-          note: "If metaType !== 'string', ensure you append JSON.stringify(meta) on the client.",
-        },
-      });
-    }
-
-    // Parse meta (string OR Blob) safely
-    const metaEntry = formData.get("meta");
-    if (!metaEntry) {
-      return NextResponse.json(
-        { ok: false, error: "Missing meta" },
-        { status: 400 }
-      );
-    }
-    const metaRaw = await readFormDataText(metaEntry);
-    let meta: MetaData;
-
-    try {
-      meta = parseMeta(metaRaw);
-    } catch (e) {
-      return NextResponse.json(
-        { ok: false, error: (e as Error).message },
-        { status: 400 }
-      );
-    }
-
-    // Files
     const rawFiles = formData.getAll("files");
     const files = rawFiles.filter((x): x is File => x instanceof File);
+
     if (!files.length) {
       return NextResponse.json(
         { ok: false, error: "No files provided" },
@@ -185,150 +118,157 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
       );
     }
 
-    // Duplicate guard within this request
     const seen = new Set<string>();
+    const results: FileResult[] = [];
+
     for (const file of files) {
-      const lang = meta[file.name];
-      if (!lang?.language_code) {
-        return NextResponse.json(
-          { ok: false, error: `Missing language for file ${file.name}` },
-          { status: 400 }
-        );
-      }
-      const key = `${file.name}__${lang.language_code}`;
-      if (seen.has(key)) {
-        return NextResponse.json(
-          {
-            ok: false,
-            error: `Duplicate file+language in this batch: ${file.name} (${lang.language_code})`,
-          },
-          { status: 400 }
-        );
-      }
-      seen.add(key);
-    }
+      const filenameOnDisk = file.name;
+      try {
+        if (!/\.json$/i.test(filenameOnDisk)) {
+          throw new Error(`File "${filenameOnDisk}" is not a .json file`);
+        }
 
-    const results: UploadResult[] = [];
+        const { filename, language_code } = parseFilename(filenameOnDisk);
+        const dupKey = `${filename}__${language_code}`;
+        if (seen.has(dupKey)) {
+          throw new Error(
+            `Duplicate file+language in this batch: ${filename} (${language_code})`
+          );
+        }
+        seen.add(dupKey);
 
-    // Process each file
-    for (const file of files) {
-      if (!/\.json$/i.test(file.name)) {
-        throw new Error(`File "${file.name}" is not a .json file`);
-      }
+        // Parse JSON (BOM-aware) and require object root
+        const text = stripBOM(await file.text()).trim();
+        const root = ensureRootObjectJSON(text, `file ${filenameOnDisk}`);
+        const json = root as JsonObject;
 
-      // Parse file JSON safely (BOM-aware, must be object)
-      const text = stripBOM(await file.text()).trim();
-      const root = ensureRootObjectJSON(text, `file ${file.name}`);
-      const json = root as JsonObject;
-
-      const lang = meta[file.name]!;
-      const filenameWithoutExt = file.name.replace(/\.[^.]+$/i, "");
-
-      // Ensure language exists by code
-      const { data: langData, error: langErr } = await supabase
-        .from("languages")
-        .select("id")
-        .eq("code", lang.language_code)
-        .maybeSingle<SupabaseLanguage>();
-      if (langErr) throw langErr;
-
-      let languageId: string;
-      if (langData?.id) {
-        languageId = langData.id;
-      } else {
-        const { data: newLang, error: insertLangErr } = await supabase
+        // Ensure language exists (name = code when creating)
+        console.log("language_code", language_code);
+        const { data: langSel, error: langSelErr } = await supabase
           .from("languages")
-          .insert({ code: lang.language_code, name: lang.language_name })
           .select("id")
-          .single<SupabaseLanguage>();
-        if (insertLangErr) throw insertLangErr;
-        languageId = newLang.id;
-      }
+          .eq("code", language_code)
+          .maybeSingle<SupabaseLanguage>();
+        if (langSelErr)
+          throw new Error(`languages select failed: ${langSelErr.message}`);
 
-      // Replace existing (delete keys -> delete files)
-      const { data: existingFiles, error: fetchFileErr } = await supabase
-        .from("translation_files")
-        .select("id")
-        .eq("filename", filenameWithoutExt)
-        .eq("language_id", languageId);
-      if (fetchFileErr) throw fetchFileErr;
+        let languageId: string;
+        if (langSel?.id) {
+          languageId = langSel.id;
+        } else {
+          const ins = await supabase
+            .from("languages")
+            .insert({ code: language_code, name: language_code })
+            .select("id")
+            .single<SupabaseLanguage>();
+          if (ins.error)
+            throw new Error(`languages insert failed: ${ins.error.message}`);
+          languageId = ins.data.id;
+        }
 
-      if (existingFiles?.length) {
-        const fileIds = existingFiles.map((f) => f.id);
-        const { error: delKeysErr } = await supabase
-          .from("translation_keys")
-          .delete()
-          .in("file_id", fileIds);
-        if (delKeysErr) throw delKeysErr;
-
-        const { error: delFilesErr } = await supabase
+        // Replace existing translation_files/keys for this (language, filename)
+        const { data: existing, error: existErr } = await supabase
           .from("translation_files")
-          .delete()
-          .in("id", fileIds);
-        if (delFilesErr) throw delFilesErr;
-      }
+          .select("id")
+          .eq("filename", filename)
+          .eq("language_id", languageId);
+        if (existErr)
+          throw new Error(
+            `translation_files select failed: ${existErr.message}`
+          );
 
-      // Insert file row
-      const { data: insertedFile, error: insertFileErr } = await supabase
-        .from("translation_files")
-        .insert({ language_id: languageId, filename: filenameWithoutExt })
-        .select("id")
-        .single<SupabaseTranslationFile>();
-      if (insertFileErr) throw insertFileErr;
+        if (existing?.length) {
+          const ids = existing.map((r) => r.id);
+          const delKeys = await supabase
+            .from("translation_keys")
+            .delete()
+            .in("file_id", ids);
+          if (delKeys.error)
+            throw new Error(
+              `translation_keys delete failed: ${delKeys.error.message}`
+            );
+          const delFiles = await supabase
+            .from("translation_files")
+            .delete()
+            .in("id", ids);
+          if (delFiles.error)
+            throw new Error(
+              `translation_files delete failed: ${delFiles.error.message}`
+            );
+        }
 
-      const fileId = insertedFile.id;
+        // Insert new translation_files row
+        const insFile = await supabase
+          .from("translation_files")
+          .insert({ language_id: languageId, filename })
+          .select("id")
+          .single<SupabaseTranslationFile>();
+        if (insFile.error)
+          throw new Error(
+            `translation_files insert failed: ${insFile.error.message}`
+          );
+        const fileId = insFile.data.id;
 
-      // Walk tree -> translation_keys (levels 0–6)
-      const keysToInsert: TranslationKeyInsert[] = [];
-      function walk(
-        obj: JsonObject,
-        path: string[],
-        level: number,
-        parentId: string | null
-      ): void {
-        ensureDepthAllowed(level, file.name);
-        for (const [segment, value] of Object.entries(obj)) {
-          const fullKeyPath = [...path, segment].join(".");
-          const isObj =
-            typeof value === "object" &&
-            value !== null &&
-            !Array.isArray(value);
-          const id = uuidv4();
-          keysToInsert.push({
-            id,
-            file_id: fileId,
-            parent_id: parentId,
-            key_path_segment: segment,
-            value: isObj ? null : value === null ? null : String(value),
-            full_key_path: fullKeyPath,
-            level,
-            has_children: isObj,
-          });
-          if (isObj) {
-            walk(value as JsonObject, [...path, segment], level + 1, id);
+        // Walk tree -> translation_keys (levels 0–6)
+        const rows: TranslationKeyInsert[] = [];
+        function walk(
+          obj: JsonObject,
+          path: string[],
+          level: number,
+          parentId: string | null
+        ): void {
+          ensureDepthAllowed(level, filenameOnDisk);
+          for (const [segment, value] of Object.entries(obj)) {
+            if (!segment)
+              throw new Error(
+                `Empty key segment at "${path.join(".")}" in ${filenameOnDisk}`
+              );
+            const full = [...path, segment].join(".");
+            const isObj =
+              typeof value === "object" &&
+              value !== null &&
+              !Array.isArray(value);
+            const id = uuidv4();
+            rows.push({
+              id,
+              file_id: fileId,
+              parent_id: parentId,
+              key_path_segment: segment,
+              value: isObj ? null : serializeLeaf(value),
+              full_key_path: full,
+              level,
+              has_children: isObj,
+            });
+            if (isObj)
+              walk(value as JsonObject, [...path, segment], level + 1, id);
           }
         }
-      }
-      walk(json, [], 0, null);
+        walk(json, [], 0, null);
 
-      if (keysToInsert.length) {
-        const { error: insertKeysErr } = await supabase
-          .from("translation_keys")
-          .insert(keysToInsert);
-        if (insertKeysErr) throw insertKeysErr;
-      }
+        if (rows.length) await insertKeysInBatches(rows);
 
-      results.push({
-        filename: file.name,
-        language_code: lang.language_code,
-        fileId,
-        languageId,
-      });
+        results.push({
+          ok: true,
+          filenameOnDisk,
+          filename,
+          language_code,
+          languageId,
+          fileId,
+        });
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        results.push({ ok: false, filenameOnDisk, error: msg });
+      }
     }
 
-    return NextResponse.json({ ok: true, results }, { status: 200 });
+    const anyFail = results.some((r) => !r.ok);
+    return NextResponse.json(
+      { ok: !anyFail, results },
+      { status: anyFail ? 207 : 200 }
+    );
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
+    // eslint-disable-next-line no-console
     console.error("Import error:", msg);
     return NextResponse.json({ ok: false, error: msg }, { status: 500 });
   }

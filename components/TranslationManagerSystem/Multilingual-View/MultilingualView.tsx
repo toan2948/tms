@@ -23,19 +23,21 @@ import { DeleteDialog } from "./Dialogs/Delete/DeleteDialog";
 import { SessionDialog } from "./Dialogs/Session/SessionDialog";
 import TreeView from "./TreeView/TreeView";
 const MultilingualView = () => {
-  const { seeAllChanges } = useOtherStateStore();
+  const { seeAllChanges, files, setFiles } = useOtherStateStore();
   const [openDialog, setOpenDialog] = React.useState(false);
   const { multiViewState } = useViewStore();
   const { user } = useUserStore();
-  const { setSelectedTreeKey, fileNameState } = useTreeKeyStore();
+  const { setSelectedTreeKey, fileNameState, setFileName } = useTreeKeyStore();
+  const [openDeleteFileDialog, setOpenDeleteFileDialog] = useState(false);
+  const { setFilesInfo } = useAllKeyFileStore();
+  const [openResetAllChangesDialog, setOpenResetAllChangesDialog] =
+    useState(false);
+
   const router = useRouter();
   useEffect(() => {
     // Prefetch the import page to improve performance when navigating
     router.prefetch?.("/import");
   }, [router]);
-  const { setFilesInfo } = useAllKeyFileStore();
-  const [openResetAllChangesDialog, setOpenResetAllChangesDialog] =
-    useState(false);
 
   const resetChanges = async () => {
     // localStorage.removeItem("filesStorage");
@@ -54,8 +56,11 @@ const MultilingualView = () => {
     await deleteFile(fileNameState);
     setSelectedTreeKey(null);
     setFilesInfo([]);
+    setFiles(files.filter((file) => file.fileName !== fileNameState));
+    setFileName(files[1]!.fileName || "");
     localStorage.removeItem("filesStorage");
     localStorage.removeItem("files");
+    setOpenDeleteFileDialog(false);
   };
 
   return (
@@ -69,6 +74,13 @@ const MultilingualView = () => {
         warning={false}
         actionText='yes, reset all'
       />
+      <DeleteDialog
+        open={openDeleteFileDialog}
+        setOpen={setOpenDeleteFileDialog}
+        handleDelete={handleDeleteFile}
+        title=' delete the files and their keys?'
+        warning={false}
+      />
       <Stack
         direction={"row"}
         justifyContent={"space-between"}
@@ -80,7 +92,7 @@ const MultilingualView = () => {
           sx={{ marginBottom: "20px" }}
         >
           <FileSelection />
-          <RedOutlineButton onClick={() => handleDeleteFile()}>
+          <RedOutlineButton onClick={() => setOpenDeleteFileDialog(true)}>
             Delete current file
           </RedOutlineButton>
           <Button component={Link} href='/import' prefetch variant='contained'>
