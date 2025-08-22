@@ -11,7 +11,7 @@ import { Stack, styled } from "@mui/material";
 import { useEffect, useState } from "react";
 import BasicSimpleTreeView from "./BasicSimpleTreeView";
 import TranslationValueList from "./FieldList/TranslationValueList";
-export const HeaderBox = styled(Stack)(({}) => ({
+export const HeaderBox = styled(Stack)(({ }) => ({
   width: "100%",
   borderBottom: "solid 1px black",
   maxHeight: "50px",
@@ -23,7 +23,7 @@ type TreeVewProps = {
   test?: boolean;
 };
 
-const TreeView = ({}: TreeVewProps) => {
+const TreeView = ({ }: TreeVewProps) => {
   const { fileNameState } = useTreeKeyStore();
 
   const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
@@ -35,22 +35,22 @@ const TreeView = ({}: TreeVewProps) => {
     async function fetchKeysAndSaveToLocal() {
       try {
         const data = await fetchAllTranslationFiles();
-        const localStorageFilesInfo = localStorage.getItem("filesStorage");
+        // const localStorageFilesInfo = localStorage.getItem("filesStorage");
 
-        if (localStorageFilesInfo !== null && localStorageFilesInfo !== "[]") {
-          console.log("Using data from localStorage");
-          const parsedData = JSON.parse(localStorageFilesInfo);
-          setFilesInfo(parsedData);
-        } else {
-          setFilesInfo(data);
-        }
+        // if (localStorageFilesInfo !== null && localStorageFilesInfo !== "[]") {
+        //   console.log("Using data from localStorage");
+        //   const parsedData = JSON.parse(localStorageFilesInfo);
+        //   setFilesInfo(parsedData);
+        // } else {
+        setFilesInfo(data);
+        // }
       } catch (error) {
         console.error("Error loading translation data:", error);
       }
     }
 
     fetchKeysAndSaveToLocal();
-  }, [fileNameState, JSON.stringify(filesInfo)]);
+  }, [fileNameState]);
 
   useEffect(() => {
     if (!fileNameState) {
@@ -58,21 +58,21 @@ const TreeView = ({}: TreeVewProps) => {
       return;
     }
 
-    const localStorageFilesInfo = localStorage.getItem("filesStorage");
+    // const localStorageFilesInfo = localStorage.getItem("filesStorage");
 
-    if (localStorageFilesInfo) {
-      const parsedData: FileState<KeyState>[] = JSON.parse(
-        localStorageFilesInfo
-      );
-      const englishFiles = findEnglishFiles(parsedData);
-      const entry = englishFiles.find((e) => e.fileName === fileNameState) || {
-        fileName: fileNameState,
-        keys: [],
-      };
-      if (entry?.keys.length > 0) {
-        setTreeKeys(buildKeyTreeFromFlatList(entry?.keys));
-      }
+    // if (localStorageFilesInfo) {
+    //   const parsedData: FileState<KeyState>[] = JSON.parse(
+    //     localStorageFilesInfo
+    //   );
+    const englishFiles = findEnglishFiles(filesInfo);
+    const entry = englishFiles.find((e) => e.fileName === fileNameState) || {
+      fileName: fileNameState,
+      keys: [],
+    };
+    if (entry?.keys.length > 0) {
+      setTreeKeys(buildKeyTreeFromFlatList(entry?.keys));
     }
+    // }
   }, [fileNameState, JSON.stringify(filesInfo)]); //filesInfo is used to trigger the effect when files are updated
 
   return (

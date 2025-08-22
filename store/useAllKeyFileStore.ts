@@ -42,7 +42,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
     set(() => ({
       filesInfo: files,
     }));
-    localStorage.setItem("filesStorage", JSON.stringify(files));
+    // localStorage.setItem("filesStorage", JSON.stringify(files));
   },
 
   addKeysToFilesInfo: (
