@@ -1,7 +1,7 @@
 import { Typo1424 } from "@/components/ui/StyledElementPaymentDetail";
 import { useAllKeyFileStore } from "@/store/useAllKeyFileStore";
 import { useTreeKeyStore } from "@/store/useTreeKeyStore";
-import { FileState, KeyState, TranslationTreeKey } from "@/types/keyType";
+import { TranslationTreeKey } from "@/types/keyType";
 import { fetchAllTranslationFiles } from "@/utils/languages/dataFunctions";
 import {
   buildKeyTreeFromFlatList,
