@@ -5,7 +5,11 @@ import Tab from '@mui/material/Tab';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import TranslationSection from '@/components/TranslationManagerSystem';
-import { Stack } from '@mui/material';
+import { Button, Stack } from '@mui/material';
+import { Typo1624 } from '@/components/ui/StyledElementPaymentDetail';
+import { signOut } from '../login/actions';
+import { getProfile } from '@/utils/languages/login';
+import { useUserStore } from '@/store/useUserStore';
 
 interface TabPanelProps {
   children?: React.ReactNode;
@@ -43,6 +47,19 @@ function a11yProps(index: number) {
 
 export default function VerticalTabs() {
   const [value, setValue] = React.useState(0);
+  const { setUser, user } = useUserStore();
+
+  const handleSignout = async () => {
+    await signOut();
+  };
+
+  React.useEffect(() => {
+    const fetchProfile = async () => {
+      const profile = await getProfile();
+      setUser(profile);
+    };
+    fetchProfile();
+  }, []);
 
   const handleChange = (event: React.SyntheticEvent, newValue: number) => {
     setValue(newValue);
@@ -51,13 +68,21 @@ export default function VerticalTabs() {
   return (
     <>
 
+      <Stack direction={"row"} justifyContent={"space-between"}>
+        <Box>
+          <Typo1624>User: {user?.full_name || user?.email}</Typo1624>
+        </Box>
+
+        <Button onClick={() => handleSignout()}>Sign out</Button>
+      </Stack>
+
       <Box
         sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex' }}
       >
         <Stack sx={{ borderRight: 1, borderColor: 'divider', height: "100%" }}>
 
 
-          <Box textAlign={"center"} padding={6}>FE Boards</Box>
+          <Box textAlign={"center"} padding={6} >FE Boards</Box>
           <Tabs
 
             orientation="vertical"
