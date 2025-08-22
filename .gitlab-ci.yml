@@ -1,0 +1,122 @@
+default:
+  tags:
+    - gjw-website
+
+variables:
+  BUILD_ENV:
+    description: "The environment to build and deploy, default=dev"
+  BUILD_VERSION: "uat"
+
+  # branch variables
+  CI_UAT_BRANCH: "uat"
+  CI_PROD_BRANCH: "main"
+  UAT_URL: "http://boards.ganjingworld.dev"
+
+  ENV: "dev"
+  TRIGGER: "3"
+
+  # k8 variables
+  K8_NAMESPACE: gjw-frontend
+  K8_DEPLOYMENT: fe-boards-server-$PREVIEW_ID
+
+  # docker variables
+  DOCKER_REGISTRY: registry.cloudokyo.cloud
+  DOCKER_PROJECT: gjw-frontend
+  DOCKER_REPO: fe-boards-server
+  DOCKER_IMAGE: $DOCKER_REGISTRY/$DOCKER_PROJECT/$DOCKER_REPO:$BUILD_VERSION
+
+# include:
+#   - $CI_PROJECT_DIR/.gitlab-ci-tests.yml
+
+stages:
+  - build
+  # - deploy-preview
+  - deploy-uat
+  #- delete-preview
+  - clean
+
+.build:
+  script:
+    - |
+
+      # Build the docker image
+      echo "---> Set the metadata file for env=$BUILD_ENV"
+      echo "{\"Time\":\"$(date)\", \"User\":\"$GITLAB_USER_EMAIL\", \"Source\":\"$CI_COMMIT_REF_NAME\", \"Commit\":\"$CI_COMMIT_SHORT_SHA\", \"Version\":\"$BUILD_VERSION\"}" > metadata.json
+      cat metadata.json
+      echo "---> Build docker image $DOCKER_IMAGE"
+      echo "---> The current docker base image is $DOCKER_IMAGE"
+      docker build --no-cache --tag $DOCKER_IMAGE -f Dockerfile .
+
+.push:
+  script:
+    - |
+      # Push the docker image to registry
+      echo "---> Push docker image $DOCKER_IMAGE"
+      echo "$DOCKER_PASS" | docker login -u $DOCKER_USER --password-stdin $DOCKER_REGISTRY
+      docker push $DOCKER_IMAGE
+
+docker:build:
+  stage: build
+  extends: .build
+  rules:
+    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == $CI_UAT_BRANCH || $CI_COMMIT_MESSAGE =~ /^(TestOnly)/ || $CI_PIPELINE_SOURCE == "schedule" || $CI_MERGE_REQUEST_LABELS =~ /(No Preview)/
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" ||
+        $CI_PIPELINE_SOURCE == "web" && $BUILD_ENV =~ /^(uat|prod)$/ ||
+        $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_UAT_BRANCH
+      when: on_success
+  allow_failure: false
+  interruptible: true
+
+docker:push:
+  stage: build
+  needs:
+    - docker:build
+  extends: .push
+  rules:
+    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == $CI_UAT_BRANCH || $CI_COMMIT_MESSAGE =~ /^(TestOnly)/ || $CI_PIPELINE_SOURCE == "schedule" || $CI_MERGE_REQUEST_LABELS =~ /(No Preview)/
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" ||
+        $CI_PIPELINE_SOURCE == "web" && $BUILD_ENV =~ /^(uat|prod)$/ ||
+        $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_UAT_BRANCH
+      when: on_success
+  allow_failure: false
+
+#========== Deploy UAT ===========
+deploy:uat:
+  stage: deploy-uat
+  variables:
+    ENV: uat
+    K8_DEPLOYMENT: fe-boards-server
+  environment:
+    name: uat
+    url: https://boards.ganjingworld.dev
+  script:
+    - |
+      # Deploy a new docker image to UAT
+      echo "---> Deploy the service to K8/UAT with config gjw-$ENV.yml"
+      kubectl --kubeconfig=$HOME/.kube/gjw-$ENV.yml --namespace=$K8_NAMESPACE set image deployment $K8_DEPLOYMENT $K8_DEPLOYMENT=$DOCKER_IMAGE
+      kubectl --kubeconfig=$HOME/.kube/gjw-$ENV.yml --namespace=$K8_NAMESPACE rollout restart deploy $K8_DEPLOYMENT
+  rules:
+    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == $CI_UAT_BRANCH
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_UAT_BRANCH ||
+        $CI_PIPELINE_SOURCE == "web" && $BUILD_ENV == "uat" # support manual deploy
+      when: on_success
+  allow_failure: false
+
+clean:docker:
+  stage: clean
+  script:
+    - |
+      echo "Remove untagged images"
+      docker image prune --filter="dangling=true" -f
+  rules:
+    - if: $CI_MERGE_REQUEST_SOURCE_BRANCH_NAME == $CI_UAT_BRANCH || $CI_COMMIT_MESSAGE =~ /^(TestOnly)/ || $CI_MERGE_REQUEST_LABELS =~ /(No Preview)/
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" ||
+        $CI_PIPELINE_SOURCE == "web" && $BUILD_ENV =~ /^(uat)$/ ||
+        $CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == $CI_UAT_BRANCH
+      when: on_success
+  allow_failure: false
+  interruptible: false
