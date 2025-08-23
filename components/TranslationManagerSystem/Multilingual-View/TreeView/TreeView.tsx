@@ -29,21 +29,12 @@ const TreeView = ({ }: TreeVewProps) => {
   const [treeKeys, setTreeKeys] = useState<TranslationTreeKey[]>([]);
   const { filesInfo, setFilesInfo } = useAllKeyFileStore();
 
-  // Fetch file data once on mount
   useEffect(() => {
-    //fetch data and save to filesInfo state/localStorage
     async function fetchKeysAndSaveToLocal() {
       try {
         const data = await fetchAllTranslationFiles();
-        // const localStorageFilesInfo = localStorage.getItem("filesStorage");
 
-        // if (localStorageFilesInfo !== null && localStorageFilesInfo !== "[]") {
-        //   console.log("Using data from localStorage");
-        //   const parsedData = JSON.parse(localStorageFilesInfo);
-        //   setFilesInfo(parsedData);
-        // } else {
         setFilesInfo(data);
-        // }
       } catch (error) {
         console.error("Error loading translation data:", error);
       }
@@ -58,12 +49,6 @@ const TreeView = ({ }: TreeVewProps) => {
       return;
     }
 
-    // const localStorageFilesInfo = localStorage.getItem("filesStorage");
-
-    // if (localStorageFilesInfo) {
-    //   const parsedData: FileState<KeyState>[] = JSON.parse(
-    //     localStorageFilesInfo
-    //   );
     const englishFiles = findEnglishFiles(filesInfo);
     const entry = englishFiles.find((e) => e.fileName === fileNameState) || {
       fileName: fileNameState,
@@ -72,7 +57,6 @@ const TreeView = ({ }: TreeVewProps) => {
     if (entry?.keys.length > 0) {
       setTreeKeys(buildKeyTreeFromFlatList(entry?.keys));
     }
-    // }
   }, [fileNameState, JSON.stringify(filesInfo)]); //filesInfo is used to trigger the effect when files are updated
 
   return (

@@ -42,7 +42,6 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
     set(() => ({
       filesInfo: files,
     }));
-    // localStorage.setItem("filesStorage", JSON.stringify(files));
   },
 
   addKeysToFilesInfo: (
@@ -70,7 +69,9 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
         return file;
       });
 
-      localStorage.setItem("filesStorage", JSON.stringify(updatedFiles));
+      const allNewKeys = updatedFiles.flatMap((file) => file.keys).filter(k => k.isNew === true);
+
+      localStorage.setItem("newKeys", JSON.stringify(allNewKeys));
 
       return { filesInfo: updatedFiles };
     });
@@ -178,7 +179,7 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
         };
       });
 
-      localStorage.setItem("filesStorage", JSON.stringify(updatedFiles));
+      // localStorage.setItem("filesStorage", JSON.stringify(updatedFiles));
       return { filesInfo: updatedFiles };
     });
   },
@@ -204,8 +205,9 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
         };
       }),
     }));
-    const updatedFiles = get().filesInfo;
-    localStorage.setItem("filesStorage", JSON.stringify(updatedFiles));
+
+    const changedKeys = get().filesInfo.flatMap((file) => file.keys).filter((k) => k.isChanged);
+    localStorage.setItem("valueChangedKeys", JSON.stringify(changedKeys));
   },
   updateKeyPathSegmentInFiles: (oldFullKeyPath, newSegment, fileName) => {
     const setSelectedTreeKey = useTreeKeyStore.getState().setSelectedTreeKey;
@@ -290,6 +292,8 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
           }
         }
 
+
+
         return {
           ...file,
           keys: updatedKeys,
@@ -297,7 +301,9 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
         };
       });
 
-      localStorage.setItem("filesStorage", JSON.stringify(updatedFiles));
+      const nameEditedKeys = updatedFiles.flatMap((file) => file.keys).filter((k) => k.isNameEdited);
+      localStorage.setItem("nameEditedKeys", JSON.stringify(nameEditedKeys));
+      // localStorage.setItem("filesStorage", JSON.stringify(updatedFiles));
 
       return { filesInfo: updatedFiles };
     });
@@ -323,7 +329,8 @@ export const useAllKeyFileStore = create<AllFileState>((set, get) => ({
         };
       });
 
-      localStorage.setItem("filesStorage", JSON.stringify(updatedFiles));
+
+      // localStorage.setItem("filesStorage", JSON.stringify(updatedFiles));
 
       return { filesInfo: updatedFiles };
     });
